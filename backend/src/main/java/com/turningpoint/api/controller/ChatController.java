@@ -3,6 +3,7 @@ package com.turningpoint.api.controller;
 import com.turningpoint.api.service.CozeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.HashMap;
 import java.util.Map;
