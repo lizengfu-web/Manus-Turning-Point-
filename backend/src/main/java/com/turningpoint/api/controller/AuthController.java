@@ -41,10 +41,18 @@ public class AuthController {
             }
             
             response.put("success", true);
-            response.put("openid", openid);
-            response.put("userId", user.getId());
-            // 在实际项目中，这里应该生成并返回一个 JWT token
-            response.put("token", "mock-jwt-token-" + openid);
+            Map<String, Object> data = new HashMap<>();
+            data.put("token", "mock-jwt-token-" + openid);
+            
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("id", user.getId());
+            userMap.put("openId", openid);
+            userMap.put("nickName", user.getNickname() != null ? user.getNickname() : "微信用户");
+            userMap.put("avatarUrl", user.getAvatarUrl() != null ? user.getAvatarUrl() : "");
+            userMap.put("userType", "normal");
+            
+            data.put("user", userMap);
+            response.put("data", data);
             
         } catch (Exception e) {
             response.put("success", false);
