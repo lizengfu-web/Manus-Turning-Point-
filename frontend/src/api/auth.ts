@@ -31,7 +31,7 @@ export async function wxLogin(params: LoginParams): Promise<LoginResponse> {
     
     // 使用标准 HTTP POST 请求
     const response = await Taro.request({
-      url: `${API_BASE_URL}/api/miniprogram/login`,
+      url: `${API_BASE_URL}/auth/login`,
       method: 'POST',
       data: params,
       header: {
@@ -97,7 +97,7 @@ export async function getUserInfo() {
     }
 
     const response = await Taro.request({
-      url: `${API_BASE_URL}/api/miniprogram/user`,
+      url: `${API_BASE_URL}/auth/user`,
       method: 'GET',
       header: {
         'Authorization': `Bearer ${token}`,
@@ -133,7 +133,7 @@ export async function updateUserInfo(userInfo: {
     }
 
     const response = await Taro.request({
-      url: `${API_BASE_URL}/api/miniprogram/user/update`,
+      url: `${API_BASE_URL}/auth/user/update`,
       method: 'POST',
       data: userInfo,
       header: {
