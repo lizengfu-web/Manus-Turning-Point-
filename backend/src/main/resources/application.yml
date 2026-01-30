@@ -22,5 +22,5 @@ wx:
 coze:
   api:
     key: ${COZE_API_KEY:your_coze_key}
-    bot-id: ${COZE_BOT_ID:your_bot_id}
-    base-url: https://api.coze.cn/open_api/v2/chat
+    project-id: ${COZE_PROJECT_ID:7600759893704048649}
+    base-url: https://jcp33s7bqh.coze.site/stream_run
