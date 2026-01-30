@@ -21,6 +21,7 @@ wx:
 
 coze:
   api:
-    key: ${COZE_API_KEY:your_coze_key}
+    token: ${COZE_TOKEN:eyJhbGciOiJSUzI1NiIsImtpZCI6ImNhMmQ5ZWNiLTcwYTMtNDNhYS1hYjhkLTJkYWM3MWMzNDIyYSJ9.eyJpc3MiOiJodHRwczovL2FwaS5jb3plLmNuIiwiYXVkIjpbImMzRnhzVEd0VW80WDFwR0x4OVJkRmQ3bmg3TU1sYnBHIl0sImV4cCI6ODIxMDI2Njg3Njc5OSwiaWF0IjoxNzY5NjkyOTEwLCJzdWIiOiJzcGlmZmU6Ly9hcGkuY296ZS5jbi93b3JrbG9hZF9pZGVudGl0eS9pZDo3NjAwNzY5NzQ5OTkxMDMwODEwIiwic3JjIjoiaW5ib3VuZF9hdXRoX2FjY2Vzc190b2tlbl9pZDo3NjAwNzczMTc1ODYwNzg5MjQ4In0.omkF_PwGEUHzt8SRKt7CZVbaINyFfZfQVE4AtqOeX1E6UYWdGOrsiT4sRE1FlnjysrfwOMJiR7wqMzy3L4LXZjbpc7oa1hcA0wDUvQKO1w3AkIXHevu5z-MuH6UMLpWEkwhYZpcp766rxWJbQwrqVe_FQlaTzGpQmr48LhRefxVZYGoPKyLAYInY3aqd9NIWyHSAJYowFolERx56GdSNCKL8bUykAsigXOKD6kfLjeVfrGyHp3z8-Ry4EsLLRCq9xpgwCys7co92nWf0rp_JQKshwygsBcJhfyq8uoxbvo8jWKlYVBWJYDNafHrr02DQu0Yyn3Uvse0zt_IBtYkSKQ}
     project-id: ${COZE_PROJECT_ID:7600759893704048649}
-    base-url: https://jcp33s7bqh.coze.site/stream_run
+    session-id: ${COZE_SESSION_ID:iigSbU_Nb52jD6bz7DZ4y}
+    base-url: ${COZE_BASE_URL:https://jcp33s7bqh.coze.site/stream_run}
