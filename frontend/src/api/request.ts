@@ -38,9 +38,12 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
     // 获取 token
     const token = Taro.getStorageSync(TOKEN_KEY);
 
+    // 确保路径拼接正确
+    const requestUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+
     // 发起请求
     const response = await Taro.request({
-      url: `${API_BASE_URL}${url}`,
+      url: requestUrl,
       method,
       data,
       header: {
@@ -56,11 +59,12 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
       Taro.hideLoading();
     }
 
-    const result = response.data as Response<T>;
-
+    const result = response.data as any;
+    
     // 处理响应
     if (response.statusCode === 200) {
-      if (result.code === 0 || result.code === 200) {
+      // 适配后端返回格式：{ success: true, data: { ... } } 或 { code: 200, data: { ... } }
+      if (result.success === true || result.code === 0 || result.code === 200) {
         return result.data;
       } else if (result.code === 401) {
         // 未登录或 token 失效
