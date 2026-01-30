@@ -9,6 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ChatController {
 
     @Autowired
