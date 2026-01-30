@@ -23,10 +23,19 @@ public class AuthController {
 
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, String> body) {
+        System.out.println("[Login] Received request body: " + body);
         String code = body.get("code");
         Map<String, Object> response = new HashMap<>();
         
+        if (code == null || code.isEmpty()) {
+            System.err.println("[Login] Error: code is missing");
+            response.put("success", false);
+            response.put("message", "code is missing");
+            return response;
+        }
+        
         try {
+            System.out.println("[Login] Calling WeChat API with code: " + code);
             WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(code);
             String openid = session.getOpenid();
             
