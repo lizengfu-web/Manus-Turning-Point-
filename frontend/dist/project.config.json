@@ -1,0 +1,15 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "zhuanjiao-yizhan",
+  "description": "转角驿站 - 温暖的职场缓冲站",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": false,
+    "es6": false,
+    "enhance": true,
+    "compileHotReLoad": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram"
+}

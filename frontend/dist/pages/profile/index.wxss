@@ -1,0 +1,424 @@
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[0].use[2]!./node_modules/resolve-url-loader/index.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[0].use[4]!./src/components/PrivacyAgreementModal.scss ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+.privacy-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: flex-end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+  z-index: 1000;
+}
+.privacy-modal {
+  width: 100%;
+  height: 90vh;
+  background-color: #fff;
+  border-radius: 16rpx 16rpx 0 0;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  overflow: hidden;
+}
+.privacy-modal-header {
+  padding: 20rpx 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  background-color: #fafafa;
+}
+.privacy-modal-title {
+  display: block;
+  font-size: 18rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+.privacy-modal-subtitle {
+  display: block;
+  font-size: 12rpx;
+  color: #999;
+}
+.privacy-modal-content {
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  overflow-y: auto;
+  padding: 16rpx;
+}
+.privacy-content-text {
+  font-size: 14rpx;
+  color: #333;
+  line-height: 1.6;
+}
+.privacy-section {
+  margin-bottom: 16rpx;
+  padding-bottom: 12rpx;
+}
+.privacy-section-title {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8rpx;
+  font-size: 14rpx;
+}
+.privacy-section-content {
+  display: block;
+  color: #666;
+  font-size: 13rpx;
+  line-height: 1.6;
+  margin-bottom: 8rpx;
+}
+.privacy-list {
+  margin-left: 12rpx;
+}
+.privacy-list-item {
+  display: block;
+  color: #666;
+  font-size: 13rpx;
+  line-height: 1.8;
+  margin-bottom: 4rpx;
+}
+.privacy-section-last {
+  text-align: center;
+  padding-top: 12rpx;
+  border-top: 1rpx solid #f0f0f0;
+  color: #999;
+  font-size: 12rpx;
+}
+.privacy-modal-footer {
+  padding: 16rpx;
+  border-top: 1rpx solid #f0f0f0;
+  background-color: #fafafa;
+}
+.privacy-checkbox-group {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  margin-bottom: 16rpx;
+  gap: 8rpx;
+}
+.privacy-checkbox {
+  width: 20rpx;
+  height: 20rpx;
+  min-width: 20rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 4rpx;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+.privacy-checkbox.checked {
+  background-color: #52c41a;
+  border-color: #52c41a;
+}
+.privacy-checkbox-icon {
+  color: #fff;
+  font-size: 14rpx;
+  font-weight: bold;
+}
+.privacy-checkbox-label {
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  font-size: 13rpx;
+  color: #666;
+  line-height: 1.5;
+  padding-top: 2rpx;
+}
+.privacy-button-group {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 12rpx;
+}
+.privacy-button {
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  height: 44rpx;
+  border-radius: 8rpx;
+  font-size: 16rpx;
+  font-weight: 500;
+  border: none;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  padding: 0;
+}
+.privacy-button::after {
+  border: none;
+}
+.privacy-button-cancel {
+  background-color: #f0f0f0;
+  color: #666;
+}
+.privacy-button-cancel:active {
+  background-color: #e0e0e0;
+}
+.privacy-button-agree {
+  background-color: #52c41a;
+  color: #fff;
+}
+.privacy-button-agree.enabled:active {
+  background-color: #45a517;
+}
+.privacy-button-agree.disabled {
+  background-color: #d9d9d9;
+  color: #999;
+}
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 4rpx;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 2rpx;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #bbb;
+}
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[0].use[2]!./node_modules/resolve-url-loader/index.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[0].use[4]!./src/pages/profile/index.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.profile-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+.profile-page .header {
+  padding: 60rpx 20rpx 40rpx;
+  background: -webkit-linear-gradient(315deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
+}
+.profile-page .header .user-info .avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  margin-bottom: 16rpx;
+}
+.profile-page .header .user-info .avatar-placeholder {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  margin: 0 auto 16rpx;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 48rpx;
+}
+.profile-page .header .user-info .nickname {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+.profile-page .header .user-info .openid {
+  display: block;
+  font-size: 12rpx;
+  opacity: 0.8;
+  margin-bottom: 8rpx;
+  word-break: break-all;
+}
+.profile-page .header .user-info .role {
+  display: block;
+  font-size: 14rpx;
+  opacity: 0.9;
+}
+.profile-page .header .login-prompt {
+  padding: 20rpx 0;
+}
+.profile-page .header .login-prompt .prompt-text {
+  display: block;
+  font-size: 16rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.9;
+}
+.profile-page .header .login-prompt .login-btn {
+  background: white;
+  color: #667eea;
+  font-size: 16rpx;
+  padding: 12rpx 40rpx;
+  border-radius: 24rpx;
+  border: none;
+}
+.profile-page .menu-list {
+  padding: 16rpx;
+}
+.profile-page .menu-section {
+  background: white;
+  border-radius: 12rpx;
+  padding: 16rpx 0;
+  margin-bottom: 16rpx;
+}
+.profile-page .menu-section .section-header {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 0 20rpx 12rpx;
+  border-bottom: 1rpx solid #f3f4f6;
+}
+.profile-page .menu-section .section-title {
+  display: block;
+  font-size: 14rpx;
+  font-weight: 600;
+  color: #9ca3af;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+}
+.profile-page .menu-section .edit-btn {
+  background: transparent;
+  color: #667eea;
+  font-size: 14rpx;
+  padding: 4rpx 12rpx;
+  border: 1rpx solid #667eea;
+  border-radius: 4rpx;
+}
+.profile-page .menu-section .edit-form {
+  padding: 16rpx 20rpx;
+}
+.profile-page .menu-section .edit-form .form-group {
+  margin-bottom: 16rpx;
+}
+.profile-page .menu-section .edit-form .form-group .form-label {
+  display: block;
+  font-size: 14rpx;
+  color: #6b7280;
+  margin-bottom: 8rpx;
+  font-weight: 500;
+}
+.profile-page .menu-section .edit-form .form-group .form-input {
+  width: 100%;
+  padding: 10rpx 12rpx;
+  border: 1rpx solid #e5e7eb;
+  border-radius: 6rpx;
+  font-size: 14rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.profile-page .menu-section .edit-form .save-btn {
+  width: 100%;
+  background: #667eea;
+  color: white;
+  font-size: 16rpx;
+  padding: 12rpx;
+  border-radius: 6rpx;
+  border: none;
+  margin-top: 8rpx;
+}
+.profile-page .menu-section .info-display {
+  padding: 16rpx 20rpx;
+}
+.profile-page .menu-section .info-display .info-item {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #f3f4f6;
+}
+.profile-page .menu-section .info-display .info-item:last-child {
+  border-bottom: none;
+}
+.profile-page .menu-section .info-display .info-item .info-label {
+  font-size: 14rpx;
+  color: #6b7280;
+  font-weight: 500;
+}
+.profile-page .menu-section .info-display .info-item .info-value {
+  font-size: 14rpx;
+  color: #1f2937;
+  font-weight: 500;
+  word-break: break-all;
+  max-width: 60%;
+  text-align: right;
+}
+.profile-page .menu-section .menu-item {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 16rpx 20rpx;
+  border-bottom: 1rpx solid #f3f4f6;
+}
+.profile-page .menu-section .menu-item:last-child {
+  border-bottom: none;
+}
+.profile-page .menu-section .menu-item .menu-icon {
+  font-size: 24rpx;
+  margin-right: 16rpx;
+}
+.profile-page .menu-section .menu-item .menu-label {
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  font-size: 16rpx;
+  color: #1f2937;
+}
+.profile-page .menu-section .menu-item .menu-arrow {
+  font-size: 24rpx;
+  color: #d1d5db;
+}
+.profile-page .menu-section .logout-btn {
+  width: 100%;
+  background: transparent;
+  color: #ef4444;
+  font-size: 16rpx;
+  border: none;
+  padding: 16rpx;
+}
