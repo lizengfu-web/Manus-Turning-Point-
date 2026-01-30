@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AuthController {
 
     @Autowired
@@ -64,6 +65,8 @@ public class AuthController {
             response.put("data", data);
             
         } catch (Exception e) {
+            System.err.println("[Login] Exception occurred during login:");
+            e.printStackTrace();
             response.put("success", false);
             response.put("message", e.getMessage());
         }
