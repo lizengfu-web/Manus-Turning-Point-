@@ -1,0 +1,422 @@
+.interview-page {
+  min-height: 100vh;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+}
+
+.interview-header {
+  background: linear-gradient(135deg, #1890ff 0%, #0050b3 100%);
+  color: #ffffff;
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.interview-title {
+  display: block;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.interview-subtitle {
+  display: block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+// 难度筛选
+.difficulty-filter {
+  display: flex;
+  padding: 12px 16px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e8e8e8;
+  overflow-x: auto;
+  white-space: nowrap;
+  
+  &::-webkit-scrollbar {
+    height: 0;
+  }
+}
+
+.filter-item {
+  margin-right: 12px;
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  text {
+    font-size: 13px;
+    color: #666666;
+    transition: all 0.3s ease;
+  }
+  
+  &:active {
+    background-color: #e0e0e0;
+  }
+  
+  text.active {
+    color: #1890ff;
+    font-weight: 600;
+  }
+}
+
+// 面试课程列表
+.session-list {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+}
+
+.session-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  
+  &:active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 4px;
+}
+
+.card-description {
+  display: block;
+  font-size: 12px;
+  color: #666666;
+  line-height: 1.4;
+}
+
+// 卡片元数据
+.card-meta {
+  display: flex;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 12px;
+}
+
+.meta-item {
+  flex: 1;
+  text-align: center;
+}
+
+.meta-label {
+  display: block;
+  font-size: 11px;
+  color: #999999;
+  margin-bottom: 4px;
+}
+
+.meta-value {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+  
+  &.difficulty {
+    font-weight: 600;
+  }
+}
+
+// 卡片操作
+.card-action {
+  text-align: right;
+}
+
+.action-text {
+  font-size: 13px;
+  color: #1890ff;
+  font-weight: 500;
+}
+
+// 面试会话界面
+.interview-session {
+  min-height: 100vh;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+}
+
+// 进度条
+.progress-bar {
+  height: 4px;
+  background-color: #f0f0f0;
+  width: 100%;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1890ff 0%, #0050b3 100%);
+  transition: width 0.3s ease;
+}
+
+// 会话头部
+.session-header {
+  background-color: #ffffff;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.back-button {
+  background-color: transparent;
+  border: none;
+  color: #333333;
+  font-size: 18px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:active {
+    color: #1890ff;
+  }
+}
+
+.session-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+  flex: 1;
+  text-align: center;
+}
+
+.question-counter {
+  font-size: 12px;
+  color: #666666;
+}
+
+// 问题内容
+.question-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.question-box {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.question-number {
+  display: block;
+  font-size: 12px;
+  color: #1890ff;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.question-text {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+// 提示信息
+.tips-section {
+  background-color: #f5f7fa;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.tips-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1890ff;
+  margin-bottom: 8px;
+}
+
+.tip-item {
+  margin-bottom: 6px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.tip-text {
+  display: block;
+  font-size: 12px;
+  color: #666666;
+  line-height: 1.5;
+}
+
+// 录音区域
+.recording-section {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.recording-title {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 4px;
+}
+
+.recording-subtitle {
+  display: block;
+  font-size: 12px;
+  color: #666666;
+  margin-bottom: 20px;
+}
+
+.recording-display {
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border: 2px dashed #e8e8e8;
+  border-radius: 8px;
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  text {
+    font-size: 14px;
+    color: #ef4444;
+    font-weight: 600;
+  }
+}
+
+.pulse {
+  width: 12px;
+  height: 12px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.recording-time {
+  display: block;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1890ff;
+  font-family: 'Courier New', monospace;
+}
+
+.recording-prompt {
+  display: block;
+  font-size: 14px;
+  color: #999999;
+}
+
+// 录音按钮
+.recording-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.record-button,
+.stop-button {
+  background-color: #1890ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:active {
+    background-color: #0050b3;
+  }
+}
+
+.stop-button {
+  background-color: #ef4444;
+  
+  &:active {
+    background-color: #d32f2f;
+  }
+}
+
+// 会话底部
+.session-footer {
+  padding: 16px;
+  background-color: #ffffff;
+  border-top: 1px solid #e8e8e8;
+}
+
+.next-button {
+  width: 100%;
+  background-color: #1890ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:active {
+    background-color: #0050b3;
+  }
+  
+  &:disabled {
+    background-color: #d9d9d9;
+    color: #999999;
+    cursor: not-allowed;
+  }
+}

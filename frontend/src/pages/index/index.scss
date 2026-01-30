@@ -1,0 +1,150 @@
+.index-page {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+  padding: 32px;
+
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+
+    .title {
+      display: block;
+      font-size: 56px;
+      font-weight: bold;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      display: block;
+      font-size: 28px;
+      color: #6b7280;
+    }
+  }
+
+  .user-card,
+  .login-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .user-card {
+    .user-info {
+      display: flex;
+      align-items: center;
+
+      .avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 48px;
+        margin-right: 24px;
+      }
+
+      .info {
+        flex: 1;
+
+        .name {
+          display: block;
+          font-size: 36px;
+          font-weight: bold;
+          color: #111827;
+          margin-bottom: 8px;
+        }
+
+        .type {
+          display: block;
+          font-size: 28px;
+          color: #6b7280;
+        }
+      }
+    }
+  }
+
+  .login-card {
+    text-align: center;
+
+    .login-tip {
+      display: block;
+      font-size: 28px;
+      color: #6b7280;
+      margin-bottom: 24px;
+    }
+
+    .login-btn {
+      background: #8b5cf6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 24px 48px;
+      font-size: 32px;
+    }
+  }
+
+  .quote-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+
+    .quote-icon {
+      font-size: 48px;
+      margin-right: 24px;
+    }
+
+    .quote-content {
+      flex: 1;
+
+      .quote-label {
+        display: block;
+        font-size: 24px;
+        color: #9ca3af;
+        margin-bottom: 12px;
+      }
+
+      .quote-text {
+        display: block;
+        font-size: 32px;
+        line-height: 1.6;
+        color: #374151;
+      }
+    }
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+
+    .feature-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      text-align: center;
+
+      .feature-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+      }
+
+      .feature-title {
+        display: block;
+        font-size: 32px;
+        font-weight: bold;
+        color: #111827;
+        margin-bottom: 8px;
+      }
+
+      .feature-desc {
+        display: block;
+        font-size: 24px;
+        color: #6b7280;
+      }
+    }
+  }
+}

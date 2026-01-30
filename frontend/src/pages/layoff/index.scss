@@ -1,0 +1,287 @@
+.layoff-page {
+  min-height: 100vh;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+}
+
+.layoff-header {
+  background: linear-gradient(135deg, #52c41a 0%, #45a517 100%);
+  color: #ffffff;
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.layoff-title {
+  display: block;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.layoff-subtitle {
+  display: block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+// 分类筛选
+.category-filter {
+  display: flex;
+  padding: 12px 16px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e8e8e8;
+  overflow-x: auto;
+  white-space: nowrap;
+  
+  &::-webkit-scrollbar {
+    height: 0;
+  }
+}
+
+.category-item {
+  margin-right: 12px;
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  text {
+    font-size: 13px;
+    color: #666666;
+    transition: all 0.3s ease;
+  }
+  
+  &:active {
+    background-color: #e0e0e0;
+  }
+  
+  text.active {
+    color: #52c41a;
+    font-weight: 600;
+  }
+}
+
+// 咨询列表
+.consultation-list {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+}
+
+.consultation-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  
+  &:active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  flex: 1;
+  gap: 12px;
+}
+
+.card-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.card-title-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 4px;
+}
+
+.card-description {
+  display: block;
+  font-size: 12px;
+  color: #666666;
+  line-height: 1.4;
+}
+
+.card-arrow {
+  color: #999999;
+  font-size: 16px;
+  margin-left: 12px;
+  flex-shrink: 0;
+}
+
+// 浮动按钮
+.floating-buttons {
+  position: fixed;
+  bottom: 80px;
+  right: 16px;
+  z-index: 10;
+}
+
+.chat-button {
+  background-color: #52c41a;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(82, 196, 26, 0.2);
+  }
+}
+
+// AI 聊天界面
+.chat-header {
+  background: linear-gradient(135deg, #52c41a 0%, #45a517 100%);
+  color: #ffffff;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.chat-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.close-button {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:active {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  margin-bottom: 12px;
+  display: flex;
+  
+  &.user {
+    justify-content: flex-end;
+  }
+  
+  &.assistant {
+    justify-content: flex-start;
+  }
+}
+
+.message-content {
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  word-wrap: break-word;
+  
+  .user & {
+    background-color: #52c41a;
+    color: #ffffff;
+  }
+  
+  .assistant & {
+    background-color: #f0f0f0;
+    color: #333333;
+  }
+  
+  text {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}
+
+// 输入框区域
+.chat-input-area {
+  padding: 12px 16px;
+  background-color: #ffffff;
+  border-top: 1px solid #e8e8e8;
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  
+  &:focus {
+    border-color: #52c41a;
+  }
+  
+  &:disabled {
+    background-color: #f5f5f5;
+    color: #999999;
+  }
+}
+
+.send-button {
+  background-color: #52c41a;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  
+  &:active {
+    background-color: #45a517;
+  }
+  
+  &:disabled {
+    background-color: #d9d9d9;
+    color: #999999;
+    cursor: not-allowed;
+  }
+}

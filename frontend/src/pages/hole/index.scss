@@ -1,0 +1,121 @@
+.hole-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+
+  .loading,
+  .empty {
+    padding: 100px 20px;
+    text-align: center;
+    color: #999;
+  }
+
+  .header {
+    padding: 40px 20px 20px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .header-content {
+      flex: 1;
+
+      .title {
+        display: block;
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 8px;
+      }
+
+      .subtitle {
+        display: block;
+        font-size: 14px;
+        opacity: 0.9;
+      }
+    }
+
+    .create-btn {
+      background: white;
+      color: #f5576c;
+      font-size: 14px;
+      padding: 8px 20px;
+      border-radius: 20px;
+      border: none;
+    }
+  }
+
+  .post-list {
+    flex: 1;
+    padding: 16px;
+  }
+
+  .post-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+
+      .author {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1f2937;
+      }
+
+      .time {
+        font-size: 12px;
+        color: #9ca3af;
+      }
+    }
+
+    .post-content {
+      display: block;
+      font-size: 15px;
+      color: #374151;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+
+      .tag {
+        font-size: 12px;
+        color: #f5576c;
+      }
+    }
+
+    .post-footer {
+      display: flex;
+      gap: 24px;
+      padding-top: 12px;
+      border-top: 1px solid #f3f4f6;
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        .stat-icon {
+          font-size: 16px;
+        }
+
+        .stat-count {
+          font-size: 14px;
+          color: #6b7280;
+        }
+      }
+    }
+  }
+}
