@@ -1,6 +1,6 @@
 import Taro from '@tarojs/taro';
 
-const BASE_URL = 'http://localhost:8080/api'; // 本地调试地址
+const BASE_URL = 'http://192.168.31.20:8080/api'; // 本地调试地址
 
 export const request = async (options: any) => {
   const { url, method = 'GET', data, header = {} } = options;
