@@ -24,9 +24,9 @@ public class AuthController {
     private UserRepository userRepository;
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> body) {
+    public Map<String, Object> login(@RequestBody Map<String, Object> body) {
         System.out.println("[Login] Received request body: " + body);
-        String code = body.get("code");
+        String code = (String) body.get("code");
         Map<String, Object> response = new HashMap<>();
         
         if (code == null || code.isEmpty()) {
