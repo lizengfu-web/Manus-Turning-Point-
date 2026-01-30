@@ -7,7 +7,8 @@ import java.util.Map;
 
 @RestController
 public class RootController {
-    @GetMapping("/")
+    
+    @GetMapping({"/", "/api", "/api/"})
     public Map<String, String> index() {
         Map<String, String> res = new HashMap<>();
         res.put("status", "ok");
