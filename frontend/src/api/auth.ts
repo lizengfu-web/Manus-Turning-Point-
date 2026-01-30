@@ -29,33 +29,15 @@ export async function wxLogin(params: LoginParams): Promise<LoginResponse> {
     console.log('[wxLogin] Starting login with code:', params.code?.substring(0, 10) + '...');
     console.log('[wxLogin] API_BASE_URL:', API_BASE_URL);
     
-    // 使用标准 HTTP POST 请求
-    const response = await Taro.request({
-      url: `${API_BASE_URL}/auth/login`,
-      method: 'POST',
-      data: params,
-      header: {
-        'Content-Type': 'application/json',
-      },
-    });
+    // 使用封装好的 request 工具类
+    const result = await post<LoginResponse>('/auth/login', params, true);
     
-    console.log('[wxLogin] Response status:', response.statusCode);
-    console.log('[wxLogin] Response data:', response.data);
+    // 保存 token 和用户信息
+    Taro.setStorageSync(TOKEN_KEY, result.token);
+    Taro.setStorageSync(USER_INFO_KEY, result.user);
     
-    if (response.statusCode === 200 && response.data.success) {
-      const result = response.data.data;
-      
-      // 保存 token 和用户信息
-      Taro.setStorageSync(TOKEN_KEY, result.token);
-      Taro.setStorageSync(USER_INFO_KEY, result.user);
-      
-      console.log('[wxLogin] Login successful');
-      return result;
-    } else {
-      const errorMsg = response.data.error || '登录失败';
-      console.error('[wxLogin] Login failed:', errorMsg);
-      throw new Error(errorMsg);
-    }
+    console.log('[wxLogin] Login successful');
+    return result;
   } catch (error: any) {
     console.error('[wxLogin] Error:', error);
     throw error;
@@ -96,19 +78,7 @@ export async function getUserInfo() {
       throw new Error('未登录');
     }
 
-    const response = await Taro.request({
-      url: `${API_BASE_URL}/auth/user`,
-      method: 'GET',
-      header: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (response.statusCode === 200 && response.data.success) {
-      return response.data.data;
-    } else {
-      throw new Error(response.data.error || '获取用户信息失败');
-    }
+    return await get('/auth/user', null, true);
   } catch (error: any) {
     console.error('获取用户信息错误:', error);
     throw error;
@@ -132,24 +102,9 @@ export async function updateUserInfo(userInfo: {
       throw new Error('未登录');
     }
 
-    const response = await Taro.request({
-      url: `${API_BASE_URL}/auth/user/update`,
-      method: 'POST',
-      data: userInfo,
-      header: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.statusCode === 200 && response.data.success) {
-      // 更新本地存储
-      const updatedUser = response.data.data;
-      Taro.setStorageSync(USER_INFO_KEY, updatedUser);
-      return updatedUser;
-    } else {
-      throw new Error(response.data.error || '编辑用户信息失败');
-    }
+    const updatedUser = await post('/auth/user/update', userInfo, true);
+    Taro.setStorageSync(USER_INFO_KEY, updatedUser);
+    return updatedUser;
   } catch (error: any) {
     console.error('编辑用户信息错误:', error);
     throw error;
