@@ -5,6 +5,7 @@ import { useUserStore } from '@/store/user';
 import { wxLogin, getCurrentUser, isLoggedIn } from '@/api/auth';
 import IdentitySelector from '@/components/IdentitySelector';
 import { getIdentityInfo, getRandomQuoteByIdentity, getIdentityList } from '@/constants/userIdentity';
+import { FEATURES, Feature } from '@/constants/features';
 import './index.scss';
 
 export default function Index() {
@@ -111,11 +112,16 @@ export default function Index() {
     setShowIdentitySelector(true);
   };
 
-  const identityInfo = userIdentity ? getIdentityInfo(userIdentity) : null;
-
-  const navigateToGuide = () => {
-    Taro.navigateTo({ url: '/pages/guide/index' });
+  // 导航到功能页面
+  const navigateToFeature = (feature: Feature) => {
+    if (feature.routeType === 'navigateTo') {
+      Taro.navigateTo({ url: feature.route });
+    } else {
+      Taro.switchTab({ url: feature.route });
+    }
   };
+
+  const identityInfo = userIdentity ? getIdentityInfo(userIdentity) : null;
 
   return (
     <View className='index-page'>
@@ -194,36 +200,36 @@ export default function Index() {
 
       {/* 功能网格 */}
       <View className='feature-grid'>
-        <View className='feature-item' onClick={navigateToGuide}>
-          <View className='feature-icon'>📖</View>
-          <Text className='feature-title'>政策指南</Text>
-          <Text className='feature-desc'>失业金计算、申领攻略</Text>
-        </View>
-        <View className='feature-item' onClick={() => Taro.navigateTo({ url: '/pages/layoff/index' })}>
-          <View className='feature-icon'>⚖️</View>
-          <Text className='feature-title'>裁员咨询</Text>
-          <Text className='feature-desc'>法律权益、补偿计算</Text>
-        </View>
-        <View className='feature-item' onClick={() => Taro.navigateTo({ url: '/pages/interview/index' })}>
-          <View className='feature-icon'>🎤</View>
-          <Text className='feature-title'>模拟面试</Text>
-          <Text className='feature-desc'>面试训练、技能提升</Text>
-        </View>
-        <View className='feature-item' onClick={() => Taro.switchTab({ url: '/pages/opportunity/index' })}>
-          <View className='feature-icon'>💼</View>
-          <Text className='feature-title'>副业机会</Text>
-          <Text className='feature-desc'>灵活就业、创业孵化</Text>
-        </View>
-        <View className='feature-item' onClick={() => Taro.switchTab({ url: '/pages/hole/index' })}>
-          <View className='feature-icon'>💬</View>
-          <Text className='feature-title'>树洞</Text>
-          <Text className='feature-desc'>倾诉心声、互相鼓励</Text>
-        </View>
-        <View className='feature-item' onClick={() => Taro.switchTab({ url: '/pages/profile/index' })}>
-          <View className='feature-icon'>👤</View>
-          <Text className='feature-title'>我的</Text>
-          <Text className='feature-desc'>个人中心、设置</Text>
-        </View>
+        {FEATURES.map((feature) => (
+          <View
+            key={feature.id}
+            className='feature-item'
+            onClick={() => navigateToFeature(feature)}
+            style={{ backgroundColor: feature.backgroundColor }}
+          >
+            <View className='feature-content'>
+              <View className='feature-header'>
+                <View
+                  className='feature-icon-wrapper'
+                  style={{ backgroundColor: feature.iconBackgroundColor }}
+                >
+                  <Text className='feature-icon'>{feature.icon}</Text>
+                </View>
+                <View className='feature-info'>
+                  <Text className='feature-title'>{feature.title}</Text>
+                  <Text className='feature-desc'>{feature.description}</Text>
+                </View>
+              </View>
+              <View className='feature-tags'>
+                {feature.tags.map((tag, index) => (
+                  <Text key={index} className='tag'>
+                    {tag}
+                  </Text>
+                ))}
+              </View>
+            </View>
+          </View>
+        ))}
       </View>
     </View>
   );
