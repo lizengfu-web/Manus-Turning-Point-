@@ -21,6 +21,7 @@ export default function Layoff() {
   const [inputValue, setInputValue] = useState('')
   const [loading, setLoading] = useState(false)
   const [scrollTop, setScrollTop] = useState(0)
+  const [scrollIntoViewId, setScrollIntoViewId] = useState('')
   const messageIdRef = useRef(0)
   const sessionIdRef = useRef<string>('')
 
@@ -36,15 +37,13 @@ export default function Layoff() {
   // 当消息列表更新时，自动滚动到底部
   useEffect(() => {
     if (chatMessages.length > 0) {
-      // 使用极大值确保绝对置底，不依赖高度估算
-      const scrollToBottomWithRetry = () => {
+      const lastMessage = chatMessages[chatMessages.length - 1]
+      // 使用 scroll-into-view 滚动到最后一条消息
+      setScrollIntoViewId(lastMessage.id)
+      // 同时设置一个极大的 scrollTop 值作为备选
+      setTimeout(() => {
         setScrollTop(99999)
-      }
-      
-      // 三级延迟：在 100ms, 200ms, 400ms 分别执行滚动以确保成功
-      setTimeout(scrollToBottomWithRetry, 100)
-      setTimeout(scrollToBottomWithRetry, 200)
-      setTimeout(scrollToBottomWithRetry, 400)
+      }, 50)
     }
   }, [chatMessages])
 
@@ -77,10 +76,12 @@ export default function Layoff() {
         setChatMessages(savedHistory.data)
         // 更新 messageIdRef 以确保新消息 ID 不重复
         messageIdRef.current = savedHistory.data.length
-        // 三级延迟滚动，确保成功
-        setTimeout(() => setScrollTop(99999), 150)
-        setTimeout(() => setScrollTop(99999), 300)
-        setTimeout(() => setScrollTop(99999), 500)
+        // 延迟滚动到底部
+        setTimeout(() => {
+          const lastMessage = savedHistory.data[savedHistory.data.length - 1]
+          setScrollIntoViewId(lastMessage.id)
+          setScrollTop(99999)
+        }, 100)
       } else {
         // 首次进入，显示开场白
         const welcomeMessage: ChatMessage = {
@@ -116,22 +117,6 @@ export default function Layoff() {
     } catch (error) {
       console.error('保存聊天历史失败:', error)
     }
-  }
-
-  // 当消息更新时自动滚动到底部
-  useEffect(() => {
-    // 延迟滚动以确保 DOM 已更新
-    const timer = setTimeout(() => {
-      scrollToBottom()
-    }, 100)
-    return () => clearTimeout(timer)
-  }, [chatMessages, loading])
-
-  // 滚动到底部
-  const scrollToBottom = () => {
-    // 计算滚动高度（简单估算：每条消息约 100px）
-    const estimatedHeight = chatMessages.length * 100 + (loading ? 100 : 0)
-    setScrollTop(estimatedHeight)
   }
 
   // 处理发送消息
@@ -203,83 +188,65 @@ export default function Layoff() {
             timeout: 30000
           })
 
-          // 解析响应
-          let assistantContent = ''
-
           if (response.statusCode === 200) {
-            const data = response.data as any
+            // 解析响应数据
+            const responseText = parseCozeStreamResponse(response.data)
 
-            // 处理流式响应数据
-            assistantContent = parseCozeStreamResponse(data)
+            if (responseText && responseText.trim()) {
+              // 添加 AI 回复消息
+              const aiMessage: ChatMessage = {
+                id: `msg-${messageIdRef.current++}`,
+                role: 'assistant',
+                content: responseText.trim(),
+                timestamp: Date.now()
+              }
+
+              const finalMessages = [...currentMessages, aiMessage]
+              setChatMessages(finalMessages)
+              await saveChatHistory(finalMessages)
+            } else {
+              // 如果解析失败，显示兜底回复
+              const fallbackMessage: ChatMessage = {
+                id: `msg-${messageIdRef.current++}`,
+                role: 'assistant',
+                content: '感谢您的提问。我已收到您的问题，正在为您准备详细的法律分析和建议。',
+                timestamp: Date.now()
+              }
+
+              const finalMessages = [...currentMessages, fallbackMessage]
+              setChatMessages(finalMessages)
+              await saveChatHistory(finalMessages)
+            }
           } else {
             throw new Error(`API 返回错误: ${response.statusCode}`)
           }
-
-          // 如果没有获取到内容，使用默认回复
-          if (!assistantContent.trim()) {
-            assistantContent = '感谢您的提问。我已收到您的问题，正在为您分析相关的法律条款和建议。'
-          }
-
-          const assistantMessage: ChatMessage = {
-            id: `msg-${messageIdRef.current++}`,
-            role: 'assistant',
-            content: assistantContent,
-            timestamp: Date.now()
-          }
-
-          const updatedMessages = [...currentMessages, assistantMessage]
-          setChatMessages(updatedMessages)
-
-          // 保存更新后的聊天历史
-          await saveChatHistory(updatedMessages)
-        } catch (requestError: any) {
-          console.error('Taro.request 错误:', requestError)
-          throw new Error(requestError.message || '网络请求失败')
+        } catch (error) {
+          console.error('Taro.request 错误:', error)
+          Taro.showToast({
+            title: '网络请求失败，请稍后重试',
+            icon: 'none'
+          })
         }
       } else {
-        // 使用模拟回复（演示模式）
-        await new Promise(resolve => {
-          setTimeout(() => {
-            const randomResponse = MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)]
-            const assistantMessage: ChatMessage = {
-              id: `msg-${messageIdRef.current++}`,
-              role: 'assistant',
-              content: randomResponse,
-              timestamp: Date.now()
-            }
+        // 演示模式：使用模拟回复
+        const mockReply = MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)]
+        const aiMessage: ChatMessage = {
+          id: `msg-${messageIdRef.current++}`,
+          role: 'assistant',
+          content: mockReply,
+          timestamp: Date.now()
+        }
 
-            const updatedMessages = [...currentMessages, assistantMessage]
-            setChatMessages(updatedMessages)
-
-            // 保存更新后的聊天历史
-            saveChatHistory(updatedMessages)
-
-            resolve(null)
-          }, 800)
-        })
+        const finalMessages = [...currentMessages, aiMessage]
+        setChatMessages(finalMessages)
+        await saveChatHistory(finalMessages)
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Coze API 错误:', error)
-
       Taro.showToast({
-        title: error.message || '请求失败',
-        icon: 'none',
-        duration: 2000
+        title: '发生错误，请稍后重试',
+        icon: 'none'
       })
-
-      // 显示错误消息
-      const errorMessage: ChatMessage = {
-        id: `msg-${messageIdRef.current++}`,
-        role: 'assistant',
-        content: '抱歉，我暂时无法处理您的请求。请检查网络连接或稍后重试。',
-        timestamp: Date.now()
-      }
-
-      const updatedMessages = [...currentMessages, errorMessage]
-      setChatMessages(updatedMessages)
-
-      // 保存包含错误消息的历史记录
-      await saveChatHistory(updatedMessages)
     }
   }
 
@@ -352,7 +319,6 @@ export default function Layoff() {
         }
       }
 
-      console.warn('未能提取到有效内容')
       return ''
     } catch (error) {
       console.error('解析响应失败:', error)
@@ -360,7 +326,6 @@ export default function Layoff() {
     }
   }
 
-  // 处理输入框回车
   const handleInputKeyDown = (e: any) => {
     if (e.key === 'Enter') {
       handleSendMessage()
@@ -370,8 +335,8 @@ export default function Layoff() {
   // 清空聊天记录（可选功能）
   const clearChatHistory = async () => {
     Taro.showModal({
-      title: '清空聊天记录',
-      content: '确定要清空所有聊天记录吗？此操作不可撤销。',
+      title: '清空咨询记录',
+      content: '确定要清空所有咨询记录吗？此操作不可撤销。',
       success: async (res) => {
         if (res.confirm) {
           try {
@@ -390,11 +355,11 @@ export default function Layoff() {
             messageIdRef.current = 1
 
             Taro.showToast({
-              title: '聊天记录已清空',
+              title: '咨询记录已清空',
               icon: 'success'
             })
           } catch (error) {
-            console.error('清空聊天记录失败:', error)
+            console.error('清空咨询记录失败:', error)
           }
         }
       }
@@ -419,10 +384,11 @@ export default function Layoff() {
         className='chat-messages'
         scrollY
         scrollTop={scrollTop}
+        scrollIntoView={scrollIntoViewId}
         scrollWithAnimation
       >
         {chatMessages.map((msg) => (
-          <View key={msg.id} className={`message-wrapper ${msg.role}`}>
+          <View key={msg.id} id={msg.id} className={`message-wrapper ${msg.role}`}>
             <View className={`message-avatar ${msg.role}`}>
               {msg.role === 'user' ? '👤' : '⚖️'}
             </View>
@@ -471,7 +437,7 @@ export default function Layoff() {
           </Button>
         </View>
         <Text className='input-hint'>
-          💡 提示：为获得更准确的建议，请提供入职时间、月薪及具体情况
+          💡 提示：为获得更准确的建议，请提供入职时间、月薪等关键信息
         </Text>
       </View>
     </View>
