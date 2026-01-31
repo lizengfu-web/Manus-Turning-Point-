@@ -7,25 +7,25 @@
   /* 顶部标签栏 */
   .tab-bar {
     display: flex;
-    gap: 8px;
-    padding: 12px 16px;
+    gap: 10px;
+    padding: 16px 16px;
     background: white;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 2px solid #f0f0f0;
     position: sticky;
     top: 0;
     z-index: 10;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
     .tab-btn {
       flex: 1;
-      height: 40px;
-      padding: 0 12px;
+      height: 50px;
+      padding: 0 16px;
       background: #f5f5f5;
-      border: 1px solid #e8e8e8;
-      border-radius: 18px;
-      font-size: 14px;
+      border: 2px solid #e8e8e8;
+      border-radius: 20px;
+      font-size: 16px;
       color: #666;
-      font-weight: 500;
+      font-weight: 600;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
       &::after {
@@ -36,27 +36,28 @@
         background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
         color: #8b6914;
         border-color: #d4a574;
-        font-weight: 600;
-        box-shadow: 0 2px 6px rgba(184, 134, 11, 0.15);
+        font-weight: 700;
+        font-size: 17px;
+        box-shadow: 0 3px 10px rgba(184, 134, 11, 0.25);
       }
     }
   }
 
   /* 标签页内容 */
   .tab-content {
-    padding: 16px;
+    padding: 20px;
   }
 
   /* 通用区域 */
   .section {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 
     .section-title {
       display: block;
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 20px;
+      font-weight: 800;
       color: #333;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       letter-spacing: 0.3px;
     }
   }
@@ -65,29 +66,30 @@
   .location-picker {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 12px;
 
     .picker-item {
       background: white;
       border: 2px solid #e8e8e8;
-      border-radius: 10px;
-      padding: 12px 14px;
+      border-radius: 12px;
+      padding: 16px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       transition: all 0.3s ease;
+      min-height: 50px;
 
       .picker-text {
-        font-size: 16px;
+        font-size: 18px;
         color: #333;
-        font-weight: 600;
+        font-weight: 700;
         flex: 1;
       }
 
       .picker-arrow {
-        font-size: 10px;
+        font-size: 12px;
         color: #999;
-        margin-left: 6px;
+        margin-left: 8px;
       }
 
       &:active {
@@ -100,22 +102,23 @@
   /* 工资信息展示 */
   .wage-info {
     background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
-    border: 1px solid #f0e6d2;
-    border-radius: 12px;
-    padding: 14px 16px;
+    border: 2px solid #f0e6d2;
+    border-radius: 14px;
+    padding: 18px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    min-height: 60px;
 
     .wage-label {
-      font-size: 15px;
+      font-size: 17px;
       color: #92400e;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .wage-value {
-      font-size: 22px;
-      font-weight: 700;
+      font-size: 26px;
+      font-weight: 800;
       color: #b8860b;
     }
   }
@@ -165,8 +168,8 @@
       gap: 8px;
 
       .period-label {
-        font-size: 14px;
-        font-weight: 700;
+        font-size: 16px;
+        font-weight: 800;
         color: #333;
         letter-spacing: 0.2px;
       }
@@ -174,21 +177,22 @@
       .period-picker {
         background: white;
         border: 2px solid #e8e8e8;
-        border-radius: 10px;
-        padding: 12px;
+        border-radius: 12px;
+        padding: 16px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         transition: all 0.3s ease;
+        min-height: 50px;
 
         .period-value {
-          font-size: 18px;
-          font-weight: 700;
+          font-size: 20px;
+          font-weight: 800;
           color: #333;
         }
 
         .period-arrow {
-          font-size: 10px;
+          font-size: 12px;
           color: #999;
         }
 
@@ -203,23 +207,24 @@
   /* 总缴费月数显示 */
   .total-months-display {
     background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
-    border: 1px solid #f0e6d2;
-    border-radius: 10px;
-    padding: 12px;
+    border: 2px solid #f0e6d2;
+    border-radius: 12px;
+    padding: 16px 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+    min-height: 55px;
 
     .total-label {
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 17px;
+      font-weight: 800;
       color: #92400e;
     }
 
     .total-value {
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 24px;
+      font-weight: 800;
       color: #b8860b;
     }
   }
@@ -231,16 +236,16 @@
 
   .calc-btn {
     width: 100%;
-    height: 52px;
+    height: 58px;
     background: linear-gradient(135deg, #b8860b 0%, #8b6914 100%);
     color: white;
     border: none;
-    border-radius: 12px;
-    font-size: 18px;
-    font-weight: 700;
+    border-radius: 14px;
+    font-size: 20px;
+    font-weight: 800;
     letter-spacing: 0.5px;
     transition: all 0.3s ease;
-    box-shadow: 0 3px 8px rgba(184, 134, 11, 0.2);
+    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
 
     &::after {
       border: none;
@@ -270,11 +275,11 @@
 
     .result-card {
       background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
-      border: 2px solid #d4a574;
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 12px;
-      box-shadow: 0 4px 12px rgba(184, 134, 11, 0.1);
+      border: 3px solid #d4a574;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 16px rgba(184, 134, 11, 0.15);
 
       &.empty {
         opacity: 0.7;
@@ -288,17 +293,17 @@
 
         .result-label {
           display: block;
-          font-size: 14px;
+          font-size: 16px;
           color: #92400e;
-          margin-bottom: 8px;
+          margin-bottom: 10px;
           letter-spacing: 0.3px;
-          font-weight: 600;
+          font-weight: 700;
         }
 
         .result-amount {
           display: block;
-          font-size: 48px;
-          font-weight: 700;
+          font-size: 56px;
+          font-weight: 800;
           color: #b8860b;
           line-height: 1;
         }
@@ -314,17 +319,17 @@
 
           .item-label {
             display: block;
-            font-size: 13px;
+            font-size: 15px;
             color: #92400e;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             letter-spacing: 0.2px;
-            font-weight: 600;
+            font-weight: 700;
           }
 
           .item-value {
             display: block;
-            font-size: 26px;
-            font-weight: 700;
+            font-size: 30px;
+            font-weight: 800;
             color: #ff8c00;
             line-height: 1;
           }
@@ -334,24 +339,24 @@
 
     .tips-box {
       background: white;
-      border: 1px solid #e8e8e8;
+      border: 2px solid #e8e8e8;
       border-radius: 12px;
-      padding: 12px 14px;
+      padding: 16px 16px;
       display: flex;
-      gap: 10px;
+      gap: 12px;
       align-items: flex-start;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 
       .tips-icon {
-        font-size: 16px;
+        font-size: 18px;
         flex-shrink: 0;
         margin-top: 2px;
       }
 
       .tips-text {
-        font-size: 14px;
+        font-size: 15px;
         color: #666;
-        line-height: 1.6;
+        line-height: 1.7;
         letter-spacing: 0.2px;
       }
     }
@@ -381,17 +386,17 @@
 
         .step-number {
           flex-shrink: 0;
-          width: 36px;
-          height: 36px;
+          width: 42px;
+          height: 42px;
           background: linear-gradient(135deg, #b8860b 0%, #8b6914 100%);
           color: white;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-weight: 700;
-          font-size: 15px;
-          box-shadow: 0 2px 6px rgba(184, 134, 11, 0.2);
+          font-weight: 800;
+          font-size: 18px;
+          box-shadow: 0 3px 8px rgba(184, 134, 11, 0.25);
         }
 
         .step-content {
@@ -402,18 +407,18 @@
 
           .step-title {
             display: block;
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 800;
             color: #333;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             letter-spacing: 0.3px;
           }
 
           .step-desc {
             display: block;
-            font-size: 14px;
+            font-size: 15px;
             color: #999;
-            line-height: 1.5;
+            line-height: 1.6;
           }
         }
       }
@@ -442,18 +447,18 @@
 
         .faq-q {
           display: block;
-          font-size: 15px;
-          font-weight: 700;
+          font-size: 17px;
+          font-weight: 800;
           color: #333;
-          margin-bottom: 8px;
+          margin-bottom: 10px;
           letter-spacing: 0.3px;
         }
 
         .faq-a {
           display: block;
-          font-size: 14px;
+          font-size: 15px;
           color: #666;
-          line-height: 1.7;
+          line-height: 1.8;
           letter-spacing: 0.2px;
         }
       }
