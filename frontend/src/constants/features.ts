@@ -50,9 +50,9 @@ export const FEATURES: Feature[] = [
   },
   {
     id: 'interview',
-    title: '面试记录',
-    description: '模拟面试、历史记录、技能提升',
-    icon: '🎤',
+    title: '模拟面试',
+    description: 'AI 面试官、实战训练、技能提升',
+    icon: '🌟',
     tags: ['面试', '训练'],
     backgroundColor: '#f0f9ff',
     iconBackgroundColor: '#bfdbfe',

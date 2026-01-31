@@ -1,486 +1,460 @@
 import Taro from '@tarojs/taro'
-import { View, Text, ScrollView, Button } from '@tarojs/components'
-import { useState } from 'react'
+import { View, Text, ScrollView, Input, Button } from '@tarojs/components'
+import { useState, useEffect, useRef } from 'react'
+import { INTERVIEW_WELCOME_MESSAGE, COZE_CONFIG, MOCK_RESPONSES, generateSessionId } from './data'
 import './index.scss'
 
-interface InterviewSession {
-  id: number
-  title: string
-  description: string
-  icon: string
-  difficulty: 'easy' | 'medium' | 'hard'
-  duration: number // 分钟
-  questionCount: number
+interface ChatMessage {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: number
 }
 
-const interviewSessions: InterviewSession[] = [
-  {
-    id: 1,
-    title: '自我介绍',
-    description: '学习如何在面试中进行有效的自我介绍',
-    icon: '👤',
-    difficulty: 'easy',
-    duration: 5,
-    questionCount: 3
-  },
-  {
-    id: 2,
-    title: '职业发展规划',
-    description: '讨论你的职业目标和发展方向',
-    icon: '🎯',
-    difficulty: 'medium',
-    duration: 10,
-    questionCount: 5
-  },
-  {
-    id: 3,
-    title: '技能展示',
-    description: '展示你的专业技能和工作经验',
-    icon: '💼',
-    difficulty: 'medium',
-    duration: 15,
-    questionCount: 6
-  },
-  {
-    id: 4,
-    title: '压力面试',
-    description: '应对高难度的压力面试问题',
-    icon: '⚡',
-    difficulty: 'hard',
-    duration: 20,
-    questionCount: 8
-  },
-  {
-    id: 5,
-    title: '行为面试',
-    description: '回答基于行为的面试问题（STAR 法则）',
-    icon: '🌟',
-    difficulty: 'medium',
-    duration: 15,
-    questionCount: 7
-  },
-  {
-    id: 6,
-    title: '技术面试',
-    description: '准备技术相关的面试问题',
-    icon: '💻',
-    difficulty: 'hard',
-    duration: 25,
-    questionCount: 10
-  }
-]
-
-const difficultyColors: Record<string, string> = {
-  easy: '#10b981',
-  medium: '#f59e0b',
-  hard: '#ef4444'
-}
-
-const difficultyLabels: Record<string, string> = {
-  easy: '简单',
-  medium: '中等',
-  hard: '困难'
+const STORAGE_KEYS = {
+  CHAT_HISTORY: 'interview_chat_history',
+  SESSION_ID: 'interview_session_id'
 }
 
 export default function Interview() {
-  const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard'>('all')
-  const [currentSession, setCurrentSession] = useState<InterviewSession | null>(null)
-  const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [sessionQuestions, setSessionQuestions] = useState<Array<{ question: string; tips: string[] }>>([])
-  const [recording, setRecording] = useState(false)
-  const [recordingTime, setRecordingTime] = useState(0)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [inputValue, setInputValue] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [scrollTop, setScrollTop] = useState(0)
+  const messageIdRef = useRef(0)
+  const sessionIdRef = useRef<string>('')
 
-  const filteredSessions = selectedDifficulty === 'all'
-    ? interviewSessions
-    : interviewSessions.filter(session => session.difficulty === selectedDifficulty)
+  Taro.setNavigationBarTitle({
+    title: '模拟面试'
+  })
 
-  const handleStartSession = (session: InterviewSession) => {
-    // 模拟生成问题
-    const questions = generateQuestions(session.id, session.questionCount)
-    setSessionQuestions(questions)
-    setCurrentSession(session)
-    setCurrentQuestion(0)
-    setRecording(false)
-    setRecordingTime(0)
-  }
+  // 初始化：页面加载时恢复历史记录或显示开场白
+  useEffect(() => {
+    loadChatHistory()
+  }, [])
 
-  const generateQuestions = (sessionId: number, count: number) => {
-    const questionBank: Record<number, Array<{ question: string; tips: string[] }>> = {
-      1: [
-        {
-          question: '请用 2-3 分钟介绍一下你自己',
-          tips: ['包括你的基本信息', '突出你的核心竞争力', '说明你为什么适合这个职位']
-        },
-        {
-          question: '你的工作经历中最有成就感的项目是什么？',
-          tips: ['使用 STAR 法则', '强调你的贡献和成果', '说明学到的经验']
-        },
-        {
-          question: '你为什么离开上一份工作？',
-          tips: ['保持积极态度', '避免批评前公司', '说明你的成长和新的目标']
+  // 加载聊天历史记录
+  const loadChatHistory = async () => {
+    try {
+      // 尝试从本地存储恢复 session_id
+      const savedSessionId = await Taro.getStorage({
+        key: STORAGE_KEYS.SESSION_ID
+      }).catch(() => null)
+
+      if (savedSessionId?.data) {
+        sessionIdRef.current = savedSessionId.data
+      } else {
+        // 生成新的 session_id
+        sessionIdRef.current = generateSessionId()
+        await Taro.setStorage({
+          key: STORAGE_KEYS.SESSION_ID,
+          data: sessionIdRef.current
+        })
+      }
+
+      // 尝试从本地存储恢复聊天记录
+      const savedHistory = await Taro.getStorage({
+        key: STORAGE_KEYS.CHAT_HISTORY
+      }).catch(() => null)
+
+      if (savedHistory?.data && Array.isArray(savedHistory.data) && savedHistory.data.length > 0) {
+        // 恢复历史记录
+        setChatMessages(savedHistory.data)
+        // 更新 messageIdRef 以确保新消息 ID 不重复
+        messageIdRef.current = savedHistory.data.length
+      } else {
+        // 首次进入，显示开场白
+        const welcomeMessage: ChatMessage = {
+          id: `msg-${messageIdRef.current++}`,
+          role: 'assistant',
+          content: INTERVIEW_WELCOME_MESSAGE,
+          timestamp: Date.now()
         }
-      ],
-      2: [
-        {
-          question: '你的职业目标是什么？',
-          tips: ['明确具体的目标', '说明如何实现', '与公司的发展方向相关']
-        },
-        {
-          question: '你认为自己在 5 年后会是什么样子？',
-          tips: ['展示你的雄心', '说明具体的发展路径', '与职位相关']
-        },
-        {
-          question: '你如何看待职业发展中的挑战？',
-          tips: ['展示学习态度', '说明应对方法', '强调持续成长']
-        },
-        {
-          question: '你想在我们公司学到什么？',
-          tips: ['表现出对公司的了解', '说明具体的学习目标', '展示你的热情']
-        },
-        {
-          question: '你如何平衡工作和生活？',
-          tips: ['展示时间管理能力', '说明你的优先级', '强调工作效率']
-        }
-      ],
-      3: [
-        {
-          question: '请介绍一个你最引以为豪的项目',
-          tips: ['详细描述项目背景', '说明你的具体角色', '强调成果和影响']
-        },
-        {
-          question: '你如何处理工作中的复杂问题？',
-          tips: ['说明你的问题解决方法', '举具体例子', '强调逻辑思维']
-        },
-        {
-          question: '你的技能中哪些最适合这个职位？',
-          tips: ['列举相关技能', '举例说明应用', '与职位要求匹配']
-        },
-        {
-          question: '你如何学习新技能？',
-          tips: ['说明学习方法', '举例说明成果', '强调持续学习']
-        },
-        {
-          question: '你在团队中的角色是什么？',
-          tips: ['说明你的贡献', '强调协作能力', '举具体例子']
-        },
-        {
-          question: '你遇到过的最大挑战是什么？',
-          tips: ['说明挑战的背景', '说明你如何应对', '强调学到的经验']
-        }
-      ],
-      4: [
-        {
-          question: '为什么我们应该雇用你而不是其他候选人？',
-          tips: ['突出你的独特优势', '说明你的价值', '避免自大']
-        },
-        {
-          question: '你如何应对失败？',
-          tips: ['举具体例子', '说明学到的经验', '强调改进和成长']
-        },
-        {
-          question: '你如何处理与同事的冲突？',
-          tips: ['说明你的沟通方式', '强调团队合作', '举具体例子']
-        },
-        {
-          question: '你的弱点是什么？',
-          tips: ['诚实但积极', '说明改进方法', '避免关键职位要求']
-        },
-        {
-          question: '你如何在压力下工作？',
-          tips: ['说明你的应对方法', '举例说明成果', '强调稳定性']
-        },
-        {
-          question: '你对我们公司的了解有多少？',
-          tips: ['说明你的研究', '提出相关问题', '展示真诚兴趣']
-        },
-        {
-          question: '你期望的薪资是多少？',
-          tips: ['做好市场调研', '根据经验合理定价', '保持灵活']
-        },
-        {
-          question: '你有什么问题要问我们？',
-          tips: ['准备好问题', '展示你的兴趣', '问关于职位和公司的问题']
-        }
-      ],
-      5: [
-        {
-          question: '请描述一个你解决复杂问题的经历',
-          tips: ['使用 STAR 法则', '说明情境、任务、行动、结果', '强调你的思考过程']
-        },
-        {
-          question: '你如何在团队中推动创新？',
-          tips: ['举具体例子', '说明你的贡献', '强调团队合作']
-        },
-        {
-          question: '请讲述一个你从失败中学到的经历',
-          tips: ['诚实地说明失败', '强调学到的经验', '说明改进措施']
-        },
-        {
-          question: '你如何处理时间压力和多任务工作？',
-          tips: ['说明你的优先级管理', '举具体例子', '强调效率']
-        },
-        {
-          question: '请描述一个你展现领导力的情况',
-          tips: ['说明你的影响力', '举具体例子', '强调团队成果']
-        },
-        {
-          question: '你如何与不同风格的人合作？',
-          tips: ['说明你的适应能力', '举具体例子', '强调沟通技巧']
-        },
-        {
-          question: '请讲述一个你改进流程或系统的经历',
-          tips: ['说明原始问题', '说明你的改进方案', '强调成果']
-        }
-      ],
-      6: [
-        {
-          question: '请解释你最熟悉的技术或框架',
-          tips: ['说明基本原理', '举实际应用例子', '说明优缺点']
-        },
-        {
-          question: '你如何解决一个复杂的技术问题？',
-          tips: ['说明你的调试方法', '举具体例子', '强调问题解决能力']
-        },
-        {
-          question: '请设计一个系统来解决这个问题',
-          tips: ['说明你的设计思路', '讨论权衡方案', '考虑可扩展性']
-        },
-        {
-          question: '你如何保证代码质量？',
-          tips: ['说明你的最佳实践', '讨论测试策略', '强调代码审查']
-        },
-        {
-          question: '请讲述一个你优化性能的经历',
-          tips: ['说明原始问题', '说明你的优化方案', '强调性能提升']
-        },
-        {
-          question: '你如何学习新的技术？',
-          tips: ['说明你的学习方法', '举具体例子', '强调实践能力']
-        },
-        {
-          question: '你在开源项目中的贡献是什么？',
-          tips: ['说明你的参与项目', '说明你的贡献', '强调学习收获']
-        },
-        {
-          question: '你如何处理技术债务？',
-          tips: ['说明你的认识', '说明处理方法', '强调平衡']
-        },
-        {
-          question: '请讲述一个你解决并发问题的经历',
-          tips: ['说明问题的复杂性', '说明你的解决方案', '强调深度理解']
-        },
-        {
-          question: '你对系统设计的理解是什么？',
-          tips: ['说明关键概念', '举实际例子', '讨论权衡']
-        }
-      ]
-    }
-
-    return questionBank[sessionId]?.slice(0, count) || []
-  }
-
-  const handleStartRecording = () => {
-    setRecording(true)
-    setRecordingTime(0)
-    
-    // 模拟计时
-    const timer = setInterval(() => {
-      setRecordingTime(prev => prev + 1)
-    }, 1000)
-    
-    setTimeout(() => {
-      clearInterval(timer)
-      setRecording(false)
-      Taro.showToast({ title: '已保存你的回答', icon: 'success' })
-    }, 30000) // 30 秒后自动停止
-  }
-
-  const handleStopRecording = () => {
-    setRecording(false)
-    Taro.showToast({ title: '已保存你的回答', icon: 'success' })
-  }
-
-  const handleNextQuestion = () => {
-    if (currentQuestion < sessionQuestions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1)
-      setRecording(false)
-      setRecordingTime(0)
-    } else {
-      handleFinishSession()
+        setChatMessages([welcomeMessage])
+        // 保存初始历史记录
+        await saveChatHistory([welcomeMessage])
+      }
+    } catch (error) {
+      console.error('加载聊天历史失败:', error)
+      // 如果加载失败，显示开场白
+      const welcomeMessage: ChatMessage = {
+        id: `msg-${messageIdRef.current++}`,
+        role: 'assistant',
+        content: INTERVIEW_WELCOME_MESSAGE,
+        timestamp: Date.now()
+      }
+      setChatMessages([welcomeMessage])
     }
   }
 
-  const handleFinishSession = () => {
-    Taro.showModal({
-      title: '完成面试',
-      content: '恭喜！你已完成本次模拟面试。系统将生成你的表现评估报告。',
-      confirmText: '查看报告',
-      cancelText: '返回',
-      success: (res) => {
-        if (res.confirm) {
-          Taro.navigateTo({
-            url: `/pages/webview/index?url=/interview/${currentSession?.id}/report`
+  // 保存聊天历史记录到本地存储
+  const saveChatHistory = async (messages: ChatMessage[]) => {
+    try {
+      await Taro.setStorage({
+        key: STORAGE_KEYS.CHAT_HISTORY,
+        data: messages
+      })
+    } catch (error) {
+      console.error('保存聊天历史失败:', error)
+    }
+  }
+
+  // 当消息更新时自动滚动到底部
+  useEffect(() => {
+    // 延迟滚动以确保 DOM 已更新
+    const timer = setTimeout(() => {
+      scrollToBottom()
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [chatMessages, loading])
+
+  // 滚动到底部
+  const scrollToBottom = () => {
+    // 计算滚动高度（简单估算：每条消息约 100px）
+    const estimatedHeight = chatMessages.length * 100 + (loading ? 100 : 0)
+    setScrollTop(estimatedHeight)
+  }
+
+  // 处理发送消息
+  const handleSendMessage = async () => {
+    if (!inputValue.trim()) {
+      Taro.showToast({ title: '请输入您的问题', icon: 'none' })
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      // 添加用户消息
+      const userMessage: ChatMessage = {
+        id: `msg-${messageIdRef.current++}`,
+        role: 'user',
+        content: inputValue.trim(),
+        timestamp: Date.now()
+      }
+
+      const updatedMessages = [...chatMessages, userMessage]
+      setChatMessages(updatedMessages)
+      setInputValue('')
+
+      // 调用 Coze API
+      await callCozeAPI(userMessage.content, updatedMessages)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // 调用 Coze stream_run API（使用 Taro.request）
+  const callCozeAPI = async (userContent: string, currentMessages: ChatMessage[]) => {
+    try {
+      // 如果配置了 Token，则调用真实 API；否则使用模拟回复
+      if (COZE_CONFIG.token) {
+        // 强制中文回复的提示词前缀
+        const chinesePrompt = `请用中文回答。${userContent}`
+
+        // 构建请求体
+        const requestBody = {
+          content: {
+            query: {
+              prompt: [
+                {
+                  type: 'text',
+                  content: {
+                    text: chinesePrompt
+                  }
+                }
+              ]
+            }
+          },
+          type: 'query',
+          session_id: sessionIdRef.current,
+          project_id: COZE_CONFIG.projectId
+        }
+
+        // 使用 Taro.request 调用 API（小程序环境兼容）
+        try {
+          const response = await Taro.request({
+            url: COZE_CONFIG.apiEndpoint,
+            method: 'POST',
+            header: {
+              'Authorization': `Bearer ${COZE_CONFIG.token}`,
+              'Content-Type': 'application/json'
+            },
+            data: requestBody,
+            timeout: 30000
           })
-        } else {
-          setCurrentSession(null)
+
+          // 解析响应
+          let assistantContent = ''
+
+          if (response.statusCode === 200) {
+            const data = response.data as any
+
+            // 处理流式响应数据
+            assistantContent = parseCozeStreamResponse(data)
+          } else {
+            throw new Error(`API 返回错误: ${response.statusCode}`)
+          }
+
+          // 如果没有获取到内容，使用默认回复
+          if (!assistantContent.trim()) {
+            assistantContent = '感谢您的提问。我已收到您的问题，正在为您准备面试指导。'
+          }
+
+          const assistantMessage: ChatMessage = {
+            id: `msg-${messageIdRef.current++}`,
+            role: 'assistant',
+            content: assistantContent,
+            timestamp: Date.now()
+          }
+
+          const updatedMessages = [...currentMessages, assistantMessage]
+          setChatMessages(updatedMessages)
+
+          // 保存更新后的聊天历史
+          await saveChatHistory(updatedMessages)
+        } catch (requestError: any) {
+          console.error('Taro.request 错误:', requestError)
+          throw new Error(requestError.message || '网络请求失败')
+        }
+      } else {
+        // 使用模拟回复（演示模式）
+        await new Promise(resolve => {
+          setTimeout(() => {
+            const randomResponse = MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)]
+            const assistantMessage: ChatMessage = {
+              id: `msg-${messageIdRef.current++}`,
+              role: 'assistant',
+              content: randomResponse,
+              timestamp: Date.now()
+            }
+
+            const updatedMessages = [...currentMessages, assistantMessage]
+            setChatMessages(updatedMessages)
+
+            // 保存更新后的聊天历史
+            saveChatHistory(updatedMessages)
+
+            resolve(null)
+          }, 800)
+        })
+      }
+    } catch (error: any) {
+      console.error('Coze API 错误:', error)
+
+      Taro.showToast({
+        title: error.message || '请求失败',
+        icon: 'none',
+        duration: 2000
+      })
+
+      // 显示错误消息
+      const errorMessage: ChatMessage = {
+        id: `msg-${messageIdRef.current++}`,
+        role: 'assistant',
+        content: '抱歉，我暂时无法处理您的请求。请检查网络连接或稍后重试。',
+        timestamp: Date.now()
+      }
+
+      const updatedMessages = [...currentMessages, errorMessage]
+      setChatMessages(updatedMessages)
+
+      // 保存包含错误消息的历史记录
+      await saveChatHistory(updatedMessages)
+    }
+  }
+
+  // 解析 Coze 流式响应数据
+  const parseCozeStreamResponse = (data: any): string => {
+    try {
+      console.log('原始响应数据:', JSON.stringify(data).substring(0, 500))
+
+      // 如果是字符串，尝试分行解析
+      if (typeof data === 'string') {
+        const lines = data.split('\n').filter(line => line.trim())
+        let extractedContent = ''
+        let hasFoundAnswer = false
+
+        for (const line of lines) {
+          // 处理 "data:" 前缀的行
+          if (line.startsWith('data:')) {
+            try {
+              const jsonStr = line.substring(5).trim()
+              const parsed = JSON.parse(jsonStr)
+              console.log('解析的 JSON:', JSON.stringify(parsed).substring(0, 300))
+
+              // 多层级提取 answer 字段
+              if (parsed.content?.answer) {
+                extractedContent += parsed.content.answer
+                hasFoundAnswer = true
+              } else if (parsed.answer) {
+                extractedContent += parsed.answer
+                hasFoundAnswer = true
+              } else if (parsed.message?.answer) {
+                extractedContent += parsed.message.answer
+                hasFoundAnswer = true
+              } else if (parsed.data?.answer) {
+                extractedContent += parsed.data.answer
+                hasFoundAnswer = true
+              }
+            } catch (e) {
+              // 忽略解析失败的行
+              console.error('JSON 解析失败:', e)
+            }
+          }
+        }
+
+        if (hasFoundAnswer) {
+          return extractedContent.trim()
+        }
+        return extractedContent.trim() || ''
+      }
+
+      // 如果是对象，直接提取（多层级尝试）
+      if (data && typeof data === 'object') {
+        // 尝试多个可能的路径
+        const possiblePaths = [
+          data.content?.answer,
+          data.answer,
+          data.message?.answer,
+          data.message,
+          data.data?.answer,
+          data.data?.content?.answer,
+          data.text,
+          data.reply,
+          data.response
+        ]
+
+        for (const path of possiblePaths) {
+          if (path && typeof path === 'string' && path.trim()) {
+            console.log('提取到内容:', path.substring(0, 100))
+            return path.trim()
+          }
+        }
+      }
+
+      console.warn('未能提取到有效内容')
+      return ''
+    } catch (error) {
+      console.error('解析响应失败:', error)
+      return ''
+    }
+  }
+
+  // 处理输入框回车
+  const handleInputKeyDown = (e: any) => {
+    if (e.key === 'Enter') {
+      handleSendMessage()
+    }
+  }
+
+  // 清空聊天记录（可选功能）
+  const clearChatHistory = async () => {
+    Taro.showModal({
+      title: '清空面试记录',
+      content: '确定要清空所有面试记录吗？此操作不可撤销。',
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            await Taro.removeStorage({
+              key: STORAGE_KEYS.CHAT_HISTORY
+            })
+
+            // 重新显示开场白
+            const welcomeMessage: ChatMessage = {
+              id: `msg-0`,
+              role: 'assistant',
+              content: INTERVIEW_WELCOME_MESSAGE,
+              timestamp: Date.now()
+            }
+            setChatMessages([welcomeMessage])
+            messageIdRef.current = 1
+
+            Taro.showToast({
+              title: '面试记录已清空',
+              icon: 'success'
+            })
+          } catch (error) {
+            console.error('清空面试记录失败:', error)
+          }
         }
       }
     })
   }
 
-  if (currentSession && sessionQuestions.length > 0) {
-    const question = sessionQuestions[currentQuestion]
-    const progress = ((currentQuestion + 1) / sessionQuestions.length) * 100
-
-    return (
-      <View className='interview-session'>
-        {/* 进度条 */}
-        <View className='progress-bar'>
-          <View className='progress-fill' style={{ width: `${progress}%` }}></View>
-        </View>
-
-        {/* 页面头部 */}
-        <View className='session-header'>
-          <Button className='back-button' onClick={() => setCurrentSession(null)}>◀</Button>
-          <Text className='session-title'>{currentSession.title}</Text>
-          <Text className='question-counter'>
-            {currentQuestion + 1}/{sessionQuestions.length}
-          </Text>
-        </View>
-
-        {/* 问题内容 */}
-        <ScrollView className='question-content'>
-          <View className='question-box'>
-            <Text className='question-number'>问题 {currentQuestion + 1}</Text>
-            <Text className='question-text'>{question.question}</Text>
-
-            {/* 提示信息 */}
-            <View className='tips-section'>
-              <Text className='tips-title'>💡 回答提示</Text>
-              {question.tips.map((tip, index) => (
-                <View key={index} className='tip-item'>
-                  <Text className='tip-text'>• {tip}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-
-          {/* 录音区域 */}
-          <View className='recording-section'>
-            <Text className='recording-title'>请开始你的回答</Text>
-            <Text className='recording-subtitle'>点击下方按钮开始录音（最长 30 秒）</Text>
-
-            <View className='recording-display'>
-              {recording ? (
-                <>
-                  <View className='recording-indicator'>
-                    <View className='pulse'></View>
-                    <Text>录音中...</Text>
-                  </View>
-                  <Text className='recording-time'>
-                    {Math.floor(recordingTime / 60)}:{String(recordingTime % 60).padStart(2, '0')}
-                  </Text>
-                </>
-              ) : (
-                <Text className='recording-prompt'>点击下方按钮开始</Text>
-              )}
-            </View>
-
-            {/* 录音按钮 */}
-            <View className='recording-buttons'>
-              {!recording ? (
-                <Button className='record-button' onClick={handleStartRecording}>
-                  🎤 开始录音
-                </Button>
-              ) : (
-                <Button className='stop-button' onClick={handleStopRecording}>
-                  ⏹️ 停止录音
-                </Button>
-              )}
-            </View>
-          </View>
-        </ScrollView>
-
-        {/* 底部操作按钮 */}
-        <View className='session-footer'>
-          <Button
-            className='next-button'
-            onClick={handleNextQuestion}
-            disabled={recording}
-          >
-            {currentQuestion === sessionQuestions.length - 1 ? '完成面试' : '下一题'}
-          </Button>
-        </View>
-      </View>
-    )
-  }
-
   return (
     <View className='interview-page'>
       {/* 页面头部 */}
-      <View className='interview-header'>
-        <Text className='interview-title'>模拟面试</Text>
-        <Text className='interview-subtitle'>通过实战练习提升你的面试技能</Text>
+      <View className='chat-header'>
+        <View className='header-content'>
+          <View className='header-icon'>🌟</View>
+          <View className='header-text'>
+            <Text className='header-title'>AI 面试官</Text>
+            <Text className='header-status'>在线</Text>
+          </View>
+        </View>
       </View>
 
-      {/* 难度筛选 */}
-      <ScrollView className='difficulty-filter' scrollX>
-        <View className='filter-item' onClick={() => setSelectedDifficulty('all')}>
-          <Text className={selectedDifficulty === 'all' ? 'active' : ''}>全部</Text>
-        </View>
-        <View className='filter-item' onClick={() => setSelectedDifficulty('easy')}>
-          <Text className={selectedDifficulty === 'easy' ? 'active' : ''}>简单</Text>
-        </View>
-        <View className='filter-item' onClick={() => setSelectedDifficulty('medium')}>
-          <Text className={selectedDifficulty === 'medium' ? 'active' : ''}>中等</Text>
-        </View>
-        <View className='filter-item' onClick={() => setSelectedDifficulty('hard')}>
-          <Text className={selectedDifficulty === 'hard' ? 'active' : ''}>困难</Text>
-        </View>
-      </ScrollView>
-
-      {/* 面试课程列表 */}
-      <ScrollView className='session-list' scrollY>
-        {filteredSessions.map(session => (
-          <View
-            key={session.id}
-            className='session-card'
-            onClick={() => handleStartSession(session)}
-          >
-            <View className='card-header'>
-              <Text className='card-icon'>{session.icon}</Text>
-              <View className='card-info'>
-                <Text className='card-title'>{session.title}</Text>
-                <Text className='card-description'>{session.description}</Text>
-              </View>
+      {/* 聊天消息区域 */}
+      <ScrollView
+        className='chat-messages'
+        scrollY
+        scrollTop={scrollTop}
+        scrollWithAnimation
+      >
+        {chatMessages.map((msg) => (
+          <View key={msg.id} className={`message-wrapper ${msg.role}`}>
+            <View className={`message-avatar ${msg.role}`}>
+              {msg.role === 'user' ? '👤' : '🌟'}
             </View>
-
-            <View className='card-meta'>
-              <View className='meta-item'>
-                <Text className='meta-label'>难度</Text>
-                <Text
-                  className='meta-value difficulty'
-                  style={{ color: difficultyColors[session.difficulty] }}
-                >
-                  {difficultyLabels[session.difficulty]}
-                </Text>
-              </View>
-              <View className='meta-item'>
-                <Text className='meta-label'>时长</Text>
-                <Text className='meta-value'>{session.duration} 分钟</Text>
-              </View>
-              <View className='meta-item'>
-                <Text className='meta-label'>题目</Text>
-                <Text className='meta-value'>{session.questionCount} 题</Text>
-              </View>
-            </View>
-
-            <View className='card-action'>
-              <Text className='action-text'>开始练习 →</Text>
+            <View className='message-bubble'>
+              <Text className='message-text'>{msg.content}</Text>
+              <Text className='message-time'>
+                {new Date(msg.timestamp).toLocaleTimeString('zh-CN')}
+              </Text>
             </View>
           </View>
         ))}
+
+        {/* 加载指示器 */}
+        {loading && (
+          <View className='message-wrapper assistant'>
+            <View className='message-avatar assistant'>🌟</View>
+            <View className='message-bubble loading'>
+              <View className='typing-indicator'>
+                <View className='dot'></View>
+                <View className='dot'></View>
+                <View className='dot'></View>
+              </View>
+            </View>
+          </View>
+        )}
       </ScrollView>
+
+      {/* 输入框区域 */}
+      <View className='chat-input-area'>
+        <View className='input-wrapper'>
+          <Input
+            className='chat-input'
+            placeholder='输入您的问题或岗位信息...'
+            placeholderStyle='color: #999;'
+            value={inputValue}
+            onInput={(e) => setInputValue(e.detail.value)}
+            onKeyDown={handleInputKeyDown}
+            disabled={loading}
+          />
+          <Button
+            className='send-button'
+            onClick={handleSendMessage}
+            disabled={loading || !inputValue.trim()}
+          >
+            {loading ? '...' : '发送'}
+          </Button>
+        </View>
+        <Text className='input-hint'>
+          💡 提示：告诉我您的目标岗位和公司，我会为您进行针对性的面试指导
+        </Text>
+      </View>
     </View>
   )
 }
