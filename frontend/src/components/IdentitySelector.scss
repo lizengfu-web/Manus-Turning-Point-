@@ -1,0 +1,165 @@
+.identity-selector-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .identity-selector-modal {
+    width: 100%;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 16px 16px;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 80vh;
+    overflow-y: auto;
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 24px;
+
+      .modal-title {
+        display: block;
+        font-size: 18px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+        letter-spacing: 0.3px;
+      }
+
+      .modal-subtitle {
+        display: block;
+        font-size: 12px;
+        color: #999;
+        line-height: 1.4;
+      }
+    }
+
+    .identity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+
+      .identity-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: #f9f9f9;
+        border-radius: 12px;
+        border-left: 4px solid #ccc;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+
+        .card-header {
+          display: flex;
+          gap: 12px;
+          flex: 1;
+          align-items: center;
+
+          .identity-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+          }
+
+          .identity-info {
+            flex: 1;
+
+            .identity-name {
+              display: block;
+              font-size: 14px;
+              font-weight: 600;
+              color: #333;
+              margin-bottom: 4px;
+            }
+
+            .identity-desc {
+              display: block;
+              font-size: 12px;
+              color: #999;
+            }
+          }
+        }
+
+        .selected-badge {
+          width: 24px;
+          height: 24px;
+          background: #10b981;
+          color: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 14px;
+        }
+
+        &.selected {
+          background: #f0f9ff;
+          border-left-color: #10b981;
+
+          .identity-name {
+            color: #10b981;
+          }
+        }
+
+        &:active {
+          background: #f5f5f5;
+        }
+      }
+    }
+
+    .modal-footer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+
+      .btn-cancel,
+      .btn-confirm {
+        height: 48px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+
+        &::after {
+          border: none;
+        }
+      }
+
+      .btn-cancel {
+        background: #f0f0f0;
+        color: #666;
+      }
+
+      .btn-confirm {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+      }
+    }
+  }
+}
