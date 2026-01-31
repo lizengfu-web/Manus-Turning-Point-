@@ -73,7 +73,7 @@ export default function Index() {
   // 跳转到指南页
   const navigateToGuide = () => {
     Taro.navigateTo({
-      url: '/pages/webview/index?url=/guide'
+      url: '/pages/guide/index'
     });
   };
 
