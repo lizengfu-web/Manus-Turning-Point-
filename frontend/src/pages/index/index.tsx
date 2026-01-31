@@ -30,44 +30,6 @@ export default function Index() {
     }
   }, []);
 
-  // 测试后端连接
-  const testConnection = async () => {
-    try {
-      setLoading(true);
-      const { API_BASE_URL } = await import('@/api/config');
-      
-      console.log('正在测试连接:', API_BASE_URL);
-      
-      // 先测试根路径
-      const result = await Taro.request({
-        url: `${API_BASE_URL}/`,
-        method: 'GET',
-        timeout: 5000,
-      });
-      
-      console.log('连接测试成功:', result);
-      
-      if (result.statusCode === 200) {
-        Taro.showToast({
-          title: '连接成功！',
-          icon: 'success',
-          duration: 2000
-        });
-      } else {
-        throw new Error(`HTTP ${result.statusCode}`);
-      }
-    } catch (error: any) {
-      console.error('连接测试失败:', error);
-      Taro.showModal({
-        title: '连接失败',
-        content: `错误信息: ${error.errMsg || error.message || '未知错误'}\n\n请检查:\n1. 后端服务器是否正在运行\n2. API 地址配置是否正确\n3. 手机和电脑是否在同一 WiFi`,
-        showCancel: false
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // 微信登录（使用新的授权方式）
   const handleLogin = async () => {
     try {
@@ -137,15 +99,7 @@ export default function Index() {
       ) : (
         <View className='login-card'>
           <Text className='login-tip'>登录后查看个性化推荐</Text>
-          <Button
-            className='test-btn'
-            onClick={testConnection}
-            loading={loading}
-            disabled={loading}
-            style={{ marginBottom: '10px', backgroundColor: '#10b981', color: '#fff' }}
-          >
-            {loading ? '测试中...' : '测试连接'}
-          </Button>
+
           <Button
             className='login-btn'
             onClick={handleLogin}
