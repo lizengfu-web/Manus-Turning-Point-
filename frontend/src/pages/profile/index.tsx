@@ -1,4 +1,4 @@
-import { View, Text, Button, Image, Input, Picker } from '@tarojs/components'
+import { View, Text, Button, Image, Input, Picker, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useUserStore } from '@/store/user'
 import { wxLogin, logout, getUserInfo, updateUserInfo } from '@/api/auth'
@@ -29,6 +29,7 @@ export default function Profile() {
     city: '',
     workYears: 0,
   })
+  const [unreadMessages, setUnreadMessages] = useState(0)
 
   // 获取省份列表
   const provinceList = useMemo(() => getProvinceList(), [])
@@ -49,6 +50,8 @@ export default function Profile() {
   useEffect(() => {
     if (user) {
       loadUserInfo()
+      // 模拟未读消息数
+      setUnreadMessages(2)
     }
   }, [user])
 
@@ -318,7 +321,7 @@ export default function Profile() {
     }
   }
 
-  const navigateToWebView = (path: string) => {
+  const handleNavigate = (path: string) => {
     if (!user) {
       Taro.showToast({
         title: '请先登录',
@@ -327,7 +330,7 @@ export default function Profile() {
       return
     }
     Taro.navigateTo({
-      url: `/pages/webview/index?url=${path}`
+      url: path
     })
   }
 
@@ -339,161 +342,170 @@ export default function Profile() {
         onDisagree={handlePrivacyDisagree}
       />
       <View className='profile-page'>
-      <View className='header'>
-        {user ? (
-          <View className='user-info'>
-            {userInfo.avatarUrl ? (
-              <Image
-                className='avatar'
-                src={userInfo.avatarUrl}
-                mode='aspectFill'
-              />
-            ) : (
-              <View className='avatar-placeholder'>
-                <Text>👤</Text>
-              </View>
-            )}
-            <Text className='nickname'>{userInfo.nickName || '用户'}</Text>
-          </View>
-        ) : (
-          <View className='login-prompt'>
-            <Text className='prompt-text'>登录后体验更多功能</Text>
-            <Button className='login-btn' onClick={handleLogin}>
-              微信登录
-            </Button>
-          </View>
-        )}
-      </View>
-
-      {user && (
-        <View className='menu-list'>
-          {/* 个人信息编辑区域 */}
-          <View className='menu-section'>
-            <View className='section-header'>
-              <Text className='section-title'>个人信息</Text>
-              <Button 
-                className='edit-btn'
-                onClick={() => {
-                  if (isEditing) {
-                    setEditForm({
-                      nickName: userInfo.nickName || '',
-                      province: userInfo.province || '',
-                      city: userInfo.city || '',
-                      workYears: userInfo.workYears || 0,
-                    })
-                  }
-                  setIsEditing(!isEditing)
-                }}
-              >
-                {isEditing ? '取消' : '编辑'}
-              </Button>
-            </View>
-
-            {isEditing ? (
-              <View className='edit-form'>
-                <View className='form-group'>
-                  <Text className='form-label'>昵称</Text>
-                  <Input
-                    className='form-input'
-                    value={editForm.nickName}
-                    placeholder='请输入昵称'
-                    onInput={(e) => handleEditChange('nickName', e.detail.value)}
-                  />
+        <ScrollView scrollY className='profile-scroll'>
+          <View className='header'>
+            {user ? (
+              <View className='user-info'>
+                <Image
+                  className='avatar'
+                  src={userInfo.avatarUrl || '/assets/default-avatar.png'}
+                  mode='aspectFill'
+                />
+                <View className='user-details'>
+                  <Text className='nickname'>{userInfo.nickName || '用户'}</Text>
+                  <Text className='location'>{userInfo.province} {userInfo.city || '未设置'}</Text>
                 </View>
-
-                <View className='form-group'>
-                  <Text className='form-label'>所在省份</Text>
-                  <Picker
-                    mode='selector'
-                    range={provinceList}
-                    rangeKey='name'
-                    value={provinceList.findIndex(p => p.name === editForm.province)}
-                    onChange={(e) => {
-                      const selectedProvince = provinceList[e.detail.value]
-                      handleEditChange('province', selectedProvince.name)
-                    }}
-                  >
-                    <View className={`picker-select ${!editForm.province ? 'placeholder' : ''}`}>
-                      <Text>{editForm.province || '请选择省份'}</Text>
-                      <Text className='picker-arrow'>▼</Text>
-                    </View>
-                  </Picker>
-                </View>
-
-                <View className='form-group'>
-                  <Text className='form-label'>所在城市</Text>
-                  <Picker
-                    mode='selector'
-                    range={cityList}
-                    rangeKey='name'
-                    value={cityList.findIndex(c => c.name === editForm.city)}
-                    onChange={(e) => {
-                      const selectedCity = cityList[e.detail.value]
-                      handleEditChange('city', selectedCity.name)
-                    }}
-                    disabled={!editForm.province}
-                  >
-                    <View className={`picker-select ${!editForm.city ? 'placeholder' : ''} ${!editForm.province ? 'disabled' : ''}`}>
-                      <Text>{editForm.city || (editForm.province ? '请选择城市' : '请先选择省份')}</Text>
-                      <Text className='picker-arrow'>▼</Text>
-                    </View>
-                  </Picker>
-                </View>
-
-                <View className='form-group'>
-                  <Text className='form-label'>工作年限</Text>
-                  <Input
-                    className='form-input'
-                    type='number'
-                    value={String(editForm.workYears)}
-                    placeholder='请输入工作年限'
-                    onInput={(e) => handleEditChange('workYears', Number(e.detail.value))}
-                  />
-                </View>
-
-                <Button 
-                  className='save-btn' 
-                  onClick={handleSaveEdit}
-                  loading={loading}
-                  disabled={loading}
-                >
-                  保存修改
+                <Button className='edit-btn' onClick={() => setIsEditing(!isEditing)}>
+                  {isEditing ? '取消' : '编辑'}
                 </Button>
               </View>
             ) : (
-              <View className='info-display'>
-                <View className='info-item'>
-                  <Text className='info-label'>昵称</Text>
-                  <Text className='info-value'>{userInfo.nickName || '未设置'}</Text>
-                </View>
-                <View className='info-item'>
-                  <Text className='info-label'>所在地</Text>
-                  <Text className='info-value'>{userInfo.province} {userInfo.city || '未设置'}</Text>
-                </View>
-                <View className='info-item'>
-                  <Text className='info-label'>工作年限</Text>
-                  <Text className='info-value'>{userInfo.workYears} 年</Text>
-                </View>
+              <View className='login-prompt'>
+                <Text className='prompt-text'>登录后体验更多功能</Text>
+                <Button className='login-btn' onClick={handleLogin}>
+                  微信登录
+                </Button>
               </View>
             )}
           </View>
 
-          <View className='menu-section'>
-            <View className='menu-item' onClick={() => navigateToWebView('https://help.manus.im')}>
-              <Text className='menu-text'>帮助与反馈</Text>
-              <Text className='menu-arrow'>></Text>
-            </View>
-            <View className='menu-item' onClick={() => navigateToWebView('https://manus.im/about')}>
-              <Text className='menu-text'>关于我们</Text>
-              <Text className='menu-arrow'>></Text>
-            </View>
-          </View>
+          {user && (
+            <>
+              {/* 编辑模式 */}
+              {isEditing ? (
+                <View className='edit-form-section'>
+                  <View className='form-group'>
+                    <Text className='form-label'>昵称</Text>
+                    <Input
+                      className='form-input'
+                      value={editForm.nickName}
+                      placeholder='请输入昵称'
+                      onInput={(e) => handleEditChange('nickName', e.detail.value)}
+                    />
+                  </View>
 
-          <Button className='logout-btn' onClick={handleLogout}>
-            退出登录
-          </Button>
-        </View>
-      )}
+                  <View className='form-group'>
+                    <Text className='form-label'>所在省份</Text>
+                    <Picker
+                      mode='selector'
+                      range={provinceList}
+                      rangeKey='name'
+                      value={provinceList.findIndex(p => p.name === editForm.province)}
+                      onChange={(e) => {
+                        const selectedProvince = provinceList[e.detail.value]
+                        handleEditChange('province', selectedProvince.name)
+                      }}
+                    >
+                      <View className={`picker-select ${!editForm.province ? 'placeholder' : ''}`}>
+                        <Text>{editForm.province || '请选择省份'}</Text>
+                        <Text className='picker-arrow'>▼</Text>
+                      </View>
+                    </Picker>
+                  </View>
+
+                  <View className='form-group'>
+                    <Text className='form-label'>所在城市</Text>
+                    <Picker
+                      mode='selector'
+                      range={cityList}
+                      rangeKey='name'
+                      value={cityList.findIndex(c => c.name === editForm.city)}
+                      onChange={(e) => {
+                        const selectedCity = cityList[e.detail.value]
+                        handleEditChange('city', selectedCity.name)
+                      }}
+                      disabled={!editForm.province}
+                    >
+                      <View className={`picker-select ${!editForm.city ? 'placeholder' : ''} ${!editForm.province ? 'disabled' : ''}`}>
+                        <Text>{editForm.city || (editForm.province ? '请选择城市' : '请先选择省份')}</Text>
+                        <Text className='picker-arrow'>▼</Text>
+                      </View>
+                    </Picker>
+                  </View>
+
+                  <View className='form-group'>
+                    <Text className='form-label'>工作年限</Text>
+                    <Input
+                      className='form-input'
+                      type='number'
+                      value={String(editForm.workYears)}
+                      placeholder='请输入工作年限'
+                      onInput={(e) => handleEditChange('workYears', Number(e.detail.value))}
+                    />
+                  </View>
+
+                  <Button 
+                    className='save-btn' 
+                    onClick={handleSaveEdit}
+                    loading={loading}
+                    disabled={loading}
+                  >
+                    保存修改
+                  </Button>
+                </View>
+              ) : (
+                <>
+                  {/* 功能菜单 */}
+                  <View className='menu-section'>
+                    <View className='menu-item' onClick={() => handleNavigate('/pages/profile/posts/index')}>
+                      <View className='menu-icon'>📝</View>
+                      <View className='menu-content'>
+                        <Text className='menu-title'>我的帖子</Text>
+                        <Text className='menu-desc'>查看我在树洞发布的帖子</Text>
+                      </View>
+                      <Text className='menu-arrow'>›</Text>
+                    </View>
+
+                    <View className='menu-item' onClick={() => handleNavigate('/pages/profile/collections/index')}>
+                      <View className='menu-icon'>⭐</View>
+                      <View className='menu-content'>
+                        <Text className='menu-title'>我的收藏</Text>
+                        <Text className='menu-desc'>收藏的精选帖子和内容</Text>
+                      </View>
+                      <Text className='menu-arrow'>›</Text>
+                    </View>
+
+                    <View className='menu-item' onClick={() => handleNavigate('/pages/profile/messages/index')}>
+                      <View className='menu-icon'>💬</View>
+                      <View className='menu-content'>
+                        <Text className='menu-title'>消息</Text>
+                        <Text className='menu-desc'>别人给我的评论和互动</Text>
+                      </View>
+                      {unreadMessages > 0 && (
+                        <View className='unread-badge'>
+                          <Text>{unreadMessages}</Text>
+                        </View>
+                      )}
+                      <Text className='menu-arrow'>›</Text>
+                    </View>
+
+                    <View className='menu-item' onClick={() => handleNavigate('/pages/profile/feedback/index')}>
+                      <View className='menu-icon'>💡</View>
+                      <View className='menu-content'>
+                        <Text className='menu-title'>意见反馈</Text>
+                        <Text className='menu-desc'>告诉我们你的想法和建议</Text>
+                      </View>
+                      <Text className='menu-arrow'>›</Text>
+                    </View>
+                  </View>
+
+                  {/* 底部信息 */}
+                  <View className='footer-section'>
+                    <View className='app-info'>
+                      <Text className='app-name'>转角驿站</Text>
+                      <Text className='app-version'>v1.0.0</Text>
+                      <Text className='app-desc'>职场转角的温暖驿站</Text>
+                    </View>
+
+                    <Button className='logout-btn' onClick={handleLogout}>
+                      退出登录
+                    </Button>
+                  </View>
+                </>
+              )}
+            </>
+          )}
+        </ScrollView>
       </View>
     </>
   )
