@@ -1,0 +1,125 @@
+.calc-page {
+  padding: 20px;
+  background: #f5f5f5;
+  min-height: 100vh;
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+
+      .label {
+        display: block;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #333;
+        box-sizing: border-box;
+
+        &::placeholder {
+          color: #999;
+        }
+      }
+    }
+
+    .calc-btn {
+      width: 100%;
+      height: 48px;
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 10px;
+
+      &::after {
+        border: none;
+      }
+    }
+  }
+
+  .result-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    .result-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+
+      .res-label {
+        font-size: 14px;
+        color: #666;
+      }
+
+      .res-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      &.highlight {
+        background: #f9f5ff;
+        padding: 12px;
+        border-radius: 8px;
+        border-bottom: none;
+        margin-top: 8px;
+
+        .res-label {
+          color: #7c3aed;
+          font-weight: 600;
+        }
+
+        .res-value {
+          color: #7c3aed;
+          font-size: 20px;
+        }
+      }
+    }
+
+    .tips {
+      font-size: 12px;
+      color: #999;
+      margin-top: 16px;
+      padding: 12px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      line-height: 1.6;
+    }
+  }
+}

@@ -2,6 +2,9 @@ export default {
   pages: [
     'pages/index/index',
     'pages/guide/index',
+    'pages/guide/detail/index',
+    'pages/guide/calculator/index',
+    'pages/guide/social-security/index',
     'pages/ai/index',
     'pages/layoff/index',
     'pages/interview/index',
