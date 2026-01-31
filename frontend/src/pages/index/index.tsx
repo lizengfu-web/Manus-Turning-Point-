@@ -36,12 +36,16 @@ export default function Index() {
       setLoading(true);
 
       // 获取微信登录 code
-      // 增加容错处理，防止 SystemError 导致崩溃
       let loginRes;
       try {
         loginRes = await Taro.login();
-      } catch (e) {
+      } catch (e: any) {
         console.error('Taro.login System Error:', e);
+        // 如果是特定的系统错误，尝试静默降级或提示环境问题
+        if (e.errMsg && e.errMsg.includes('webapi_getwxaasyncsecinfo:fail')) {
+          console.warn('[System Compatibility] Intercepted specific WeChat SystemError during login');
+          throw new Error('微信开发者工具环境异常，请尝试重启工具或清除缓存后再试');
+        }
         throw new Error('微信登录服务暂时不可用，请稍后再试');
       }
 
@@ -69,6 +73,10 @@ export default function Index() {
       });
     } catch (error: any) {
       console.error('登录失败:', error);
+      // 针对系统错误，不弹出 Toast 干扰，仅在控制台记录
+      if (error.message && error.message.includes('webapi_getwxaasyncsecinfo:fail')) {
+        return;
+      }
       Taro.showToast({
         title: error.message || '登录失败',
         icon: 'none',
