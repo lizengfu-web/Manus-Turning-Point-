@@ -16,7 +16,8 @@ export default function Calculator() {
   const [activeTab, setActiveTab] = useState('calculator');
   const [selectedProvince, setSelectedProvince] = useState('beijing');
   const [selectedCity, setSelectedCity] = useState('beijing');
-  const [yearsOfPayment, setYearsOfPayment] = useState(1);
+  const [yearsOfPayment, setYearsOfPayment] = useState(0);
+  const [monthsOfPayment, setMonthsOfPayment] = useState(0);
   const [customMinWage, setCustomMinWage] = useState<number | null>(null);
   const [result, setResult] = useState<ResultData>({
     months: 0,
@@ -42,61 +43,69 @@ export default function Calculator() {
     return getMinWageByCity(selectedProvince, selectedCity);
   }, [selectedProvince, selectedCity, customMinWage]);
 
+  // 计算总月数
+  const totalMonths = useMemo(() => {
+    return yearsOfPayment * 12 + monthsOfPayment;
+  }, [yearsOfPayment, monthsOfPayment]);
+
   // 处理省份变化
   const handleProvinceChange = (e: any) => {
     const provinceKey = provinceList[e.detail.value].key;
     setSelectedProvince(provinceKey);
-    // 重置城市选择为该省的第一个城市
     const newCityList = getCityListByProvince(provinceKey);
     if (newCityList.length > 0) {
       setSelectedCity(newCityList[0].key);
     }
-    // 重置结果为0
-    setResult({
-      months: 0,
-      monthlyAmount: 0,
-      total: 0,
-      provinceName: provinceList.find(p => p.key === provinceKey)?.name || '北京',
-      cityName: newCityList[0]?.name || '北京'
-    });
+    resetResult(provinceKey, newCityList[0]?.key || 'beijing');
   };
 
   // 处理城市变化
   const handleCityChange = (e: any) => {
     const cityKey = cityList[e.detail.value].key;
     setSelectedCity(cityKey);
-    // 重置结果为0
+    resetResult(selectedProvince, cityKey);
+  };
+
+  // 重置结果
+  const resetResult = (provinceKey: string, cityKey: string) => {
     setResult({
       months: 0,
       monthlyAmount: 0,
       total: 0,
-      provinceName: provinceList.find(p => p.key === selectedProvince)?.name || '北京',
-      cityName: cityList.find(c => c.key === cityKey)?.name || '北京'
+      provinceName: provinceList.find(p => p.key === provinceKey)?.name || '北京',
+      cityName: getCityListByProvince(provinceKey).find(c => c.key === cityKey)?.name || '北京'
     });
   };
 
   // 计算失业金
   const calculate = () => {
-    let months = 0;
+    let eligibleMonths = 0;
 
-    if (yearsOfPayment >= 1 && yearsOfPayment < 2) months = 2;
-    else if (yearsOfPayment >= 2 && yearsOfPayment < 3) months = 4;
-    else if (yearsOfPayment >= 3 && yearsOfPayment < 4) months = 6;
-    else if (yearsOfPayment >= 4 && yearsOfPayment < 5) months = 9;
-    else if (yearsOfPayment >= 5 && yearsOfPayment < 10) months = 12;
-    else if (yearsOfPayment >= 10) months = 24;
+    // 根据缴费月数计算领取月数
+    if (totalMonths >= 12 && totalMonths < 24) eligibleMonths = 2;
+    else if (totalMonths >= 24 && totalMonths < 36) eligibleMonths = 4;
+    else if (totalMonths >= 36 && totalMonths < 48) eligibleMonths = 6;
+    else if (totalMonths >= 48 && totalMonths < 60) eligibleMonths = 9;
+    else if (totalMonths >= 60 && totalMonths < 120) eligibleMonths = 12;
+    else if (totalMonths >= 120) eligibleMonths = 24;
 
     const monthlyAmount = Math.round(currentMinWage * 0.9);
-    const total = monthlyAmount * months;
+    const total = monthlyAmount * eligibleMonths;
 
     setResult({
-      months,
+      months: eligibleMonths,
       monthlyAmount,
       total,
       provinceName: provinceList.find(p => p.key === selectedProvince)?.name || '北京',
       cityName: cityList.find(c => c.key === selectedCity)?.name || '北京'
     });
   };
+
+  // 生成年份数组（0-50年）
+  const yearArray = Array.from({ length: 51 }, (_, i) => `${i}年`);
+  
+  // 生成月份数组（0-11月）
+  const monthArray = Array.from({ length: 12 }, (_, i) => `${i}月`);
 
   const renderCalculatorTab = () => (
     <View className='tab-content'>
@@ -140,32 +149,50 @@ export default function Calculator() {
         </View>
       </View>
 
-      {/* 缴费年限滑块 */}
+      {/* 缴费年限选择 - 年月双维度 */}
       <View className='section'>
-        <View className='slider-header'>
-          <Text className='section-title'>累计缴费年限</Text>
-          <Text className='slider-value'>{yearsOfPayment} 年</Text>
+        <Text className='section-title'>累计缴费年限</Text>
+        <View className='payment-period-selector'>
+          <View className='period-group'>
+            <Text className='period-label'>年</Text>
+            <Picker
+              mode='selector'
+              range={yearArray}
+              value={yearsOfPayment}
+              onChange={(e) => {
+                setYearsOfPayment(e.detail.value);
+                resetResult(selectedProvince, selectedCity);
+              }}
+            >
+              <View className='period-picker'>
+                <Text className='period-value'>{yearsOfPayment}</Text>
+                <Text className='period-arrow'>▼</Text>
+              </View>
+            </Picker>
+          </View>
+
+          <View className='period-group'>
+            <Text className='period-label'>月</Text>
+            <Picker
+              mode='selector'
+              range={monthArray}
+              value={monthsOfPayment}
+              onChange={(e) => {
+                setMonthsOfPayment(e.detail.value);
+                resetResult(selectedProvince, selectedCity);
+              }}
+            >
+              <View className='period-picker'>
+                <Text className='period-value'>{monthsOfPayment}</Text>
+                <Text className='period-arrow'>▼</Text>
+              </View>
+            </Picker>
+          </View>
         </View>
-        <Slider
-          className='year-slider'
-          min={1}
-          max={10}
-          value={yearsOfPayment}
-          onChange={(e) => {
-            setYearsOfPayment(e.detail.value);
-            // 重置结果为0
-            setResult({
-              months: 0,
-              monthlyAmount: 0,
-              total: 0,
-              provinceName: provinceList.find(p => p.key === selectedProvince)?.name || '北京',
-              cityName: cityList.find(c => c.key === selectedCity)?.name || '北京'
-            });
-          }}
-        />
-        <View className='slider-labels'>
-          <Text>1年</Text>
-          <Text>10年+</Text>
+
+        <View className='total-months-display'>
+          <Text className='total-label'>总计缴费</Text>
+          <Text className='total-value'>{totalMonths} 个月</Text>
         </View>
       </View>
 

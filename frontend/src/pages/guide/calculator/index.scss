@@ -152,6 +152,78 @@
     margin-top: 8px;
   }
 
+  /* 年月双维度选择器 */
+  .payment-period-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .period-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .period-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+        letter-spacing: 0.2px;
+      }
+
+      .period-picker {
+        background: white;
+        border: 2px solid #e8e8e8;
+        border-radius: 10px;
+        padding: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+
+        .period-value {
+          font-size: 16px;
+          font-weight: 600;
+          color: #333;
+        }
+
+        .period-arrow {
+          font-size: 10px;
+          color: #999;
+        }
+
+        &:active {
+          background: #fafafa;
+          border-color: #d4a574;
+        }
+      }
+    }
+  }
+
+  /* 总缴费月数显示 */
+  .total-months-display {
+    background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
+    border: 1px solid #f0e6d2;
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .total-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #92400e;
+    }
+
+    .total-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #b8860b;
+    }
+  }
+
   /* 按钮区域 */
   .button-section {
     margin-bottom: 20px;
