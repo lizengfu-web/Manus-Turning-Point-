@@ -4,13 +4,27 @@ import { View, Text, Slider, Button, Picker } from '@tarojs/components';
 import { getProvinceList, getCityListByProvince, getMinWageByCity } from './data';
 import './index.scss';
 
+interface ResultData {
+  months: number;
+  monthlyAmount: number;
+  total: number;
+  provinceName: string;
+  cityName: string;
+}
+
 export default function Calculator() {
   const [activeTab, setActiveTab] = useState('calculator');
   const [selectedProvince, setSelectedProvince] = useState('beijing');
   const [selectedCity, setSelectedCity] = useState('beijing');
   const [yearsOfPayment, setYearsOfPayment] = useState(1);
   const [customMinWage, setCustomMinWage] = useState<number | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<ResultData>({
+    months: 0,
+    monthlyAmount: 0,
+    total: 0,
+    provinceName: '北京',
+    cityName: '北京'
+  });
 
   Taro.setNavigationBarTitle({
     title: '失业金计算器'
@@ -37,14 +51,28 @@ export default function Calculator() {
     if (newCityList.length > 0) {
       setSelectedCity(newCityList[0].key);
     }
-    setResult(null);
+    // 重置结果为0
+    setResult({
+      months: 0,
+      monthlyAmount: 0,
+      total: 0,
+      provinceName: provinceList.find(p => p.key === provinceKey)?.name || '北京',
+      cityName: newCityList[0]?.name || '北京'
+    });
   };
 
   // 处理城市变化
   const handleCityChange = (e: any) => {
     const cityKey = cityList[e.detail.value].key;
     setSelectedCity(cityKey);
-    setResult(null);
+    // 重置结果为0
+    setResult({
+      months: 0,
+      monthlyAmount: 0,
+      total: 0,
+      provinceName: provinceList.find(p => p.key === selectedProvince)?.name || '北京',
+      cityName: cityList.find(c => c.key === cityKey)?.name || '北京'
+    });
   };
 
   // 计算失业金
@@ -65,8 +93,8 @@ export default function Calculator() {
       months,
       monthlyAmount,
       total,
-      provinceName: provinceList.find(p => p.key === selectedProvince)?.name,
-      cityName: cityList.find(c => c.key === selectedCity)?.name
+      provinceName: provinceList.find(p => p.key === selectedProvince)?.name || '北京',
+      cityName: cityList.find(c => c.key === selectedCity)?.name || '北京'
     });
   };
 
@@ -125,7 +153,14 @@ export default function Calculator() {
           value={yearsOfPayment}
           onChange={(e) => {
             setYearsOfPayment(e.detail.value);
-            setResult(null);
+            // 重置结果为0
+            setResult({
+              months: 0,
+              monthlyAmount: 0,
+              total: 0,
+              provinceName: provinceList.find(p => p.key === selectedProvince)?.name || '北京',
+              cityName: cityList.find(c => c.key === selectedCity)?.name || '北京'
+            });
           }}
         />
         <View className='slider-labels'>
@@ -141,32 +176,30 @@ export default function Calculator() {
         </Button>
       </View>
 
-      {/* 结果展示 */}
-      {result && (
-        <View className='result-section'>
-          <View className='result-card'>
-            <View className='result-main'>
-              <Text className='result-label'>月度失业金</Text>
-              <Text className='result-amount'>¥{result.monthlyAmount.toLocaleString()}</Text>
-            </View>
-            <View className='result-split'>
-              <View className='result-item'>
-                <Text className='item-label'>可领取月数</Text>
-                <Text className='item-value'>{result.months} 月</Text>
-              </View>
-              <View className='result-item'>
-                <Text className='item-label'>总计金额</Text>
-                <Text className='item-value'>¥{result.total.toLocaleString()}</Text>
-              </View>
-            </View>
+      {/* 结果展示 - 始终显示 */}
+      <View className='result-section'>
+        <View className={`result-card ${result.months === 0 ? 'empty' : ''}`}>
+          <View className='result-main'>
+            <Text className='result-label'>月度失业金</Text>
+            <Text className='result-amount'>¥{result.monthlyAmount.toLocaleString()}</Text>
           </View>
-
-          <View className='tips-box'>
-            <Text className='tips-icon'>💡</Text>
-            <Text className='tips-text'>提示：失业金计算基于{result.provinceName}{result.cityName}2024年数据，具体金额以当地社保部门公布为准。</Text>
+          <View className='result-split'>
+            <View className='result-item'>
+              <Text className='item-label'>可领取月数</Text>
+              <Text className='item-value'>{result.months} 月</Text>
+            </View>
+            <View className='result-item'>
+              <Text className='item-label'>总计金额</Text>
+              <Text className='item-value'>¥{result.total.toLocaleString()}</Text>
+            </View>
           </View>
         </View>
-      )}
+
+        <View className='tips-box'>
+          <Text className='tips-icon'>💡</Text>
+          <Text className='tips-text'>提示：失业金计算基于{result.provinceName}{result.cityName}2024年数据，具体金额以当地社保部门公布为准。</Text>
+        </View>
+      </View>
     </View>
   );
 
