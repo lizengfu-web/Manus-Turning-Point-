@@ -6,43 +6,54 @@
 
   .loading,
   .empty {
-    padding: 100px 20px;
+    padding: 120px 20px;
     text-align: center;
     color: #999;
+    font-size: 18px;
+    font-weight: 500;
   }
 
   .header {
-    padding: 40px 20px 20px;
+    padding: 24px 20px 20px;
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     color: white;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
     .header-content {
       flex: 1;
 
       .title {
         display: block;
-        font-size: 32px;
-        font-weight: bold;
+        font-size: 28px;
+        font-weight: 800;
         margin-bottom: 8px;
+        letter-spacing: 0.5px;
       }
 
       .subtitle {
         display: block;
-        font-size: 14px;
+        font-size: 16px;
         opacity: 0.9;
+        font-weight: 500;
       }
     }
 
     .create-btn {
       background: white;
       color: #f5576c;
-      font-size: 14px;
-      padding: 8px 20px;
-      border-radius: 20px;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 12px 24px;
+      border-radius: 24px;
       border: none;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
   }
 
@@ -53,67 +64,80 @@
 
   .post-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 20px;
     margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+
+    &:active {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
 
     .post-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
 
       .author {
-        font-size: 14px;
-        font-weight: 600;
+        font-size: 16px;
+        font-weight: 800;
         color: #1f2937;
       }
 
       .time {
-        font-size: 12px;
+        font-size: 14px;
         color: #9ca3af;
+        font-weight: 500;
       }
     }
 
     .post-content {
       display: block;
-      font-size: 15px;
+      font-size: 17px;
       color: #374151;
-      line-height: 1.6;
-      margin-bottom: 12px;
+      line-height: 1.8;
+      margin-bottom: 14px;
+      font-weight: 500;
     }
 
     .tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
+      gap: 10px;
+      margin-bottom: 14px;
 
       .tag {
-        font-size: 12px;
+        font-size: 14px;
         color: #f5576c;
+        font-weight: 700;
+        padding: 6px 12px;
+        background: rgba(245, 87, 108, 0.1);
+        border-radius: 12px;
       }
     }
 
     .post-footer {
       display: flex;
-      gap: 24px;
-      padding-top: 12px;
-      border-top: 1px solid #f3f4f6;
+      gap: 28px;
+      padding-top: 14px;
+      border-top: 2px solid #f3f4f6;
 
       .stat-item {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
 
         .stat-icon {
-          font-size: 16px;
+          font-size: 18px;
         }
 
         .stat-count {
-          font-size: 14px;
+          font-size: 16px;
           color: #6b7280;
+          font-weight: 700;
         }
       }
     }

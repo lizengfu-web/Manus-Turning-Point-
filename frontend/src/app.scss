@@ -1,19 +1,49 @@
+/* ===== 全局大字号规范 ===== */
+:root {
+  /* 字号体系 - 超大号适配 */
+  --font-size-xs: 13px;      /* 极小文字（辅助信息） */
+  --font-size-sm: 14px;      /* 小文字（标签、提示） */
+  --font-size-base: 16px;    /* 基础文字（正文） */
+  --font-size-lg: 18px;      /* 大文字（小标题） */
+  --font-size-xl: 20px;      /* 超大文字（标题） */
+  --font-size-2xl: 24px;     /* 页面标题 */
+  --font-size-3xl: 28px;     /* 主标题 */
+
+  /* 行高体系 */
+  --line-height-tight: 1.4;
+  --line-height-normal: 1.6;
+  --line-height-relaxed: 1.8;
+  --line-height-loose: 2.0;
+
+  /* 间距体系 */
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+}
+
 page {
   background-color: #f5f5f5;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
 }
 
+/* ===== 基础组件大字号适配 ===== */
+
 .container {
-  padding: 32px;
+  padding: var(--spacing-2xl);
 }
 
 .card {
   background: #fff;
   border-radius: 16px;
-  padding: 32px;
-  margin-bottom: 24px;
+  padding: var(--spacing-2xl);
+  margin-bottom: var(--spacing-lg);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -22,8 +52,14 @@ page {
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 24px 48px;
-  font-size: 32px;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  height: auto;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-secondary {
@@ -31,6 +67,282 @@ page {
   color: #374151;
   border: none;
   border-radius: 8px;
-  padding: 24px 48px;
-  font-size: 32px;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  height: auto;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== 文字样式规范 ===== */
+
+.text-xs {
+  font-size: var(--font-size-xs);
+}
+
+.text-sm {
+  font-size: var(--font-size-sm);
+}
+
+.text-base {
+  font-size: var(--font-size-base);
+}
+
+.text-lg {
+  font-size: var(--font-size-lg);
+}
+
+.text-xl {
+  font-size: var(--font-size-xl);
+}
+
+.text-2xl {
+  font-size: var(--font-size-2xl);
+}
+
+.text-3xl {
+  font-size: var(--font-size-3xl);
+}
+
+.text-bold {
+  font-weight: 700;
+}
+
+.text-semibold {
+  font-weight: 600;
+}
+
+.text-medium {
+  font-weight: 500;
+}
+
+/* ===== 行高规范 ===== */
+
+.line-tight {
+  line-height: var(--line-height-tight);
+}
+
+.line-normal {
+  line-height: var(--line-height-normal);
+}
+
+.line-relaxed {
+  line-height: var(--line-height-relaxed);
+}
+
+.line-loose {
+  line-height: var(--line-height-loose);
+}
+
+/* ===== 间距规范 ===== */
+
+.gap-xs {
+  gap: var(--spacing-xs);
+}
+
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+
+.gap-md {
+  gap: var(--spacing-md);
+}
+
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+
+.gap-xl {
+  gap: var(--spacing-xl);
+}
+
+.mb-xs {
+  margin-bottom: var(--spacing-xs);
+}
+
+.mb-sm {
+  margin-bottom: var(--spacing-sm);
+}
+
+.mb-md {
+  margin-bottom: var(--spacing-md);
+}
+
+.mb-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+.mb-xl {
+  margin-bottom: var(--spacing-xl);
+}
+
+.mt-xs {
+  margin-top: var(--spacing-xs);
+}
+
+.mt-sm {
+  margin-top: var(--spacing-sm);
+}
+
+.mt-md {
+  margin-top: var(--spacing-md);
+}
+
+.mt-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.mt-xl {
+  margin-top: var(--spacing-xl);
+}
+
+.px-md {
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}
+
+.px-lg {
+  padding-left: var(--spacing-lg);
+  padding-right: var(--spacing-lg);
+}
+
+.py-md {
+  padding-top: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+}
+
+.py-lg {
+  padding-top: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+}
+
+/* ===== 输入组件大字号适配 ===== */
+
+input,
+textarea,
+select {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  padding: var(--spacing-md) var(--spacing-lg);
+  min-height: 50px;
+}
+
+button {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  min-height: 50px;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+/* ===== 列表与卡片大字号适配 ===== */
+
+.list-item {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid #f0f0f0;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+}
+
+.list-item-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+}
+
+.list-item-desc {
+  font-size: var(--font-size-base);
+  color: #666;
+  line-height: var(--line-height-relaxed);
+}
+
+/* ===== 标签与徽章大字号适配 ===== */
+
+.tag,
+.badge {
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-weight: 600;
+}
+
+/* ===== 对话与评论大字号适配 ===== */
+
+.comment,
+.message {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.comment-author,
+.message-author {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+}
+
+/* ===== 表单大字号适配 ===== */
+
+.form-group {
+  margin-bottom: var(--spacing-xl);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+  color: #333;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  font-size: var(--font-size-base);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 2px solid #e8e8e8;
+  border-radius: 8px;
+  min-height: 50px;
+  line-height: var(--line-height-normal);
+
+  &:focus {
+    border-color: #667eea;
+    outline: none;
+  }
+}
+
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* ===== 模态框与弹窗大字号适配 ===== */
+
+.modal-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  margin-bottom: var(--spacing-lg);
+}
+
+.modal-content {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: #333;
+}
+
+.modal-footer {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+}
+
+/* ===== 禁用状态 ===== */
+
+:disabled,
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
