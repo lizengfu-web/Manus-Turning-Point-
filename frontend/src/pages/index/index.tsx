@@ -23,14 +23,20 @@ export default function Index() {
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     setQuote(randomQuote);
 
-    // 检查登录状态
-    if (isLoggedIn()) {
-      const currentUser = getCurrentUser();
-      setUser(currentUser);
+    // 仅从本地缓存检查登录状态，不调用任何微信异步接口
+    try {
+      if (isLoggedIn()) {
+        const currentUser = getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+        }
+      }
+    } catch (e) {
+      console.error('Check login status error:', e);
     }
   }, []);
 
-  // 微信登录（使用新的授权方式）
+  // 微信登录（改为手动触发，且增加极端容错）
   const handleLogin = async () => {
     try {
       setLoading(true);
@@ -38,24 +44,16 @@ export default function Index() {
       // 获取微信登录 code
       let loginRes;
       try {
+        // 增加超时控制或直接捕获所有异常
         loginRes = await Taro.login();
       } catch (e: any) {
         console.error('Taro.login System Error:', e);
-        // 如果是特定的系统错误，尝试静默降级或提示环境问题
-        if (e.errMsg && e.errMsg.includes('webapi_getwxaasyncsecinfo:fail')) {
-          console.warn('[System Compatibility] Intercepted specific WeChat SystemError during login');
-          throw new Error('微信开发者工具环境异常，请尝试重启工具或清除缓存后再试');
-        }
-        throw new Error('微信登录服务暂时不可用，请稍后再试');
+        throw new Error('当前环境微信登录接口异常，请尝试真机调试');
       }
 
       const { code } = loginRes;
+      if (!code) throw new Error('获取登录凭证失败');
 
-      if (!code) {
-        throw new Error('获取登录凭证失败');
-      }
-
-      // 调用后端登录接口（匿名登录）
       const result = await wxLogin({
         code,
         userInfo: {
@@ -65,48 +63,33 @@ export default function Index() {
       });
 
       setUser(result.user);
-
-      Taro.showToast({
-        title: '登录成功',
-        icon: 'success',
-        duration: 2000
-      });
+      Taro.showToast({ title: '登录成功', icon: 'success' });
     } catch (error: any) {
       console.error('登录失败:', error);
-      // 针对系统错误，不弹出 Toast 干扰，仅在控制台记录
-      if (error.message && error.message.includes('webapi_getwxaasyncsecinfo:fail')) {
-        return;
-      }
       Taro.showToast({
         title: error.message || '登录失败',
-        icon: 'none',
-        duration: 2000
+        icon: 'none'
       });
     } finally {
       setLoading(false);
     }
   };
 
-  // 跳转到指南页
   const navigateToGuide = () => {
-    Taro.navigateTo({
-      url: '/pages/guide/index'
-    });
+    Taro.navigateTo({ url: '/pages/guide/index' });
   };
 
   return (
     <View className='index-page'>
-      {/* Header */}
       <View className='header'>
         <Text className='title'>转角驿站</Text>
         <Text className='subtitle'>职场转折的温暖驿站</Text>
       </View>
 
-      {/* User Card */}
       {user ? (
         <View className='user-card'>
           <View className='user-info'>
-            <Image className='avatar' src={user.avatarUrl} />
+            <Image className='avatar' src={user.avatarUrl || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'} />
             <View className='info'>
               <Text className='name'>{user.nickName}</Text>
               <Text className='type'>{getUserTypeLabel(user.userType)}</Text>
@@ -116,19 +99,12 @@ export default function Index() {
       ) : (
         <View className='login-card'>
           <Text className='login-tip'>登录后查看个性化推荐</Text>
-
-          <Button
-            className='login-btn'
-            onClick={handleLogin}
-            loading={loading}
-            disabled={loading}
-          >
-            {loading ? '登录中...' : '微信登录'}
+          <Button className='login-btn' onClick={handleLogin} loading={loading}>
+            微信登录
           </Button>
         </View>
       )}
 
-      {/* Quote Card */}
       <View className='quote-card'>
         <View className='quote-icon'>💡</View>
         <View className='quote-content'>
@@ -137,38 +113,32 @@ export default function Index() {
         </View>
       </View>
 
-      {/* Feature Grid */}
       <View className='feature-grid'>
         <View className='feature-item' onClick={navigateToGuide}>
           <View className='feature-icon'>📖</View>
           <Text className='feature-title'>政策指南</Text>
           <Text className='feature-desc'>失业金计算、申领攻略</Text>
         </View>
-
         <View className='feature-item' onClick={() => Taro.navigateTo({ url: '/pages/layoff/index' })}>
           <View className='feature-icon'>⚖️</View>
           <Text className='feature-title'>裁员咨询</Text>
           <Text className='feature-desc'>法律权益、补偿计算</Text>
         </View>
-
         <View className='feature-item' onClick={() => Taro.navigateTo({ url: '/pages/interview/index' })}>
           <View className='feature-icon'>🎤</View>
           <Text className='feature-title'>模拟面试</Text>
           <Text className='feature-desc'>面试训练、技能提升</Text>
         </View>
-
         <View className='feature-item' onClick={() => Taro.switchTab({ url: '/pages/opportunity/index' })}>
           <View className='feature-icon'>💼</View>
           <Text className='feature-title'>副业机会</Text>
           <Text className='feature-desc'>灵活就业、创业孵化</Text>
         </View>
-
         <View className='feature-item' onClick={() => Taro.switchTab({ url: '/pages/hole/index' })}>
           <View className='feature-icon'>💬</View>
           <Text className='feature-title'>树洞</Text>
           <Text className='feature-desc'>倾诉心声、互相鼓励</Text>
         </View>
-
         <View className='feature-item' onClick={() => Taro.switchTab({ url: '/pages/profile/index' })}>
           <View className='feature-icon'>👤</View>
           <Text className='feature-title'>我的</Text>
