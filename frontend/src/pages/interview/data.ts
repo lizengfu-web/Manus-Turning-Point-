@@ -10,9 +10,9 @@ export const generateSessionId = (): string => {
 // Coze 智能体配置（模拟面试专用）
 export const COZE_CONFIG = {
   // 从环境变量或直接配置中获取 Token
-  token: '',
-  projectId: '7600759893704048649', // 替换为模拟面试专用的 project_id
-  apiEndpoint: 'https://jcp33s7bqh.coze.site/stream_run'
+  token: '', // 请填入您的 Coze Token
+  projectId: '7600760736050364459', // 模拟面试专用的 project_id
+  apiEndpoint: 'https://n58f47kfhx.coze.site/stream_run' // 模拟面试专用的 API 端点
 }
 
 // 模拟面试开场白
