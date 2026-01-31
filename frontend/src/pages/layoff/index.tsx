@@ -15,7 +15,7 @@ export default function Layoff() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
   const [loading, setLoading] = useState(false)
-  const scrollViewRef = useRef<any>(null)
+  const [scrollTop, setScrollTop] = useState(0)
   const messageIdRef = useRef(0)
   const sessionIdRef = useRef<string>('')
 
@@ -35,18 +35,22 @@ export default function Layoff() {
       timestamp: Date.now()
     }
     setChatMessages([welcomeMessage])
-
-    // 延迟滚动到底部
-    setTimeout(() => {
-      scrollToBottom()
-    }, 300)
   }, [])
+
+  // 当消息更新时自动滚动到底部
+  useEffect(() => {
+    // 延迟滚动以确保 DOM 已更新
+    const timer = setTimeout(() => {
+      scrollToBottom()
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [chatMessages, loading])
 
   // 滚动到底部
   const scrollToBottom = () => {
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollTop()
-    }
+    // 计算滚动高度（简单估算：每条消息约 80px）
+    const estimatedHeight = chatMessages.length * 100 + (loading ? 100 : 0)
+    setScrollTop(estimatedHeight)
   }
 
   // 处理发送消息
@@ -69,9 +73,6 @@ export default function Layoff() {
       setChatMessages(prev => [...prev, userMessage])
       setInputValue('')
 
-      // 延迟滚动
-      setTimeout(() => scrollToBottom(), 100)
-
       // 调用 Coze API
       await callCozeAPI(userMessage.content)
     } finally {
@@ -79,7 +80,7 @@ export default function Layoff() {
     }
   }
 
-  // 调用 Coze stream_run API
+  // 调用 Coze stream_run API（使用 Taro.request）
   const callCozeAPI = async (userContent: string) => {
     try {
       // 如果配置了 Token，则调用真实 API；否则使用模拟回复
@@ -103,93 +104,86 @@ export default function Layoff() {
           project_id: COZE_CONFIG.projectId
         }
 
-        // 调用 Coze API
-        const response = await fetch(COZE_CONFIG.apiEndpoint, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${COZE_CONFIG.token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(requestBody)
-        })
+        // 使用 Taro.request 调用 API（小程序环境兼容）
+        try {
+          const response = await Taro.request({
+            url: COZE_CONFIG.apiEndpoint,
+            method: 'POST',
+            header: {
+              'Authorization': `Bearer ${COZE_CONFIG.token}`,
+              'Content-Type': 'application/json'
+            },
+            data: requestBody,
+            timeout: 30000
+          })
 
-        if (!response.ok) {
-          throw new Error(`API 错误: ${response.status} ${response.statusText}`)
-        }
+          // 解析响应
+          let assistantContent = ''
 
-        // 处理流式响应
-        const reader = response.body?.getReader()
-        if (!reader) {
-          throw new Error('无法读取响应流')
-        }
+          if (response.statusCode === 200) {
+            const data = response.data as any
 
-        let assistantContent = ''
-        const decoder = new TextDecoder()
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          const chunk = decoder.decode(value)
-          const lines = chunk.split('\n')
-
-          for (const line of lines) {
-            if (line.startsWith('data:')) {
+            // 根据 Coze API 的响应格式提取内容
+            if (typeof data === 'string') {
+              // 如果是字符串，尝试解析 JSON
               try {
-                const jsonStr = line.slice(5).trim()
-                if (jsonStr) {
-                  const data = JSON.parse(jsonStr)
-                  // 根据 Coze API 的响应格式提取内容
-                  if (data.content) {
-                    assistantContent += data.content
-                  } else if (data.message) {
-                    assistantContent += data.message
-                  } else if (data.text) {
-                    assistantContent += data.text
-                  }
-                }
-              } catch (e) {
-                // 忽略 JSON 解析错误
+                const parsed = JSON.parse(data)
+                assistantContent = parsed.content || parsed.message || parsed.text || data
+              } catch {
+                assistantContent = data
               }
+            } else if (data.content) {
+              assistantContent = data.content
+            } else if (data.message) {
+              assistantContent = data.message
+            } else if (data.text) {
+              assistantContent = data.text
+            } else {
+              assistantContent = JSON.stringify(data)
             }
+          } else {
+            throw new Error(`API 返回错误: ${response.statusCode}`)
           }
-        }
 
-        // 如果没有获取到内容，使用默认回复
-        if (!assistantContent.trim()) {
-          assistantContent = '感谢您的提问。我已收到您的问题，正在为您分析相关的法律条款和建议。'
-        }
+          // 如果没有获取到内容，使用默认回复
+          if (!assistantContent.trim()) {
+            assistantContent = '感谢您的提问。我已收到您的问题，正在为您分析相关的法律条款和建议。'
+          }
 
-        const assistantMessage: ChatMessage = {
-          id: `msg-${messageIdRef.current++}`,
-          role: 'assistant',
-          content: assistantContent,
-          timestamp: Date.now()
-        }
-        setChatMessages(prev => [...prev, assistantMessage])
-      } else {
-        // 使用模拟回复（演示模式）
-        setTimeout(() => {
-          const randomResponse = MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)]
           const assistantMessage: ChatMessage = {
             id: `msg-${messageIdRef.current++}`,
             role: 'assistant',
-            content: randomResponse,
+            content: assistantContent,
             timestamp: Date.now()
           }
           setChatMessages(prev => [...prev, assistantMessage])
-          scrollToBottom()
-        }, 800)
+        } catch (requestError: any) {
+          console.error('Taro.request 错误:', requestError)
+          throw new Error(requestError.message || '网络请求失败')
+        }
+      } else {
+        // 使用模拟回复（演示模式）
+        await new Promise(resolve => {
+          setTimeout(() => {
+            const randomResponse = MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)]
+            const assistantMessage: ChatMessage = {
+              id: `msg-${messageIdRef.current++}`,
+              role: 'assistant',
+              content: randomResponse,
+              timestamp: Date.now()
+            }
+            setChatMessages(prev => [...prev, assistantMessage])
+            resolve(null)
+          }, 800)
+        })
       }
-
-      // 延迟滚动
-      setTimeout(() => scrollToBottom(), 100)
     } catch (error: any) {
       console.error('Coze API 错误:', error)
 
       Taro.showToast({
         title: error.message || '请求失败',
-        icon: 'none'
+        icon: 'none',
+        duration: 2000
       })
 
       // 显示错误消息
@@ -228,8 +222,8 @@ export default function Layoff() {
       <ScrollView
         className='chat-messages'
         scrollY
-        scrollIntoView='bottom'
-        ref={scrollViewRef}
+        scrollTop={scrollTop}
+        scrollWithAnimation
       >
         {chatMessages.map((msg) => (
           <View key={msg.id} className={`message-wrapper ${msg.role}`}>
