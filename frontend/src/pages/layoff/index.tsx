@@ -267,46 +267,73 @@ export default function Layoff() {
   // 解析 Coze 流式响应数据
   const parseCozeStreamResponse = (data: any): string => {
     try {
+      console.log('原始响应数据:', JSON.stringify(data).substring(0, 500))
+
       // 如果是字符串，尝试分行解析
       if (typeof data === 'string') {
         const lines = data.split('\n').filter(line => line.trim())
         let extractedContent = ''
+        let hasFoundAnswer = false
 
         for (const line of lines) {
+          // 处理 "data:" 前缀的行
           if (line.startsWith('data:')) {
             try {
               const jsonStr = line.substring(5).trim()
               const parsed = JSON.parse(jsonStr)
+              console.log('解析的 JSON:', JSON.stringify(parsed).substring(0, 300))
 
-              // 提取 answer 字段（Coze 的标准格式）
-              if (parsed.content && parsed.content.answer) {
+              // 多层级提取 answer 字段
+              if (parsed.content?.answer) {
                 extractedContent += parsed.content.answer
+                hasFoundAnswer = true
+              } else if (parsed.answer) {
+                extractedContent += parsed.answer
+                hasFoundAnswer = true
+              } else if (parsed.message?.answer) {
+                extractedContent += parsed.message.answer
+                hasFoundAnswer = true
+              } else if (parsed.data?.answer) {
+                extractedContent += parsed.data.answer
+                hasFoundAnswer = true
               }
             } catch (e) {
               // 忽略解析失败的行
+              console.error('JSON 解析失败:', e)
             }
           }
         }
 
+        if (hasFoundAnswer) {
+          return extractedContent.trim()
+        }
         return extractedContent.trim() || ''
       }
 
-      // 如果是对象，直接提取
+      // 如果是对象，直接提取（多层级尝试）
       if (data && typeof data === 'object') {
-        if (data.content?.answer) {
-          return data.content.answer
-        }
-        if (data.answer) {
-          return data.answer
-        }
-        if (data.message) {
-          return data.message
-        }
-        if (data.text) {
-          return data.text
+        // 尝试多个可能的路径
+        const possiblePaths = [
+          data.content?.answer,
+          data.answer,
+          data.message?.answer,
+          data.message,
+          data.data?.answer,
+          data.data?.content?.answer,
+          data.text,
+          data.reply,
+          data.response
+        ]
+
+        for (const path of possiblePaths) {
+          if (path && typeof path === 'string' && path.trim()) {
+            console.log('提取到内容:', path.substring(0, 100))
+            return path.trim()
+          }
         }
       }
 
+      console.warn('未能提取到有效内容')
       return ''
     } catch (error) {
       console.error('解析响应失败:', error)
