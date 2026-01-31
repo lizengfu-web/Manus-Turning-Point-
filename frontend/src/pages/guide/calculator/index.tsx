@@ -1,29 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Taro from '@tarojs/taro';
-import { View, Text, Slider, Button } from '@tarojs/components';
+import { View, Text, Slider, Button, Picker } from '@tarojs/components';
+import { getProvinceList, getCityListByProvince, getMinWageByCity } from './data';
 import './index.scss';
 
 export default function Calculator() {
   const [activeTab, setActiveTab] = useState('calculator');
+  const [selectedProvince, setSelectedProvince] = useState('beijing');
   const [selectedCity, setSelectedCity] = useState('beijing');
   const [yearsOfPayment, setYearsOfPayment] = useState(1);
+  const [customMinWage, setCustomMinWage] = useState<number | null>(null);
   const [result, setResult] = useState<any>(null);
-
-  // 各城市最低工资标准（2024年数据）
-  const cityData: Record<string, { name: string; minWage: number }> = {
-    beijing: { name: '北京', minWage: 2420 },
-    shanghai: { name: '上海', minWage: 2690 },
-    guangzhou: { name: '广州', minWage: 2300 },
-    shenzhen: { name: '深圳', minWage: 2360 },
-    hangzhou: { name: '杭州', minWage: 2290 }
-  };
 
   Taro.setNavigationBarTitle({
     title: '失业金计算器'
   });
 
+  // 获取省份列表
+  const provinceList = useMemo(() => getProvinceList(), []);
+  
+  // 获取当前省份的城市列表
+  const cityList = useMemo(() => getCityListByProvince(selectedProvince), [selectedProvince]);
+
+  // 获取当前选中的最低工资标准
+  const currentMinWage = useMemo(() => {
+    if (customMinWage !== null) return customMinWage;
+    return getMinWageByCity(selectedProvince, selectedCity);
+  }, [selectedProvince, selectedCity, customMinWage]);
+
+  // 处理省份变化
+  const handleProvinceChange = (e: any) => {
+    const provinceKey = provinceList[e.detail.value].key;
+    setSelectedProvince(provinceKey);
+    // 重置城市选择为该省的第一个城市
+    const newCityList = getCityListByProvince(provinceKey);
+    if (newCityList.length > 0) {
+      setSelectedCity(newCityList[0].key);
+    }
+    setResult(null);
+  };
+
+  // 处理城市变化
+  const handleCityChange = (e: any) => {
+    const cityKey = cityList[e.detail.value].key;
+    setSelectedCity(cityKey);
+    setResult(null);
+  };
+
+  // 计算失业金
   const calculate = () => {
-    const wage = cityData[selectedCity].minWage;
     let months = 0;
 
     if (yearsOfPayment >= 1 && yearsOfPayment < 2) months = 2;
@@ -33,46 +58,75 @@ export default function Calculator() {
     else if (yearsOfPayment >= 5 && yearsOfPayment < 10) months = 12;
     else if (yearsOfPayment >= 10) months = 24;
 
-    const monthlyAmount = wage * 0.9;
+    const monthlyAmount = Math.round(currentMinWage * 0.9);
     const total = monthlyAmount * months;
 
     setResult({
       months,
-      monthlyAmount: Math.round(monthlyAmount),
-      total: Math.round(total),
-      cityName: cityData[selectedCity].name
+      monthlyAmount,
+      total,
+      provinceName: provinceList.find(p => p.key === selectedProvince)?.name,
+      cityName: cityList.find(c => c.key === selectedCity)?.name
     });
   };
 
   const renderCalculatorTab = () => (
     <View className='tab-content'>
-      {/* 城市选择 */}
+      {/* 省市选择区域 */}
       <View className='section'>
-        <Text className='section-title'>选择城市</Text>
-        <View className='city-grid'>
-          {Object.entries(cityData).map(([key, { name }]) => (
-            <Button
-              key={key}
-              className={`city-btn ${selectedCity === key ? 'active' : ''}`}
-              onClick={() => setSelectedCity(key)}
-            >
-              {name}
-            </Button>
-          ))}
+        <Text className='section-title'>选择地区</Text>
+        <View className='location-picker'>
+          <Picker
+            mode='selector'
+            range={provinceList}
+            rangeKey='name'
+            value={provinceList.findIndex(p => p.key === selectedProvince)}
+            onChange={handleProvinceChange}
+          >
+            <View className='picker-item'>
+              <Text className='picker-text'>{provinceList.find(p => p.key === selectedProvince)?.name}</Text>
+              <Text className='picker-arrow'>▼</Text>
+            </View>
+          </Picker>
+
+          <Picker
+            mode='selector'
+            range={cityList}
+            rangeKey='name'
+            value={cityList.findIndex(c => c.key === selectedCity)}
+            onChange={handleCityChange}
+          >
+            <View className='picker-item'>
+              <Text className='picker-text'>{cityList.find(c => c.key === selectedCity)?.name}</Text>
+              <Text className='picker-arrow'>▼</Text>
+            </View>
+          </Picker>
+        </View>
+      </View>
+
+      {/* 当前最低工资标准显示 */}
+      <View className='section'>
+        <View className='wage-info'>
+          <Text className='wage-label'>当前最低工资标准</Text>
+          <Text className='wage-value'>¥{currentMinWage}/月</Text>
         </View>
       </View>
 
       {/* 缴费年限滑块 */}
       <View className='section'>
         <View className='slider-header'>
-          <Text className='section-title'>累计缴费年限：{yearsOfPayment} 年</Text>
+          <Text className='section-title'>累计缴费年限</Text>
+          <Text className='slider-value'>{yearsOfPayment} 年</Text>
         </View>
         <Slider
           className='year-slider'
           min={1}
           max={10}
           value={yearsOfPayment}
-          onChange={(e) => setYearsOfPayment(e.detail.value)}
+          onChange={(e) => {
+            setYearsOfPayment(e.detail.value);
+            setResult(null);
+          }}
         />
         <View className='slider-labels'>
           <Text>1年</Text>
@@ -81,7 +135,7 @@ export default function Calculator() {
       </View>
 
       {/* 计算按钮 */}
-      <View className='section'>
+      <View className='section button-section'>
         <Button className='calc-btn' onClick={calculate}>
           计算失业金
         </Button>
@@ -109,7 +163,7 @@ export default function Calculator() {
 
           <View className='tips-box'>
             <Text className='tips-icon'>💡</Text>
-            <Text className='tips-text'>提示：失业金计算基于{result.cityName}2024年数据，具体金额以当地社保部门公布为准。</Text>
+            <Text className='tips-text'>提示：失业金计算基于{result.provinceName}{result.cityName}2024年数据，具体金额以当地社保部门公布为准。</Text>
           </View>
         </View>
       )}
