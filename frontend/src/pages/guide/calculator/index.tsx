@@ -45,7 +45,9 @@ export default function Calculator() {
 
   // 计算总月数
   const totalMonths = useMemo(() => {
-    return yearsOfPayment * 12 + monthsOfPayment;
+    const years = Number(yearsOfPayment) || 0;
+    const months = Number(monthsOfPayment) || 0;
+    return years * 12 + months;
   }, [yearsOfPayment, monthsOfPayment]);
 
   // 处理省份变化
@@ -160,7 +162,7 @@ export default function Calculator() {
               range={yearArray}
               value={yearsOfPayment}
               onChange={(e) => {
-                setYearsOfPayment(e.detail.value);
+                setYearsOfPayment(Number(e.detail.value));
                 resetResult(selectedProvince, selectedCity);
               }}
             >
@@ -178,7 +180,7 @@ export default function Calculator() {
               range={monthArray}
               value={monthsOfPayment}
               onChange={(e) => {
-                setMonthsOfPayment(e.detail.value);
+                setMonthsOfPayment(Number(e.detail.value));
                 resetResult(selectedProvince, selectedCity);
               }}
             >
