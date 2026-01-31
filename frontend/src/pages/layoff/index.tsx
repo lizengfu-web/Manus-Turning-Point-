@@ -33,6 +33,17 @@ export default function Layoff() {
     loadChatHistory()
   }, [])
 
+  // 当消息列表更新时，自动滚动到底部
+  useEffect(() => {
+    if (chatMessages.length > 0) {
+      // 延迟执行滚动，确保 DOM 已更新
+      setTimeout(() => {
+        const scrollHeight = chatMessages.length * 100 + 500 // 粗略估计滚动高度
+        setScrollTop(scrollHeight)
+      }, 100)
+    }
+  }, [chatMessages])
+
   // 加载聊天历史记录
   const loadChatHistory = async () => {
     try {
@@ -62,6 +73,11 @@ export default function Layoff() {
         setChatMessages(savedHistory.data)
         // 更新 messageIdRef 以确保新消息 ID 不重复
         messageIdRef.current = savedHistory.data.length
+        // 延迟滚动到底部，确保 DOM 已更新
+        setTimeout(() => {
+          const scrollHeight = savedHistory.data.length * 100 + 500
+          setScrollTop(scrollHeight)
+        }, 150)
       } else {
         // 首次进入，显示开场白
         const welcomeMessage: ChatMessage = {
