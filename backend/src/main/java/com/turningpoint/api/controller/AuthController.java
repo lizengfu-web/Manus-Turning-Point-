@@ -37,8 +37,10 @@ public class AuthController {
         }
         
         try {
-            System.out.println("[Login] Calling WeChat API with code: " + code);
-            WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(code);
+            // 对 code 进行处理，防止包含空格等非法字符导致 URI 异常
+            String cleanCode = code.trim().replace(" ", "");
+            System.out.println("[Login] Calling WeChat API with code: " + cleanCode);
+            WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(cleanCode);
             String openid = session.getOpenid();
             
             Optional<User> userOptional = userRepository.findByOpenid(openid);

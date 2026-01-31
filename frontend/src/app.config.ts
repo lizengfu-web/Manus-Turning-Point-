@@ -1,6 +1,7 @@
 export default {
   pages: [
     'pages/index/index',
+    'pages/guide/index',
     'pages/ai/index',
     'pages/layoff/index',
     'pages/interview/index',
