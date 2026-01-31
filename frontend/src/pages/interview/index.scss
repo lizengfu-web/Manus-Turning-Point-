@@ -26,13 +26,13 @@
         gap: 4px;
 
         .header-title {
-          font-size: 22px;
+          font-size: 31px;
           font-weight: 800;
           line-height: 1.2;
         }
 
         .header-status {
-          font-size: 14px;
+          font-size: 24px;
           opacity: 0.9;
         }
       }
@@ -98,14 +98,14 @@
 
         .message-text {
           display: block;
-          font-size: 18px;
+          font-size: 27px;
           line-height: 1.9;
           margin-bottom: 8px;
         }
 
         .message-time {
           display: block;
-          font-size: 12px;
+          font-size: 24px;
           opacity: 0.6;
           margin-top: 8px;
         }
@@ -163,7 +163,7 @@
       .chat-input {
         flex: 1;
         padding: 12px 20px;
-        font-size: 18px;
+        font-size: 27px;
         background-color: transparent;
         border: none;
         outline: none;
@@ -199,7 +199,7 @@
     }
 
     .input-hint {
-      font-size: 14px;
+      font-size: 24px;
       color: #999;
       padding: 0 20px;
       line-height: 1.5;

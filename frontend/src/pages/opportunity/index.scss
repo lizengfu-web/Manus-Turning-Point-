@@ -13,14 +13,14 @@
 
     .page-title {
       display: block;
-      font-size: 28px;
+      font-size: 35px;
       font-weight: 800;
       margin-bottom: 8px;
     }
 
     .page-subtitle {
       display: block;
-      font-size: 15px;
+      font-size: 24px;
       opacity: 0.9;
     }
   }
@@ -56,7 +56,7 @@
 
         .opportunity-title {
           display: block;
-          font-size: 18px;
+          font-size: 27px;
           font-weight: 800;
           color: #333;
           margin-bottom: 6px;
@@ -64,18 +64,18 @@
 
         .opportunity-desc {
           display: block;
-          font-size: 14px;
+          font-size: 24px;
           color: #666;
           line-height: 1.5;
         }
       }
 
-      .recommended-badge {
+        .recommended-badge {
         background: linear-gradient(135deg, #b8860b 0%, #8b6914 100%);
         color: white;
         padding: 6px 12px;
         border-radius: 20px;
-        font-size: 12px;
+        font-size: 24px;
         font-weight: 700;
         white-space: nowrap;
         flex-shrink: 0;
@@ -94,7 +94,7 @@
         color: #666;
         padding: 6px 12px;
         border-radius: 12px;
-        font-size: 12px;
+        font-size: 24px;
         font-weight: 600;
       }
     }
@@ -129,7 +129,7 @@
 
         .metric-label {
           display: block;
-          font-size: 12px;
+          font-size: 24px;
           color: #999;
           margin-bottom: 4px;
           font-weight: 600;
@@ -137,7 +137,7 @@
 
         .metric-value {
           display: block;
-          font-size: 16px;
+          font-size: 27px;
           font-weight: 800;
           color: #333;
         }
@@ -161,7 +161,7 @@
 
         .detail-title {
           display: block;
-          font-size: 14px;
+          font-size: 27px;
           font-weight: 700;
           color: #333;
           margin-bottom: 6px;
@@ -169,14 +169,14 @@
 
         .detail-text {
           display: block;
-          font-size: 13px;
+          font-size: 24px;
           color: #666;
           line-height: 1.6;
         }
 
         .detail-item {
           display: block;
-          font-size: 13px;
+          font-size: 24px;
           color: #666;
           line-height: 1.6;
           margin-bottom: 4px;
@@ -224,7 +224,7 @@
     .suggestions-list {
       .suggestion-item {
         display: block;
-        font-size: 14px;
+        font-size: 27px;
         color: #555;
         line-height: 1.8;
         margin-bottom: 8px;
@@ -253,18 +253,15 @@
       .section-icon {
         font-size: 20px;
       }
-
       .section-title {
-        font-size: 16px;
+        font-size: 31px;
         font-weight: 800;
         color: #333;
       }
-    }
 
-    .pitfalls-list {
-      .pitfall-item {
+    .pitfalls-list {section       .pitfall-item {
         display: block;
-        font-size: 14px;
+        font-size: 27px;
         color: #555;
         line-height: 1.8;
         margin-bottom: 8px;

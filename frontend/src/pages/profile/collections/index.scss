@@ -11,7 +11,7 @@
     text-align: center;
 
     .collections-title {
-      font-size: 18px;
+      font-size: 31px;
       font-weight: 600;
       color: #333;
     }
@@ -28,7 +28,7 @@
       align-items: center;
       height: 300px;
       color: #999;
-      font-size: 14px;
+      font-size: 24px;
     }
 
     .collection-item {
@@ -42,7 +42,7 @@
 
         .header-info {
           .collection-title {
-            font-size: 15px;
+            font-size: 27px;
             font-weight: 600;
             color: #333;
             margin-bottom: 8px;
@@ -52,7 +52,7 @@
           .meta-info {
             display: flex;
             gap: 12px;
-            font-size: 12px;
+            font-size: 24px;
             color: #999;
 
             .author,
@@ -64,7 +64,7 @@
       }
 
       .collection-content {
-        font-size: 13px;
+        font-size: 24px;
         color: #666;
         line-height: 1.6;
         margin-bottom: 12px;
@@ -78,7 +78,7 @@
         display: flex;
         gap: 16px;
         margin-bottom: 12px;
-        font-size: 12px;
+        font-size: 24px;
         color: #999;
 
         .stat {
@@ -103,13 +103,13 @@
           cursor: pointer;
 
           .toggle-text {
-            font-size: 12px;
+            font-size: 24px;
             color: #8b7d3d;
             font-weight: 500;
           }
 
           .toggle-arrow {
-            font-size: 10px;
+            font-size: 24px;
             color: #999;
           }
         }
@@ -129,19 +129,19 @@
               margin-bottom: 6px;
 
               .comment-author {
-                font-size: 12px;
+                font-size: 24px;
                 font-weight: 500;
                 color: #333;
               }
 
               .comment-time {
-                font-size: 11px;
+                font-size: 24px;
                 color: #999;
               }
             }
 
             .comment-content {
-              font-size: 12px;
+              font-size: 24px;
               color: #666;
               line-height: 1.5;
               margin-bottom: 8px;
@@ -152,7 +152,7 @@
               display: flex;
               justify-content: space-between;
               align-items: center;
-              font-size: 11px;
+              font-size: 24px;
 
               .comment-like {
                 color: #999;
@@ -160,7 +160,7 @@
 
               .reply-btn {
                 padding: 4px 8px;
-                font-size: 11px;
+                font-size: 24px;
                 color: #8b7d3d;
                 border: 1px solid #8b7d3d;
                 border-radius: 3px;
@@ -178,7 +178,7 @@
         .remove-btn {
           flex: 1;
           height: 32px;
-          font-size: 12px;
+          font-size: 24px;
           border-radius: 4px;
           background-color: #f5f5f5;
           color: #d9534f;
