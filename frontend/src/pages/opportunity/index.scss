@@ -70,7 +70,7 @@
         }
       }
 
-        .recommended-badge {
+      .recommended-badge {
         background: linear-gradient(135deg, #b8860b 0%, #8b6914 100%);
         color: white;
         padding: 6px 12px;
@@ -215,7 +215,7 @@
       }
 
       .section-title {
-        font-size: 16px;
+        font-size: 31px;
         font-weight: 800;
         color: #333;
       }
@@ -253,13 +253,16 @@
       .section-icon {
         font-size: 20px;
       }
+
       .section-title {
         font-size: 31px;
         font-weight: 800;
         color: #333;
       }
+    }
 
-    .pitfalls-list {section       .pitfall-item {
+    .pitfalls-list {
+      .pitfall-item {
         display: block;
         font-size: 27px;
         color: #555;
