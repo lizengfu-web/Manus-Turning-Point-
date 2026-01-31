@@ -1,0 +1,83 @@
+.strategy-page {
+  background: #f5f5f5;
+  min-height: 100vh;
+
+  .header {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+
+    .title {
+      display: block;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      display: block;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+  }
+
+  .content-list {
+    padding: 20px;
+
+    .strategy-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+      .card-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .card-content {
+        font-size: 13px;
+        color: #666;
+        line-height: 1.6;
+      }
+    }
+
+    .action-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+      .action-title {
+        display: block;
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 16px;
+      }
+
+      .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+
+        .mini-btn {
+          flex: 1;
+          min-width: 100px;
+          padding: 12px;
+          background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+          color: white;
+          border-radius: 8px;
+          text-align: center;
+          font-size: 13px;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
