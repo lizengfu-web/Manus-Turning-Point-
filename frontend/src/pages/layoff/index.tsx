@@ -11,6 +11,11 @@ interface ChatMessage {
   timestamp: number
 }
 
+const STORAGE_KEYS = {
+  CHAT_HISTORY: 'layoff_chat_history',
+  SESSION_ID: 'layoff_session_id'
+}
+
 export default function Layoff() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
@@ -23,19 +28,76 @@ export default function Layoff() {
     title: '职场维权咨询'
   })
 
-  // 初始化：页面加载时发送开场白和生成 session_id
+  // 初始化：页面加载时恢复历史记录或显示开场白
   useEffect(() => {
-    // 生成 session_id 用于维持对话上下文
-    sessionIdRef.current = generateSessionId()
-
-    const welcomeMessage: ChatMessage = {
-      id: `msg-${messageIdRef.current++}`,
-      role: 'assistant',
-      content: COZE_WELCOME_MESSAGE,
-      timestamp: Date.now()
-    }
-    setChatMessages([welcomeMessage])
+    loadChatHistory()
   }, [])
+
+  // 加载聊天历史记录
+  const loadChatHistory = async () => {
+    try {
+      // 尝试从本地存储恢复 session_id
+      const savedSessionId = await Taro.getStorage({
+        key: STORAGE_KEYS.SESSION_ID
+      }).catch(() => null)
+
+      if (savedSessionId?.data) {
+        sessionIdRef.current = savedSessionId.data
+      } else {
+        // 生成新的 session_id
+        sessionIdRef.current = generateSessionId()
+        await Taro.setStorage({
+          key: STORAGE_KEYS.SESSION_ID,
+          data: sessionIdRef.current
+        })
+      }
+
+      // 尝试从本地存储恢复聊天记录
+      const savedHistory = await Taro.getStorage({
+        key: STORAGE_KEYS.CHAT_HISTORY
+      }).catch(() => null)
+
+      if (savedHistory?.data && Array.isArray(savedHistory.data) && savedHistory.data.length > 0) {
+        // 恢复历史记录
+        setChatMessages(savedHistory.data)
+        // 更新 messageIdRef 以确保新消息 ID 不重复
+        messageIdRef.current = savedHistory.data.length
+      } else {
+        // 首次进入，显示开场白
+        const welcomeMessage: ChatMessage = {
+          id: `msg-${messageIdRef.current++}`,
+          role: 'assistant',
+          content: COZE_WELCOME_MESSAGE,
+          timestamp: Date.now()
+        }
+        setChatMessages([welcomeMessage])
+        // 保存初始历史记录
+        await saveChatHistory([welcomeMessage])
+      }
+    } catch (error) {
+      console.error('加载聊天历史失败:', error)
+      // 如果加载失败，显示开场白
+      const welcomeMessage: ChatMessage = {
+        id: `msg-${messageIdRef.current++}`,
+        role: 'assistant',
+        content: COZE_WELCOME_MESSAGE,
+        timestamp: Date.now()
+      }
+      setChatMessages([welcomeMessage])
+    }
+  }
+
+  // 保存聊天历史记录到本地存储
+  const saveChatHistory = async (messages: ChatMessage[]) => {
+    try {
+      await Taro.setStorage({
+        key: STORAGE_KEYS.CHAT_HISTORY,
+        data: messages
+      })
+    } catch (error) {
+      console.error('保存聊天历史失败:', error)
+    }
+  }
 
   // 当消息更新时自动滚动到底部
   useEffect(() => {
@@ -48,7 +110,7 @@ export default function Layoff() {
 
   // 滚动到底部
   const scrollToBottom = () => {
-    // 计算滚动高度（简单估算：每条消息约 80px）
+    // 计算滚动高度（简单估算：每条消息约 100px）
     const estimatedHeight = chatMessages.length * 100 + (loading ? 100 : 0)
     setScrollTop(estimatedHeight)
   }
@@ -70,21 +132,26 @@ export default function Layoff() {
         content: inputValue.trim(),
         timestamp: Date.now()
       }
-      setChatMessages(prev => [...prev, userMessage])
+
+      const updatedMessages = [...chatMessages, userMessage]
+      setChatMessages(updatedMessages)
       setInputValue('')
 
       // 调用 Coze API
-      await callCozeAPI(userMessage.content)
+      await callCozeAPI(userMessage.content, updatedMessages)
     } finally {
       setLoading(false)
     }
   }
 
   // 调用 Coze stream_run API（使用 Taro.request）
-  const callCozeAPI = async (userContent: string) => {
+  const callCozeAPI = async (userContent: string, currentMessages: ChatMessage[]) => {
     try {
       // 如果配置了 Token，则调用真实 API；否则使用模拟回复
       if (COZE_CONFIG.token) {
+        // 强制中文回复的提示词前缀
+        const chinesePrompt = `请用中文回答。${userContent}`
+
         // 构建请求体
         const requestBody = {
           content: {
@@ -93,7 +160,7 @@ export default function Layoff() {
                 {
                   type: 'text',
                   content: {
-                    text: userContent
+                    text: chinesePrompt
                   }
                 }
               ]
@@ -123,24 +190,8 @@ export default function Layoff() {
           if (response.statusCode === 200) {
             const data = response.data as any
 
-            // 根据 Coze API 的响应格式提取内容
-            if (typeof data === 'string') {
-              // 如果是字符串，尝试解析 JSON
-              try {
-                const parsed = JSON.parse(data)
-                assistantContent = parsed.content || parsed.message || parsed.text || data
-              } catch {
-                assistantContent = data
-              }
-            } else if (data.content) {
-              assistantContent = data.content
-            } else if (data.message) {
-              assistantContent = data.message
-            } else if (data.text) {
-              assistantContent = data.text
-            } else {
-              assistantContent = JSON.stringify(data)
-            }
+            // 处理流式响应数据
+            assistantContent = parseCozeStreamResponse(data)
           } else {
             throw new Error(`API 返回错误: ${response.statusCode}`)
           }
@@ -156,7 +207,12 @@ export default function Layoff() {
             content: assistantContent,
             timestamp: Date.now()
           }
-          setChatMessages(prev => [...prev, assistantMessage])
+
+          const updatedMessages = [...currentMessages, assistantMessage]
+          setChatMessages(updatedMessages)
+
+          // 保存更新后的聊天历史
+          await saveChatHistory(updatedMessages)
         } catch (requestError: any) {
           console.error('Taro.request 错误:', requestError)
           throw new Error(requestError.message || '网络请求失败')
@@ -172,7 +228,13 @@ export default function Layoff() {
               content: randomResponse,
               timestamp: Date.now()
             }
-            setChatMessages(prev => [...prev, assistantMessage])
+
+            const updatedMessages = [...currentMessages, assistantMessage]
+            setChatMessages(updatedMessages)
+
+            // 保存更新后的聊天历史
+            saveChatHistory(updatedMessages)
+
             resolve(null)
           }, 800)
         })
@@ -193,16 +255,104 @@ export default function Layoff() {
         content: '抱歉，我暂时无法处理您的请求。请检查网络连接或稍后重试。',
         timestamp: Date.now()
       }
-      setChatMessages(prev => [...prev, errorMessage])
+
+      const updatedMessages = [...currentMessages, errorMessage]
+      setChatMessages(updatedMessages)
+
+      // 保存包含错误消息的历史记录
+      await saveChatHistory(updatedMessages)
+    }
+  }
+
+  // 解析 Coze 流式响应数据
+  const parseCozeStreamResponse = (data: any): string => {
+    try {
+      // 如果是字符串，尝试分行解析
+      if (typeof data === 'string') {
+        const lines = data.split('\n').filter(line => line.trim())
+        let extractedContent = ''
+
+        for (const line of lines) {
+          if (line.startsWith('data:')) {
+            try {
+              const jsonStr = line.substring(5).trim()
+              const parsed = JSON.parse(jsonStr)
+
+              // 提取 answer 字段（Coze 的标准格式）
+              if (parsed.content && parsed.content.answer) {
+                extractedContent += parsed.content.answer
+              }
+            } catch (e) {
+              // 忽略解析失败的行
+            }
+          }
+        }
+
+        return extractedContent.trim() || ''
+      }
+
+      // 如果是对象，直接提取
+      if (data && typeof data === 'object') {
+        if (data.content?.answer) {
+          return data.content.answer
+        }
+        if (data.answer) {
+          return data.answer
+        }
+        if (data.message) {
+          return data.message
+        }
+        if (data.text) {
+          return data.text
+        }
+      }
+
+      return ''
+    } catch (error) {
+      console.error('解析响应失败:', error)
+      return ''
     }
   }
 
   // 处理输入框回车
-  const handleKeyDown = (e: any) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
+  const handleInputKeyDown = (e: any) => {
+    if (e.key === 'Enter') {
       handleSendMessage()
     }
+  }
+
+  // 清空聊天记录（可选功能）
+  const clearChatHistory = async () => {
+    Taro.showModal({
+      title: '清空聊天记录',
+      content: '确定要清空所有聊天记录吗？此操作不可撤销。',
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            await Taro.removeStorage({
+              key: STORAGE_KEYS.CHAT_HISTORY
+            })
+
+            // 重新显示开场白
+            const welcomeMessage: ChatMessage = {
+              id: `msg-0`,
+              role: 'assistant',
+              content: COZE_WELCOME_MESSAGE,
+              timestamp: Date.now()
+            }
+            setChatMessages([welcomeMessage])
+            messageIdRef.current = 1
+
+            Taro.showToast({
+              title: '聊天记录已清空',
+              icon: 'success'
+            })
+          } catch (error) {
+            console.error('清空聊天记录失败:', error)
+          }
+        }
+      }
+    })
   }
 
   return (
@@ -210,9 +360,9 @@ export default function Layoff() {
       {/* 页面头部 */}
       <View className='chat-header'>
         <View className='header-content'>
-          <Text className='header-icon'>⚖️</Text>
+          <View className='header-icon'>⚖️</View>
           <View className='header-text'>
-            <Text className='header-title'>{COZE_CONFIG.agentName}</Text>
+            <Text className='header-title'>转角卫士·职场维权助手</Text>
             <Text className='header-status'>在线</Text>
           </View>
         </View>
@@ -227,34 +377,23 @@ export default function Layoff() {
       >
         {chatMessages.map((msg) => (
           <View key={msg.id} className={`message-wrapper ${msg.role}`}>
-            {msg.role === 'assistant' && (
-              <View className='message-avatar'>
-                <Text>⚖️</Text>
-              </View>
-            )}
-            <View className={`message-bubble ${msg.role}`}>
+            <View className={`message-avatar ${msg.role}`}>
+              {msg.role === 'user' ? '👤' : '⚖️'}
+            </View>
+            <View className='message-bubble'>
               <Text className='message-text'>{msg.content}</Text>
               <Text className='message-time'>
-                {new Date(msg.timestamp).toLocaleTimeString('zh-CN', {
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
+                {new Date(msg.timestamp).toLocaleTimeString('zh-CN')}
               </Text>
             </View>
-            {msg.role === 'user' && (
-              <View className='message-avatar user'>
-                <Text>👤</Text>
-              </View>
-            )}
           </View>
         ))}
 
+        {/* 加载指示器 */}
         {loading && (
           <View className='message-wrapper assistant'>
-            <View className='message-avatar'>
-              <Text>⚖️</Text>
-            </View>
-            <View className='message-bubble assistant loading'>
+            <View className='message-avatar assistant'>⚖️</View>
+            <View className='message-bubble loading'>
               <View className='typing-indicator'>
                 <View className='dot'></View>
                 <View className='dot'></View>
@@ -270,13 +409,12 @@ export default function Layoff() {
         <View className='input-wrapper'>
           <Input
             className='chat-input'
-            type='text'
             placeholder='输入您的问题...'
+            placeholderStyle='color: #999;'
             value={inputValue}
             onInput={(e) => setInputValue(e.detail.value)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleInputKeyDown}
             disabled={loading}
-            placeholderStyle='color: #999;'
           />
           <Button
             className='send-button'
@@ -287,7 +425,7 @@ export default function Layoff() {
           </Button>
         </View>
         <Text className='input-hint'>
-          💡 提示：提供更多信息（如入职时间、月薪等）可获得更准确的建议
+          💡 提示：为获得更准确的建议，请提供入职时间、月薪及具体情况
         </Text>
       </View>
     </View>
