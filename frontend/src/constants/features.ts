@@ -70,15 +70,4 @@ export const FEATURES: Feature[] = [
     route: '/pages/layoff/index',
     routeType: 'navigateTo'
   },
-  {
-    id: 'profile',
-    title: '我的',
-    description: '个人中心、帖子、收藏、消息',
-    icon: '👤',
-    tags: ['个人', '设置'],
-    backgroundColor: '#faf5ff',
-    iconBackgroundColor: '#e9d5ff',
-    route: '/pages/profile/index',
-    routeType: 'switchTab'
-  }
 ];

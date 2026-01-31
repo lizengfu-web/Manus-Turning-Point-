@@ -39,12 +39,41 @@ export default function Hole() {
     if (!user) {
       Taro.showToast({
         title: '请先登录',
-        icon: 'none'
+        icon: 'none',
+        duration: 2000
       })
       return
     }
     Taro.navigateTo({
       url: `/pages/webview/index?url=/hole/create`
+    })
+  }
+
+  const handleLikePost = (postId: number) => {
+    if (!user) {
+      Taro.showToast({
+        title: '请先登录',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    // 实现点赞逻辑
+    console.log('点赞了帖子:', postId)
+  }
+
+  const handleCommentPost = (postId: number) => {
+    if (!user) {
+      Taro.showToast({
+        title: '请先登录',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    // 实现评论逻辑
+    Taro.navigateTo({
+      url: `/pages/webview/index?url=/hole/${postId}/comment`
     })
   }
 
@@ -111,11 +140,17 @@ export default function Hole() {
             )}
 
             <View className='post-footer'>
-              <View className='stat-item'>
+              <View className='stat-item' onClick={(e) => {
+                e.stopPropagation()
+                handleLikePost(post.id)
+              }}>
                 <Text className='stat-icon'>👍</Text>
                 <Text className='stat-count'>{post.likes || 0}</Text>
               </View>
-              <View className='stat-item'>
+              <View className='stat-item' onClick={(e) => {
+                e.stopPropagation()
+                handleCommentPost(post.id)
+              }}>
                 <Text className='stat-icon'>💬</Text>
                 <Text className='stat-count'>{post.comments || 0}</Text>
               </View>

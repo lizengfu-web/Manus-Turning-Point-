@@ -2,6 +2,8 @@ import Taro from '@tarojs/taro'
 import { View, Text, ScrollView, Input, Button } from '@tarojs/components'
 import { useState, useEffect, useRef } from 'react'
 import { INTERVIEW_WELCOME_MESSAGE, COZE_CONFIG, MOCK_RESPONSES, generateSessionId } from './data'
+import { useUserStore } from '@/store/user'
+import { isLoggedIn } from '@/api/auth'
 import './index.scss'
 
 interface ChatMessage {
@@ -17,6 +19,7 @@ const STORAGE_KEYS = {
 }
 
 export default function Interview() {
+  const { user } = useUserStore()
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
   const [loading, setLoading] = useState(false)
@@ -133,6 +136,15 @@ export default function Interview() {
 
   // 处理发送消息
   const handleSendMessage = async () => {
+    if (!isLoggedIn()) {
+      Taro.showToast({
+        title: '请先登录',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+
     if (!inputValue.trim()) {
       Taro.showToast({ title: '请输入您的问题', icon: 'none' })
       return
