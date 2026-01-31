@@ -36,7 +36,16 @@ export default function Index() {
       setLoading(true);
 
       // 获取微信登录 code
-      const { code } = await Taro.login();
+      // 增加容错处理，防止 SystemError 导致崩溃
+      let loginRes;
+      try {
+        loginRes = await Taro.login();
+      } catch (e) {
+        console.error('Taro.login System Error:', e);
+        throw new Error('微信登录服务暂时不可用，请稍后再试');
+      }
+
+      const { code } = loginRes;
 
       if (!code) {
         throw new Error('获取登录凭证失败');
