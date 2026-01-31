@@ -1,94 +1,213 @@
 import React, { useState } from 'react';
 import Taro from '@tarojs/taro';
-import { View, Text, Input, Button } from '@tarojs/components';
+import { View, Text, Slider, Button } from '@tarojs/components';
 import './index.scss';
 
 export default function Calculator() {
-  const [years, setYears] = useState('');
-  const [minWage, setMinWage] = useState('2420'); 
+  const [activeTab, setActiveTab] = useState('calculator');
+  const [selectedCity, setSelectedCity] = useState('beijing');
+  const [yearsOfPayment, setYearsOfPayment] = useState(1);
   const [result, setResult] = useState<any>(null);
+
+  // 各城市最低工资标准（2024年数据）
+  const cityData: Record<string, { name: string; minWage: number }> = {
+    beijing: { name: '北京', minWage: 2420 },
+    shanghai: { name: '上海', minWage: 2690 },
+    guangzhou: { name: '广州', minWage: 2300 },
+    shenzhen: { name: '深圳', minWage: 2360 },
+    hangzhou: { name: '杭州', minWage: 2290 }
+  };
 
   Taro.setNavigationBarTitle({
     title: '失业金计算器'
   });
 
   const calculate = () => {
-    const y = parseFloat(years);
-    const wage = parseFloat(minWage);
-
-    if (isNaN(y) || y < 1) {
-      Taro.showToast({ title: '缴费需满1年', icon: 'none' });
-      return;
-    }
-
+    const wage = cityData[selectedCity].minWage;
     let months = 0;
-    if (y >= 1 && y < 2) months = 3;
-    else if (y >= 2 && y < 3) months = 6;
-    else if (y >= 3 && y < 4) months = 9;
-    else if (y >= 4 && y < 5) months = 12;
-    else if (y >= 5 && y < 10) months = 18;
-    else if (y >= 10) months = 24;
 
-    const monthlyAmount = wage * 0.9; 
+    if (yearsOfPayment >= 1 && yearsOfPayment < 2) months = 2;
+    else if (yearsOfPayment >= 2 && yearsOfPayment < 3) months = 4;
+    else if (yearsOfPayment >= 3 && yearsOfPayment < 4) months = 6;
+    else if (yearsOfPayment >= 4 && yearsOfPayment < 5) months = 9;
+    else if (yearsOfPayment >= 5 && yearsOfPayment < 10) months = 12;
+    else if (yearsOfPayment >= 10) months = 24;
+
+    const monthlyAmount = wage * 0.9;
     const total = monthlyAmount * months;
 
     setResult({
       months,
-      monthlyAmount: monthlyAmount.toFixed(2),
-      total: total.toFixed(2)
+      monthlyAmount: Math.round(monthlyAmount),
+      total: Math.round(total),
+      cityName: cityData[selectedCity].name
     });
   };
 
-  return (
-    <View className='calc-page'>
-      <View className='card'>
-        <View className='card-title'>失业金计算器</View>
-        
-        <View className='input-group'>
-          <Text className='label'>累计缴费年限 (年)</Text>
-          <Input 
-            className='input' 
-            type='digit' 
-            placeholder='请输入年限，如 5.5' 
-            value={years} 
-            onInput={(e) => setYears(e.detail.value)} 
-          />
+  const renderCalculatorTab = () => (
+    <View className='tab-content'>
+      {/* 城市选择 */}
+      <View className='section'>
+        <Text className='section-title'>选择城市</Text>
+        <View className='city-grid'>
+          {Object.entries(cityData).map(([key, { name }]) => (
+            <Button
+              key={key}
+              className={`city-btn ${selectedCity === key ? 'active' : ''}`}
+              onClick={() => setSelectedCity(key)}
+            >
+              {name}
+            </Button>
+          ))}
         </View>
-
-        <View className='input-group'>
-          <Text className='label'>当地最低工资标准 (元/月)</Text>
-          <Input 
-            className='input' 
-            type='number' 
-            placeholder='请输入当地标准' 
-            value={minWage} 
-            onInput={(e) => setMinWage(e.detail.value)} 
-          />
-        </View>
-
-        <Button className='calc-btn' onClick={calculate}>开始计算</Button>
       </View>
 
+      {/* 缴费年限滑块 */}
+      <View className='section'>
+        <View className='slider-header'>
+          <Text className='section-title'>累计缴费年限：{yearsOfPayment} 年</Text>
+        </View>
+        <Slider
+          className='year-slider'
+          min={1}
+          max={10}
+          value={yearsOfPayment}
+          onChange={(e) => setYearsOfPayment(e.detail.value)}
+        />
+        <View className='slider-labels'>
+          <Text>1年</Text>
+          <Text>10年+</Text>
+        </View>
+      </View>
+
+      {/* 计算按钮 */}
+      <View className='section'>
+        <Button className='calc-btn' onClick={calculate}>
+          计算失业金
+        </Button>
+      </View>
+
+      {/* 结果展示 */}
       {result && (
-        <View className='result-card'>
-          <View className='result-title'>计算结果</View>
-          <View className='result-item'>
-            <Text className='res-label'>可领取期限</Text>
-            <Text className='res-value'>{result.months} 个月</Text>
+        <View className='result-section'>
+          <View className='result-card'>
+            <View className='result-main'>
+              <Text className='result-label'>月度失业金</Text>
+              <Text className='result-amount'>¥{result.monthlyAmount.toLocaleString()}</Text>
+            </View>
+            <View className='result-split'>
+              <View className='result-item'>
+                <Text className='item-label'>可领取月数</Text>
+                <Text className='item-value'>{result.months} 月</Text>
+              </View>
+              <View className='result-item'>
+                <Text className='item-label'>总计金额</Text>
+                <Text className='item-value'>¥{result.total.toLocaleString()}</Text>
+              </View>
+            </View>
           </View>
-          <View className='result-item'>
-            <Text className='res-label'>预计每月领取</Text>
-            <Text className='res-value'>¥ {result.monthlyAmount}</Text>
-          </View>
-          <View className='result-item highlight'>
-            <Text className='res-label'>预计总额</Text>
-            <Text className='res-value'>¥ {result.total}</Text>
-          </View>
-          <View className='tips'>
-            * 注：计算结果仅供参考。领取期间社保基金将为您代缴医保，您可正常享受医保待遇。
+
+          <View className='tips-box'>
+            <Text className='tips-icon'>💡</Text>
+            <Text className='tips-text'>提示：失业金计算基于{result.cityName}2024年数据，具体金额以当地社保部门公布为准。</Text>
           </View>
         </View>
       )}
+    </View>
+  );
+
+  const renderApplicationTab = () => (
+    <View className='tab-content'>
+      <View className='info-section'>
+        <Text className='section-title'>失业金申领流程</Text>
+        <View className='steps'>
+          <View className='step'>
+            <View className='step-number'>1</View>
+            <View className='step-content'>
+              <Text className='step-title'>准备材料</Text>
+              <Text className='step-desc'>身份证、户口本、解除劳动合同证明等</Text>
+            </View>
+          </View>
+          <View className='step'>
+            <View className='step-number'>2</View>
+            <View className='step-content'>
+              <Text className='step-title'>前往社保部门</Text>
+              <Text className='step-desc'>携带材料到当地失业保险经办机构</Text>
+            </View>
+          </View>
+          <View className='step'>
+            <View className='step-number'>3</View>
+            <View className='step-content'>
+              <Text className='step-title'>填写申请表</Text>
+              <Text className='step-desc'>完整填写失业保险待遇申请表</Text>
+            </View>
+          </View>
+          <View className='step'>
+            <View className='step-number'>4</View>
+            <View className='step-content'>
+              <Text className='step-title'>审核与发放</Text>
+              <Text className='step-desc'>通常7个工作日内审核，通过后按月发放</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+
+  const renderFAQTab = () => (
+    <View className='tab-content'>
+      <View className='faq-section'>
+        <Text className='section-title'>常见问题</Text>
+        <View className='faq-list'>
+          <View className='faq-item'>
+            <Text className='faq-q'>Q: 失业金领取有时间限制吗？</Text>
+            <Text className='faq-a'>A: 失业金最长可领取24个月，需在失业后60天内申领，逾期视为自动放弃。</Text>
+          </View>
+          <View className='faq-item'>
+            <Text className='faq-q'>Q: 领取失业金期间能找工作吗？</Text>
+            <Text className='faq-a'>A: 可以。找到工作后应主动告知社保部门，停止领取失业金。</Text>
+          </View>
+          <View className='faq-item'>
+            <Text className='faq-q'>Q: 失业金和社保有什么关系？</Text>
+            <Text className='faq-a'>A: 领取失业金期间，社保基金代缴医保和养老保险，您可正常享受医保待遇。</Text>
+          </View>
+          <View className='faq-item'>
+            <Text className='faq-q'>Q: 如何查询失业金申领进度？</Text>
+            <Text className='faq-a'>A: 可通过当地社保官网、12333热线或微信小程序查询。</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+
+  return (
+    <View className='calculator-page'>
+      {/* 顶部标签栏 */}
+      <View className='tab-bar'>
+        <Button
+          className={`tab-btn ${activeTab === 'calculator' ? 'active' : ''}`}
+          onClick={() => setActiveTab('calculator')}
+        >
+          📊 计算器
+        </Button>
+        <Button
+          className={`tab-btn ${activeTab === 'application' ? 'active' : ''}`}
+          onClick={() => setActiveTab('application')}
+        >
+          📋 申领
+        </Button>
+        <Button
+          className={`tab-btn ${activeTab === 'faq' ? 'active' : ''}`}
+          onClick={() => setActiveTab('faq')}
+        >
+          ❓ 常见问题
+        </Button>
+      </View>
+
+      {/* 标签页内容 */}
+      {activeTab === 'calculator' && renderCalculatorTab()}
+      {activeTab === 'application' && renderApplicationTab()}
+      {activeTab === 'faq' && renderFAQTab()}
     </View>
   );
 }
