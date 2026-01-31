@@ -21,6 +21,9 @@ export interface LoginResponse {
   };
 }
 
+// 本地存储的用户信息缓存 key
+const LOCAL_USER_CACHE_KEY = 'local_user_cache';
+
 /**
  * 微信登录
  */
@@ -57,6 +60,7 @@ export function getCurrentUser() {
 export function logout() {
   Taro.removeStorageSync(TOKEN_KEY);
   Taro.removeStorageSync(USER_INFO_KEY);
+  Taro.removeStorageSync(LOCAL_USER_CACHE_KEY);
   Taro.reLaunch({ url: '/pages/index/index' });
 }
 
@@ -78,9 +82,25 @@ export async function getUserInfo() {
       throw new Error('未登录');
     }
 
-    return await get('/auth/user', null, true);
+    try {
+      // 尝试从服务器获取
+      const userInfo = await get('/auth/user', null, false);
+      // 获取成功，保存到本地缓存
+      Taro.setStorageSync(LOCAL_USER_CACHE_KEY, userInfo);
+      return userInfo;
+    } catch (networkError) {
+      // 网络请求失败，尝试使用本地缓存
+      console.warn('[getUserInfo] 网络请求失败，尝试使用本地缓存:', networkError);
+      const cachedInfo = Taro.getStorageSync(LOCAL_USER_CACHE_KEY);
+      if (cachedInfo) {
+        console.log('[getUserInfo] 使用本地缓存的用户信息');
+        return cachedInfo;
+      }
+      // 如果本地也没有缓存，则抛出错误
+      throw networkError;
+    }
   } catch (error: any) {
-    console.error('获取用户信息错误:', error);
+    console.error('[getUserInfo] 获取用户信息错误:', error);
     throw error;
   }
 }
@@ -102,11 +122,64 @@ export async function updateUserInfo(userInfo: {
       throw new Error('未登录');
     }
 
-    const updatedUser = await post('/auth/user/update', userInfo, true);
-    Taro.setStorageSync(USER_INFO_KEY, updatedUser);
-    return updatedUser;
+    try {
+      // 尝试从服务器更新
+      const updatedUser = await post('/auth/user/update', userInfo, false);
+      // 更新成功，保存到本地缓存和存储
+      Taro.setStorageSync(USER_INFO_KEY, updatedUser);
+      Taro.setStorageSync(LOCAL_USER_CACHE_KEY, updatedUser);
+      return updatedUser;
+    } catch (networkError) {
+      // 网络请求失败，使用本地降级方案
+      console.warn('[updateUserInfo] 网络请求失败，使用本地存储降级方案:', networkError);
+      
+      // 获取当前存储的用户信息
+      const currentUser = Taro.getStorageSync(USER_INFO_KEY) || {};
+      
+      // 合并新的用户信息
+      const updatedUser = {
+        ...currentUser,
+        ...userInfo
+      };
+      
+      // 保存到本地存储和缓存
+      Taro.setStorageSync(USER_INFO_KEY, updatedUser);
+      Taro.setStorageSync(LOCAL_USER_CACHE_KEY, updatedUser);
+      
+      console.log('[updateUserInfo] 已保存到本地存储，待网络恢复后将同步到服务器');
+      return updatedUser;
+    }
   } catch (error: any) {
-    console.error('编辑用户信息错误:', error);
+    console.error('[updateUserInfo] 编辑用户信息错误:', error);
     throw error;
+  }
+}
+
+/**
+ * 同步本地用户信息到服务器（用于网络恢复后的数据同步）
+ */
+export async function syncUserInfoToServer() {
+  try {
+    const token = Taro.getStorageSync(TOKEN_KEY);
+    if (!token) {
+      return;
+    }
+
+    const cachedInfo = Taro.getStorageSync(LOCAL_USER_CACHE_KEY);
+    if (!cachedInfo) {
+      return;
+    }
+
+    // 尝试同步到服务器
+    const syncedUser = await post('/auth/user/update', cachedInfo, false);
+    
+    // 同步成功，更新本地存储
+    Taro.setStorageSync(USER_INFO_KEY, syncedUser);
+    Taro.setStorageSync(LOCAL_USER_CACHE_KEY, syncedUser);
+    
+    console.log('[syncUserInfoToServer] 用户信息已成功同步到服务器');
+  } catch (error: any) {
+    console.warn('[syncUserInfoToServer] 同步失败:', error);
+    // 同步失败不抛出错误，允许应用继续运行
   }
 }
