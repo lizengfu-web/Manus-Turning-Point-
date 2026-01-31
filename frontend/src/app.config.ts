@@ -11,6 +11,11 @@ export default {
     'pages/opportunity/index',
     'pages/hole/index',
     'pages/profile/index',
+    'pages/profile/edit/index',
+    'pages/profile/posts/index',
+    'pages/profile/collections/index',
+    'pages/profile/messages/index',
+    'pages/profile/feedback/index',
     'pages/webview/index'
   ],
   window: {
