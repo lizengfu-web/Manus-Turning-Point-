@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro'
 import { View, Text, ScrollView, Input, Button } from '@tarojs/components'
 import { useState, useEffect, useRef } from 'react'
-import { COZE_WELCOME_MESSAGE, COZE_CONFIG, MOCK_RESPONSES } from './data'
+import { COZE_WELCOME_MESSAGE, COZE_CONFIG, MOCK_RESPONSES, generateSessionId } from './data'
 import './index.scss'
 
 interface ChatMessage {
@@ -17,13 +17,17 @@ export default function Layoff() {
   const [loading, setLoading] = useState(false)
   const scrollViewRef = useRef<any>(null)
   const messageIdRef = useRef(0)
+  const sessionIdRef = useRef<string>('')
 
   Taro.setNavigationBarTitle({
     title: '职场维权咨询'
   })
 
-  // 初始化：页面加载时发送开场白
+  // 初始化：页面加载时发送开场白和生成 session_id
   useEffect(() => {
+    // 生成 session_id 用于维持对话上下文
+    sessionIdRef.current = generateSessionId()
+
     const welcomeMessage: ChatMessage = {
       id: `msg-${messageIdRef.current++}`,
       role: 'assistant',
@@ -31,7 +35,7 @@ export default function Layoff() {
       timestamp: Date.now()
     }
     setChatMessages([welcomeMessage])
-    
+
     // 延迟滚动到底部
     setTimeout(() => {
       scrollToBottom()
@@ -68,45 +72,93 @@ export default function Layoff() {
       // 延迟滚动
       setTimeout(() => scrollToBottom(), 100)
 
-      // 调用 Coze API 或使用模拟回复
+      // 调用 Coze API
       await callCozeAPI(userMessage.content)
     } finally {
       setLoading(false)
     }
   }
 
-  // 调用 Coze API
+  // 调用 Coze stream_run API
   const callCozeAPI = async (userContent: string) => {
     try {
-      // 如果配置了 Coze API，则调用真实 API；否则使用模拟回复
-      if (COZE_CONFIG.apiKey && COZE_CONFIG.botId) {
-        // 实际 Coze API 调用逻辑
+      // 如果配置了 Token，则调用真实 API；否则使用模拟回复
+      if (COZE_CONFIG.token) {
+        // 构建请求体
+        const requestBody = {
+          content: {
+            query: {
+              prompt: [
+                {
+                  type: 'text',
+                  content: {
+                    text: userContent
+                  }
+                }
+              ]
+            }
+          },
+          type: 'query',
+          session_id: sessionIdRef.current,
+          project_id: COZE_CONFIG.projectId
+        }
+
+        // 调用 Coze API
         const response = await fetch(COZE_CONFIG.apiEndpoint, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${COZE_CONFIG.apiKey}`
+            'Authorization': `Bearer ${COZE_CONFIG.token}`,
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            bot_id: COZE_CONFIG.botId,
-            user_id: 'user_' + Date.now(),
-            stream: false,
-            auto_save_history: true,
-            messages: [
-              {
-                role: 'user',
-                content: userContent
-              }
-            ]
-          })
+          body: JSON.stringify(requestBody)
         })
 
         if (!response.ok) {
-          throw new Error(`API 错误: ${response.status}`)
+          throw new Error(`API 错误: ${response.status} ${response.statusText}`)
         }
 
-        const data = await response.json()
-        const assistantContent = data.messages?.[0]?.content || '抱歉，我暂时无法回答您的问题。'
+        // 处理流式响应
+        const reader = response.body?.getReader()
+        if (!reader) {
+          throw new Error('无法读取响应流')
+        }
+
+        let assistantContent = ''
+        const decoder = new TextDecoder()
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value)
+          const lines = chunk.split('\n')
+
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              try {
+                const jsonStr = line.slice(5).trim()
+                if (jsonStr) {
+                  const data = JSON.parse(jsonStr)
+                  // 根据 Coze API 的响应格式提取内容
+                  if (data.content) {
+                    assistantContent += data.content
+                  } else if (data.message) {
+                    assistantContent += data.message
+                  } else if (data.text) {
+                    assistantContent += data.text
+                  }
+                }
+              } catch (e) {
+                // 忽略 JSON 解析错误
+              }
+            }
+          }
+        }
+
+        // 如果没有获取到内容，使用默认回复
+        if (!assistantContent.trim()) {
+          assistantContent = '感谢您的提问。我已收到您的问题，正在为您分析相关的法律条款和建议。'
+        }
 
         const assistantMessage: ChatMessage = {
           id: `msg-${messageIdRef.current++}`,
@@ -133,6 +185,8 @@ export default function Layoff() {
       // 延迟滚动
       setTimeout(() => scrollToBottom(), 100)
     } catch (error: any) {
+      console.error('Coze API 错误:', error)
+
       Taro.showToast({
         title: error.message || '请求失败',
         icon: 'none'
@@ -142,7 +196,7 @@ export default function Layoff() {
       const errorMessage: ChatMessage = {
         id: `msg-${messageIdRef.current++}`,
         role: 'assistant',
-        content: '抱歉，我暂时无法处理您的请求。请稍后重试。',
+        content: '抱歉，我暂时无法处理您的请求。请检查网络连接或稍后重试。',
         timestamp: Date.now()
       }
       setChatMessages(prev => [...prev, errorMessage])

@@ -54,14 +54,26 @@ export const COZE_WELCOME_MESSAGE = `您好！作为职场维权卫士，我可�
 ⚠️ **重要提醒**：以上法律建议仅供参考，不构成正式法律意见。具体案件请咨询线下执业律师或当地劳动仲裁部门。`;
 
 /**
- * Coze 智能体配置
+ * Coze 智能体配置（stream_run API 模式）
  */
 export const COZE_CONFIG = {
-  // 您需要填入自己的 Coze API 信息
-  apiKey: process.env.COZE_API_KEY || '',
-  botId: process.env.COZE_BOT_ID || '',
-  apiEndpoint: 'https://api.coze.cn/v3/chat/completions',
+  // 您需要填入自己的 Coze 凭证
+  token: process.env.COZE_TOKEN || '',
+  projectId: process.env.COZE_PROJECT_ID || '7600759893704048649', // 示例 project_id
+  apiEndpoint: 'https://jcp33s7bqh.coze.site/stream_run',
   agentName: '转角卫士·职场维权助手'
+};
+
+/**
+ * 生成 session_id（用于维持对话上下文）
+ */
+export const generateSessionId = (): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  let sessionId = '';
+  for (let i = 0; i < 20; i++) {
+    sessionId += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return sessionId;
 };
 
 /**
