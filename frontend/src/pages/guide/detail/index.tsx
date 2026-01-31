@@ -1,6 +1,6 @@
 import Taro, { useRouter } from '@tarojs/taro';
 import { View, Text, RichText } from '@tarojs/components';
-import { GUIDES_DATA } from '../index';
+import { GUIDES_DATA } from '../data';
 import './index.scss';
 
 export default function GuideDetail() {
