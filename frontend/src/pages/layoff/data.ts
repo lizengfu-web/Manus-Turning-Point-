@@ -59,7 +59,7 @@ export const COZE_WELCOME_MESSAGE = `您好！作为职场维权卫士，我可�
  */
 export const COZE_CONFIG = {
   // 您需要填入自己的 Coze 凭证
-  token: '', // 在此填入您的 Coze Token
+  token: 'eyJhbGciOiJSUzI1NiIsImtpZCI6ImNhMmQ5ZWNiLTcwYTMtNDNhYS1hYjhkLTJkYWM3MWMzNDIyYSJ9.eyJpc3MiOiJodHRwczovL2FwaS5jb3plLmNuIiwiYXVkIjpbImMzRnhzVEd0VW80WDFwR0x4OVJkRmQ3bmg3TU1sYnBHIl0sImV4cCI6ODIxMDI2Njg3Njc5OSwiaWF0IjoxNzY5NjkyOTEwLCJzdWIiOiJzcGlmZmU6Ly9hcGkuY296ZS5jbi93b3JrbG9hZF9pZGVudGl0eS9pZDo3NjAwNzY5NzQ5OTkxMDMwODEwIiwic3JjIjoiaW5ib3VuZF9hdXRoX2FjY2Vzc190b2tlbl9pZDo3NjAwNzczMTc1ODYwNzg5MjQ4In0.omkF_PwGEUHzt8SRKt7CZVbaINyFfZfQVE4AtqOeX1E6UYWdGOrsiT4sRE1FlnjysrfwOMJiR7wqMzy3L4LXZjbpc7oa1hcA0wDUvQKO1w3AkIXHevu5z-MuH6UMLpWEkwhYZpcp766rxWJbQwrqVe_FQlaTzGpQmr48LhRefxVZYGoPKyLAYInY3aqd9NIWyHSAJYowFolERx56GdSNCKL8bUykAsigXOKD6kfLjeVfrGyHp3z8-Ry4EsLLRCq9xpgwCys7co92nWf0rp_JQKshwygsBcJhfyq8uoxbvo8jWKlYVBWJYDNafHrr02DQu0Yyn3Uvse0zt_IBtYkSKQ', // 在此填入您的 Coze Token
   projectId: '7600759893704048649', // 示例 project_id，应根据实际情况修改
   apiEndpoint: 'https://jcp33s7bqh.coze.site/stream_run',
   agentName: '转角卫士·职场维权助手'
