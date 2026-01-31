@@ -2,40 +2,44 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f5f5f5;
+  background: #f8f8f8;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 
   /* 页面头部 */
   .chat-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px 16px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
     flex-shrink: 0;
 
     .header-content {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
 
       .header-icon {
-        font-size: 28px;
+        font-size: 32px;
+        flex-shrink: 0;
       }
 
       .header-text {
         display: flex;
         flex-direction: column;
+        gap: 4px;
 
         .header-title {
           display: block;
-          font-size: 16px;
-          font-weight: 700;
+          font-size: 18px;
+          font-weight: 800;
+          letter-spacing: 0.5px;
         }
 
         .header-status {
           display: block;
-          font-size: 12px;
-          opacity: 0.9;
+          font-size: 13px;
+          opacity: 0.85;
+          font-weight: 500;
         }
       }
     }
@@ -45,15 +49,15 @@
   .chat-messages {
     flex: 1;
     overflow-y: auto;
-    padding: 16px;
+    padding: 20px 16px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 
     .message-wrapper {
       display: flex;
       align-items: flex-end;
-      gap: 8px;
+      gap: 10px;
       animation: slideIn 0.3s ease;
 
       &.user {
@@ -62,7 +66,8 @@
         .message-bubble {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
-          border-radius: 18px 18px 4px 18px;
+          border-radius: 20px 20px 4px 20px;
+          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
         }
       }
 
@@ -72,38 +77,41 @@
         .message-bubble {
           background: white;
           color: #333;
-          border-radius: 18px 18px 18px 4px;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+          border-radius: 20px 20px 20px 4px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
       }
 
       .message-avatar {
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         background: #f0f0f0;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 22px;
         flex-shrink: 0;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 
         &.user {
           order: 2;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
       }
 
       .message-bubble {
-        max-width: 75%;
-        padding: 12px 16px;
+        max-width: 80%;
+        padding: 14px 18px;
         word-wrap: break-word;
         word-break: break-word;
 
         .message-text {
           display: block;
-          font-size: 14px;
-          line-height: 1.6;
+          font-size: 16px;
+          line-height: 1.8;
           white-space: pre-wrap;
+          font-weight: 500;
 
           /* 支持 Markdown 基本格式 */
           &::before {
@@ -113,13 +121,14 @@
 
         .message-time {
           display: block;
-          font-size: 11px;
+          font-size: 12px;
           opacity: 0.6;
-          margin-top: 6px;
+          margin-top: 8px;
+          font-weight: 400;
         }
 
         &.loading {
-          padding: 12px 16px;
+          padding: 14px 18px;
         }
       }
     }
@@ -129,14 +138,14 @@
   .typing-indicator {
     display: flex;
     align-items: center;
-    gap: 4px;
-    height: 20px;
+    gap: 6px;
+    height: 24px;
 
     .dot {
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background: #999;
+      background: #667eea;
       animation: bounce 1.4s infinite;
 
       &:nth-child(1) {
@@ -156,28 +165,31 @@
   /* 输入框区域 */
   .chat-input-area {
     background: white;
-    border-top: 1px solid #e8e8e8;
-    padding: 12px 16px;
+    border-top: 2px solid #f0f0f0;
+    padding: 16px;
     flex-shrink: 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
 
     .input-wrapper {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
 
       .chat-input {
         flex: 1;
-        height: 40px;
-        padding: 10px 14px;
-        border: 1px solid #e8e8e8;
-        border-radius: 20px;
-        font-size: 14px;
-        background: #f5f5f5;
+        height: 50px;
+        padding: 12px 18px;
+        border: 2px solid #e8e8e8;
+        border-radius: 25px;
+        font-size: 16px;
+        background: #f8f8f8;
         outline: none;
+        font-weight: 500;
 
         &:focus {
           border-color: #667eea;
           background: white;
+          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
         }
 
         &:disabled {
@@ -187,19 +199,26 @@
       }
 
       .send-button {
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
         padding: 0;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
         border-radius: 50%;
-        font-size: 12px;
-        font-weight: 700;
+        font-size: 14px;
+        font-weight: 800;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
+        transition: all 0.2s ease;
+
+        &:active {
+          transform: scale(0.95);
+          box-shadow: 0 1px 4px rgba(102, 126, 234, 0.2);
+        }
 
         &:disabled {
           opacity: 0.6;
@@ -210,10 +229,11 @@
 
     .input-hint {
       display: block;
-      font-size: 12px;
+      font-size: 14px;
       color: #999;
-      margin-top: 8px;
-      padding: 0 14px;
+      margin-top: 12px;
+      padding: 0 18px;
+      font-weight: 500;
     }
   }
 }
@@ -237,6 +257,6 @@
   }
   40% {
     opacity: 1;
-    transform: translateY(-8px);
+    transform: translateY(-10px);
   }
 }
