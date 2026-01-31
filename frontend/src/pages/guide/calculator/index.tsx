@@ -224,7 +224,7 @@ export default function Calculator() {
 
         <View className='tips-box'>
           <Text className='tips-icon'>💡</Text>
-          <Text className='tips-text'>提示：失业金计算基于{result.provinceName}{result.cityName}2024年数据，具体金额以当地社保部门公布为准。</Text>
+          <Text className='tips-text'>提示：失业金计算基于{result.provinceName}{result.cityName}2026年最新数据标准，具体金额以当地社保部门公布为准。</Text>
         </View>
       </View>
     </View>

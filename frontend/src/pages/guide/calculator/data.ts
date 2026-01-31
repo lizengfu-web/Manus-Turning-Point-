@@ -4,7 +4,7 @@
 
 export interface CityData {
   name: string;
-  minWage: number; // 2024年最低工资标准（元/月）
+  minWage: number; // 2026年最低工资标准（元/月）
 }
 
 export interface ProvinceData {
@@ -23,7 +23,7 @@ export const provinceCityData: Record<string, ProvinceData> = {
   shanghai: {
     name: '上海',
     cities: {
-      shanghai: { name: '上海', minWage: 2690 }
+      shanghai: { name: '上海', minWage: 2740 }
     }
   },
   tianjin: {
@@ -143,18 +143,18 @@ export const provinceCityData: Record<string, ProvinceData> = {
   jiangsu: {
     name: '江苏省',
     cities: {
-      nanjing: { name: '南京', minWage: 2420 },
-      xuzhou: { name: '徐州', minWage: 2420 },
-      lianyungang: { name: '连云港', minWage: 2420 },
-      淮安: { name: '淮安', minWage: 2420 },
-      yancheng: { name: '盐城', minWage: 2420 },
-      yangzhou: { name: '扬州', minWage: 2420 },
-      taizhou: { name: '泰州', minWage: 2420 },
-      nantong: { name: '南通', minWage: 2420 },
-      suzhou: { name: '苏州', minWage: 2420 },
-      wuxi: { name: '无锡', minWage: 2420 },
-      changzhou: { name: '常州', minWage: 2420 },
-      zhenjiang: { name: '镇江', minWage: 2420 }
+      nanjing: { name: '南京', minWage: 2660 },
+      xuzhou: { name: '徐州', minWage: 2660 },
+      lianyungang: { name: '连云港', minWage: 2660 },
+      淮安: { name: '淮安', minWage: 2660 },
+      yancheng: { name: '盐城', minWage: 2660 },
+      yangzhou: { name: '扬州', minWage: 2660 },
+      taizhou: { name: '泰州', minWage: 2660 },
+      nantong: { name: '南通', minWage: 2660 },
+      suzhou: { name: '苏州', minWage: 2660 },
+      wuxi: { name: '无锡', minWage: 2660 },
+      changzhou: { name: '常州', minWage: 2660 },
+      zhenjiang: { name: '镇江', minWage: 2660 }
     }
   },
 
@@ -162,16 +162,16 @@ export const provinceCityData: Record<string, ProvinceData> = {
   zhejiang: {
     name: '浙江省',
     cities: {
-      hangzhou: { name: '杭州', minWage: 2290 },
-      ningbo: { name: '宁波', minWage: 2290 },
-      wenzhou: { name: '温州', minWage: 2290 },
-      jiaxing: { name: '嘉兴', minWage: 2290 },
-      huzhou: { name: '湖州', minWage: 2290 },
-      shaoxing: { name: '绍兴', minWage: 2290 },
-      jinhua: { name: '金华', minWage: 2290 },
-      衢州: { name: '衢州', minWage: 2290 },
-      lishui: { name: '丽水', minWage: 2290 },
-      taizhou: { name: '台州', minWage: 2290 }
+      hangzhou: { name: '杭州', minWage: 2660 },
+      ningbo: { name: '宁波', minWage: 2660 },
+      wenzhou: { name: '温州', minWage: 2660 },
+      jiaxing: { name: '嘉兴', minWage: 2660 },
+      huzhou: { name: '湖州', minWage: 2660 },
+      shaoxing: { name: '绍兴', minWage: 2660 },
+      jinhua: { name: '金华', minWage: 2660 },
+      衢州: { name: '衢州', minWage: 2660 },
+      lishui: { name: '丽水', minWage: 2660 },
+      taizhou: { name: '台州', minWage: 2660 }
     }
   },
 
@@ -317,15 +317,15 @@ export const provinceCityData: Record<string, ProvinceData> = {
   guangdong: {
     name: '广东省',
     cities: {
-      guangzhou: { name: '广州', minWage: 2300 },
-      shenzhen: { name: '深圳', minWage: 2360 },
-      zhuhai: { name: '珠海', minWage: 2300 },
-      shantou: { name: '汕头', minWage: 2300 },
-      foshan: { name: '佛山', minWage: 2300 },
-      jiangmen: { name: '江门', minWage: 2300 },
-      yangjiang: { name: '阳江', minWage: 2300 },
-      zhaoqing: { name: '肇庆', minWage: 2300 },
-      huizhou: { name: '惠州', minWage: 2300 },
+      guangzhou: { name: '广州', minWage: 2500 },
+      shenzhen: { name: '深圳', minWage: 2520 },
+      zhuhai: { name: '珠海', minWage: 2500 },
+      shantou: { name: '汕头', minWage: 2500 },
+      foshan: { name: '佛山', minWage: 2500 },
+      jiangmen: { name: '江门', minWage: 2500 },
+      yangjiang: { name: '阳江', minWage: 2500 },
+      zhaoqing: { name: '肇庆', minWage: 2500 },
+      huizhou: { name: '惠州', minWage: 2500 },
       meizhou: { name: '梅州', minWage: 2300 },
       shanwei: { name: '汕尾', minWage: 2300 },
       heyuan: { name: '河源', minWage: 2300 },
