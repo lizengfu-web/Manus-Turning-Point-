@@ -1,10 +1,11 @@
-import { View, Text, Button, Image, Input } from '@tarojs/components'
+import { View, Text, Button, Image, Input, Picker } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useUserStore } from '@/store/user'
 import { wxLogin, logout, getUserInfo, updateUserInfo } from '@/api/auth'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import PrivacyAgreementModal from '@/components/PrivacyAgreementModal'
 import { hasAgreedPrivacyPolicy, savePrivacyPolicyAgreement } from '@/constants/privacy'
+import { getProvinceList, getCityListByProvince } from '@/pages/guide/calculator/data'
 import './index.scss'
 
 export default function Profile() {
@@ -29,6 +30,21 @@ export default function Profile() {
     workYears: 0,
   })
 
+  // 获取省份列表
+  const provinceList = useMemo(() => getProvinceList(), [])
+  
+  // 根据选中的省份获取城市列表
+  const cityList = useMemo(() => {
+    const selectedProvince = provinceList.find(p => p.name === editForm.province)
+    if (selectedProvince) {
+      return getCityListByProvince(selectedProvince.key)
+    }
+    return []
+  }, [editForm.province, provinceList])
+
+  // 直辖市列表
+  const municipalCities = ['北京', '上海', '天津', '重庆']
+
   // 加载用户信息
   useEffect(() => {
     if (user) {
@@ -48,6 +64,7 @@ export default function Profile() {
         workYears: info.workYears || 0,
       })
     } catch (error: any) {
+      console.error('加载用户信息错误:', error)
       Taro.showToast({
         title: error.message || '加载用户信息失败',
         icon: 'none'
@@ -225,14 +242,56 @@ export default function Profile() {
   }
 
   const handleEditChange = (field: string, value: any) => {
-    setEditForm({
-      ...editForm,
-      [field]: value
-    })
+    if (field === 'province') {
+      // 当选择省份时，重置城市
+      setEditForm({
+        ...editForm,
+        [field]: value,
+        city: ''
+      })
+      
+      // 如果是直辖市，自动设置城市
+      if (municipalCities.includes(value)) {
+        setEditForm(prev => ({
+          ...prev,
+          city: value
+        }))
+      }
+    } else {
+      setEditForm({
+        ...editForm,
+        [field]: value
+      })
+    }
   }
 
   const handleSaveEdit = async () => {
     try {
+      // 验证必填字段
+      if (!editForm.nickName.trim()) {
+        Taro.showToast({
+          title: '昵称不能为空',
+          icon: 'none'
+        })
+        return
+      }
+
+      if (!editForm.province) {
+        Taro.showToast({
+          title: '请选择省份',
+          icon: 'none'
+        })
+        return
+      }
+
+      if (!editForm.city) {
+        Taro.showToast({
+          title: '请选择城市',
+          icon: 'none'
+        })
+        return
+      }
+
       setLoading(true)
       const updated = await updateUserInfo({
         nickName: editForm.nickName,
@@ -249,6 +308,7 @@ export default function Profile() {
         icon: 'success'
       })
     } catch (error: any) {
+      console.error('保存用户信息错误:', error)
       Taro.showToast({
         title: error.message || '更新失败',
         icon: 'none'
@@ -294,8 +354,6 @@ export default function Profile() {
               </View>
             )}
             <Text className='nickname'>{userInfo.nickName || '用户'}</Text>
-            <Text className='openid'>ID: {userInfo.openId}</Text>
-            <Text className='role'>{userInfo.userType === 'admin' ? '管理员' : '普通用户'}</Text>
           </View>
         ) : (
           <View className='login-prompt'>
@@ -345,22 +403,41 @@ export default function Profile() {
 
                 <View className='form-group'>
                   <Text className='form-label'>所在省份</Text>
-                  <Input
-                    className='form-input'
-                    value={editForm.province}
-                    placeholder='请输入省份'
-                    onInput={(e) => handleEditChange('province', e.detail.value)}
-                  />
+                  <Picker
+                    mode='selector'
+                    range={provinceList}
+                    rangeKey='name'
+                    value={provinceList.findIndex(p => p.name === editForm.province)}
+                    onChange={(e) => {
+                      const selectedProvince = provinceList[e.detail.value]
+                      handleEditChange('province', selectedProvince.name)
+                    }}
+                  >
+                    <View className={`picker-select ${!editForm.province ? 'placeholder' : ''}`}>
+                      <Text>{editForm.province || '请选择省份'}</Text>
+                      <Text className='picker-arrow'>▼</Text>
+                    </View>
+                  </Picker>
                 </View>
 
                 <View className='form-group'>
                   <Text className='form-label'>所在城市</Text>
-                  <Input
-                    className='form-input'
-                    value={editForm.city}
-                    placeholder='请输入城市'
-                    onInput={(e) => handleEditChange('city', e.detail.value)}
-                  />
+                  <Picker
+                    mode='selector'
+                    range={cityList}
+                    rangeKey='name'
+                    value={cityList.findIndex(c => c.name === editForm.city)}
+                    onChange={(e) => {
+                      const selectedCity = cityList[e.detail.value]
+                      handleEditChange('city', selectedCity.name)
+                    }}
+                    disabled={!editForm.province}
+                  >
+                    <View className={`picker-select ${!editForm.city ? 'placeholder' : ''} ${!editForm.province ? 'disabled' : ''}`}>
+                      <Text>{editForm.city || (editForm.province ? '请选择城市' : '请先选择省份')}</Text>
+                      <Text className='picker-arrow'>▼</Text>
+                    </View>
+                  </Picker>
                 </View>
 
                 <View className='form-group'>
@@ -378,12 +455,17 @@ export default function Profile() {
                   className='save-btn' 
                   onClick={handleSaveEdit}
                   loading={loading}
+                  disabled={loading}
                 >
                   保存修改
                 </Button>
               </View>
             ) : (
               <View className='info-display'>
+                <View className='info-item'>
+                  <Text className='info-label'>昵称</Text>
+                  <Text className='info-value'>{userInfo.nickName || '未设置'}</Text>
+                </View>
                 <View className='info-item'>
                   <Text className='info-label'>所在地</Text>
                   <Text className='info-value'>{userInfo.province} {userInfo.city || '未设置'}</Text>

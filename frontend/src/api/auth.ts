@@ -1,4 +1,4 @@
-import { post } from './request';
+import { post, get } from './request';
 import Taro from '@tarojs/taro';
 import { TOKEN_KEY, USER_INFO_KEY, API_BASE_URL } from './config';
 
