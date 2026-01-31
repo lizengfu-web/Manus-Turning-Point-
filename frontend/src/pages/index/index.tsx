@@ -175,19 +175,7 @@ export default function Index() {
             设置 →
           </Button>
         </View>
-      ) : (
-        <View className='login-card'>
-          <Text className='login-tip'>登录后查看个性化推荐</Text>
-          <Button
-            className='login-btn'
-            onClick={handleLogin}
-            loading={loading}
-            disabled={loading}
-          >
-            {loading ? '登录中...' : '微信登录'}
-          </Button>
-        </View>
-      )}
+      ) : null}
 
       {/* 今日寄语卡片 */}
       <View className='quote-card'>

@@ -61,7 +61,7 @@ export const FEATURES: Feature[] = [
   },
   {
     id: 'layoff',
-    title: '裁员咨询',
+    title: '维权卫士',
     description: '法律权益、补偿计算、权益保护',
     icon: '⚖️',
     tags: ['法律', '权益'],
