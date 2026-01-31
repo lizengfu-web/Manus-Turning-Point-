@@ -1,83 +1,51 @@
 import Taro from '@tarojs/taro'
-import { View, Text, ScrollView, Button } from '@tarojs/components'
-import { useState } from 'react'
+import { View, Text, ScrollView, Input, Button } from '@tarojs/components'
+import { useState, useEffect, useRef } from 'react'
+import { COZE_WELCOME_MESSAGE, COZE_CONFIG, MOCK_RESPONSES } from './data'
 import './index.scss'
 
-interface ConsultationItem {
-  id: number
-  title: string
-  description: string
-  icon: string
-  category: 'legal' | 'compensation' | 'procedure' | 'rights'
+interface ChatMessage {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: number
 }
 
-const consultationItems: ConsultationItem[] = [
-  {
-    id: 1,
-    title: '裁员法律权益',
-    description: '了解你在裁员中的法律权益和保护',
-    icon: '⚖️',
-    category: 'legal'
-  },
-  {
-    id: 2,
-    title: '经济补偿金计算',
-    description: '如何计算应得的经济补偿金',
-    icon: '💰',
-    category: 'compensation'
-  },
-  {
-    id: 3,
-    title: '裁员程序和流程',
-    description: '企业裁员的标准程序和注意事项',
-    icon: '📋',
-    category: 'procedure'
-  },
-  {
-    id: 4,
-    title: '员工权利保护',
-    description: '了解你在裁员中的各项权利',
-    icon: '🛡️',
-    category: 'rights'
-  },
-  {
-    id: 5,
-    title: '谈判技巧',
-    description: '与公司谈判补偿的有效技巧',
-    icon: '🤝',
-    category: 'legal'
-  },
-  {
-    id: 6,
-    title: '社保和公积金处理',
-    description: '裁员后社保和公积金如何处理',
-    icon: '📊',
-    category: 'compensation'
-  }
-]
-
 export default function Layoff() {
-  const [selectedCategory, setSelectedCategory] = useState<'all' | ConsultationItem['category']>('all')
-  const [showChat, setShowChat] = useState(false)
-  const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([
-    {
-      role: 'assistant',
-      content: '你好！我是转角驿站的裁员咨询助手。我可以帮助你了解裁员相关的法律权益、补偿计算、程序流程等。请告诉我你想咨询的问题。'
-    }
-  ])
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
   const [loading, setLoading] = useState(false)
+  const scrollViewRef = useRef<any>(null)
+  const messageIdRef = useRef(0)
 
-  const filteredItems = selectedCategory === 'all' 
-    ? consultationItems 
-    : consultationItems.filter(item => item.category === selectedCategory)
+  Taro.setNavigationBarTitle({
+    title: '职场维权咨询'
+  })
 
-  const handleItemClick = (item: ConsultationItem) => {
-    Taro.navigateTo({
-      url: `/pages/webview/index?url=/layoff/${item.id}`
-    })
+  // 初始化：页面加载时发送开场白
+  useEffect(() => {
+    const welcomeMessage: ChatMessage = {
+      id: `msg-${messageIdRef.current++}`,
+      role: 'assistant',
+      content: COZE_WELCOME_MESSAGE,
+      timestamp: Date.now()
+    }
+    setChatMessages([welcomeMessage])
+    
+    // 延迟滚动到底部
+    setTimeout(() => {
+      scrollToBottom()
+    }, 300)
+  }, [])
+
+  // 滚动到底部
+  const scrollToBottom = () => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTop()
+    }
   }
 
+  // 处理发送消息
   const handleSendMessage = async () => {
     if (!inputValue.trim()) {
       Taro.showToast({ title: '请输入问题', icon: 'none' })
@@ -86,127 +54,194 @@ export default function Layoff() {
 
     try {
       setLoading(true)
-      
+
       // 添加用户消息
-      const userMessage = inputValue
-      setChatMessages(prev => [...prev, { role: 'user', content: userMessage }])
+      const userMessage: ChatMessage = {
+        id: `msg-${messageIdRef.current++}`,
+        role: 'user',
+        content: inputValue.trim(),
+        timestamp: Date.now()
+      }
+      setChatMessages(prev => [...prev, userMessage])
       setInputValue('')
 
-      // 模拟 AI 回复（实际应该调用后端 API）
-      setTimeout(() => {
-        const responses = [
-          '根据《劳动合同法》，企业进行经济性裁员时，应当提前30天通知员工或支付1个月工资作为代通知金。',
-          '经济补偿金的计算标准是：按照员工在本单位工作的年限，每满一年支付一个月工资，最多支付12个月工资。',
-          '裁员程序通常包括：制定裁员方案 → 通知工会 → 通知员工 → 协商 → 办理离职手续。',
-          '在裁员过程中，你有权了解裁员原因、获得书面通知、进行协商、获得经济补偿等权利。',
-          '与公司谈判时，建议准备好相关证据（工作年限证明、工资条等），了解法律规定的最低补偿标准。',
-          '裁员后，企业应当为你办理社保转移手续，公积金可以申请提取或转移。'
-        ]
-        
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)]
-        setChatMessages(prev => [...prev, { role: 'assistant', content: randomResponse }])
-      }, 800)
+      // 延迟滚动
+      setTimeout(() => scrollToBottom(), 100)
+
+      // 调用 Coze API 或使用模拟回复
+      await callCozeAPI(userMessage.content)
     } finally {
       setLoading(false)
     }
   }
 
+  // 调用 Coze API
+  const callCozeAPI = async (userContent: string) => {
+    try {
+      // 如果配置了 Coze API，则调用真实 API；否则使用模拟回复
+      if (COZE_CONFIG.apiKey && COZE_CONFIG.botId) {
+        // 实际 Coze API 调用逻辑
+        const response = await fetch(COZE_CONFIG.apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${COZE_CONFIG.apiKey}`
+          },
+          body: JSON.stringify({
+            bot_id: COZE_CONFIG.botId,
+            user_id: 'user_' + Date.now(),
+            stream: false,
+            auto_save_history: true,
+            messages: [
+              {
+                role: 'user',
+                content: userContent
+              }
+            ]
+          })
+        })
+
+        if (!response.ok) {
+          throw new Error(`API 错误: ${response.status}`)
+        }
+
+        const data = await response.json()
+        const assistantContent = data.messages?.[0]?.content || '抱歉，我暂时无法回答您的问题。'
+
+        const assistantMessage: ChatMessage = {
+          id: `msg-${messageIdRef.current++}`,
+          role: 'assistant',
+          content: assistantContent,
+          timestamp: Date.now()
+        }
+        setChatMessages(prev => [...prev, assistantMessage])
+      } else {
+        // 使用模拟回复（演示模式）
+        setTimeout(() => {
+          const randomResponse = MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)]
+          const assistantMessage: ChatMessage = {
+            id: `msg-${messageIdRef.current++}`,
+            role: 'assistant',
+            content: randomResponse,
+            timestamp: Date.now()
+          }
+          setChatMessages(prev => [...prev, assistantMessage])
+          scrollToBottom()
+        }, 800)
+      }
+
+      // 延迟滚动
+      setTimeout(() => scrollToBottom(), 100)
+    } catch (error: any) {
+      Taro.showToast({
+        title: error.message || '请求失败',
+        icon: 'none'
+      })
+
+      // 显示错误消息
+      const errorMessage: ChatMessage = {
+        id: `msg-${messageIdRef.current++}`,
+        role: 'assistant',
+        content: '抱歉，我暂时无法处理您的请求。请稍后重试。',
+        timestamp: Date.now()
+      }
+      setChatMessages(prev => [...prev, errorMessage])
+    }
+  }
+
+  // 处理输入框回车
+  const handleKeyDown = (e: any) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
+    }
+  }
+
   return (
     <View className='layoff-page'>
-      {!showChat ? (
-        <>
-          {/* 页面头部 */}
-          <View className='layoff-header'>
-            <Text className='layoff-title'>裁员咨询</Text>
-            <Text className='layoff-subtitle'>了解你的权利，保护你的权益</Text>
+      {/* 页面头部 */}
+      <View className='chat-header'>
+        <View className='header-content'>
+          <Text className='header-icon'>⚖️</Text>
+          <View className='header-text'>
+            <Text className='header-title'>{COZE_CONFIG.agentName}</Text>
+            <Text className='header-status'>在线</Text>
           </View>
+        </View>
+      </View>
 
-          {/* 分类筛选 */}
-          <ScrollView className='category-filter' scrollX>
-            <View className='category-item' onClick={() => setSelectedCategory('all')}>
-              <Text className={selectedCategory === 'all' ? 'active' : ''}>全部</Text>
-            </View>
-            <View className='category-item' onClick={() => setSelectedCategory('legal')}>
-              <Text className={selectedCategory === 'legal' ? 'active' : ''}>法律权益</Text>
-            </View>
-            <View className='category-item' onClick={() => setSelectedCategory('compensation')}>
-              <Text className={selectedCategory === 'compensation' ? 'active' : ''}>补偿计算</Text>
-            </View>
-            <View className='category-item' onClick={() => setSelectedCategory('procedure')}>
-              <Text className={selectedCategory === 'procedure' ? 'active' : ''}>程序流程</Text>
-            </View>
-            <View className='category-item' onClick={() => setSelectedCategory('rights')}>
-              <Text className={selectedCategory === 'rights' ? 'active' : ''}>权利保护</Text>
-            </View>
-          </ScrollView>
-
-          {/* 咨询项目列表 */}
-          <ScrollView className='consultation-list' scrollY>
-            {filteredItems.map(item => (
-              <View
-                key={item.id}
-                className='consultation-card'
-                onClick={() => handleItemClick(item)}
-              >
-                <View className='card-header'>
-                  <Text className='card-icon'>{item.icon}</Text>
-                  <View className='card-title-group'>
-                    <Text className='card-title'>{item.title}</Text>
-                    <Text className='card-description'>{item.description}</Text>
-                  </View>
-                </View>
-                <Text className='card-arrow'>→</Text>
+      {/* 聊天消息区域 */}
+      <ScrollView
+        className='chat-messages'
+        scrollY
+        scrollIntoView='bottom'
+        ref={scrollViewRef}
+      >
+        {chatMessages.map((msg) => (
+          <View key={msg.id} className={`message-wrapper ${msg.role}`}>
+            {msg.role === 'assistant' && (
+              <View className='message-avatar'>
+                <Text>⚖️</Text>
               </View>
-            ))}
-          </ScrollView>
-
-          {/* 浮动按钮 */}
-          <View className='floating-buttons'>
-            <Button className='chat-button' onClick={() => setShowChat(true)}>
-              💬 AI 咨询
-            </Button>
-          </View>
-        </>
-      ) : (
-        <>
-          {/* AI 聊天界面 */}
-          <View className='chat-header'>
-            <Text className='chat-title'>AI 裁员咨询助手</Text>
-            <Button className='close-button' onClick={() => setShowChat(false)}>✕</Button>
-          </View>
-
-          <ScrollView className='chat-messages'>
-            {chatMessages.map((msg, index) => (
-              <View key={index} className={`message ${msg.role}`}>
-                <View className='message-content'>
-                  <Text>{msg.content}</Text>
-                </View>
+            )}
+            <View className={`message-bubble ${msg.role}`}>
+              <Text className='message-text'>{msg.content}</Text>
+              <Text className='message-time'>
+                {new Date(msg.timestamp).toLocaleTimeString('zh-CN', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </Text>
+            </View>
+            {msg.role === 'user' && (
+              <View className='message-avatar user'>
+                <Text>👤</Text>
               </View>
-            ))}
-          </ScrollView>
+            )}
+          </View>
+        ))}
 
-          {/* 输入框 */}
-          <View className='chat-input-area'>
-            <View className='input-wrapper'>
-              <input
-                type='text'
-                className='chat-input'
-                placeholder='输入你的问题...'
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                disabled={loading}
-              />
-              <Button
-                className='send-button'
-                onClick={handleSendMessage}
-                disabled={loading || !inputValue.trim()}
-              >
-                {loading ? '...' : '发送'}
-              </Button>
+        {loading && (
+          <View className='message-wrapper assistant'>
+            <View className='message-avatar'>
+              <Text>⚖️</Text>
+            </View>
+            <View className='message-bubble assistant loading'>
+              <View className='typing-indicator'>
+                <View className='dot'></View>
+                <View className='dot'></View>
+                <View className='dot'></View>
+              </View>
             </View>
           </View>
-        </>
-      )}
+        )}
+      </ScrollView>
+
+      {/* 输入框区域 */}
+      <View className='chat-input-area'>
+        <View className='input-wrapper'>
+          <Input
+            className='chat-input'
+            type='text'
+            placeholder='输入您的问题...'
+            value={inputValue}
+            onInput={(e) => setInputValue(e.detail.value)}
+            onKeyDown={handleKeyDown}
+            disabled={loading}
+            placeholderStyle='color: #999;'
+          />
+          <Button
+            className='send-button'
+            onClick={handleSendMessage}
+            disabled={loading || !inputValue.trim()}
+          >
+            {loading ? '...' : '发送'}
+          </Button>
+        </View>
+        <Text className='input-hint'>
+          💡 提示：提供更多信息（如入职时间、月薪等）可获得更准确的建议
+        </Text>
+      </View>
     </View>
   )
 }
