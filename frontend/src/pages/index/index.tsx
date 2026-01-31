@@ -1,80 +1,8 @@
 import Taro from '@tarojs/taro';
-import { View, Text, Image, Button } from '@tarojs/components';
-import { useState, useEffect } from 'react';
-import { useUserStore } from '@/store/user';
-import { wxLogin, getCurrentUser, isLoggedIn } from '@/api/auth';
+import { View, Text, Image } from '@tarojs/components';
 import './index.scss';
 
 export default function Index() {
-  const { user, setUser } = useUserStore();
-  const [quote, setQuote] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const quotes = [
-    '失业不是终点，而是转折点。每一个停顿，都是为了更好的起跑。',
-    '你的价值不由工作定义。这个时期，是重新认识自己的机会。',
-    '很多成功的人，都曾经历过失业。这不是失败，这是成长的代价。',
-    '焦虑是正常的，但它不会改变现状。不如把精力投入到能改变的事情上。',
-    '失业期间最珍贵的不是金钱，而是时间。好好利用它。'
-  ];
-
-  useEffect(() => {
-    // 随机选择一条寄语
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    setQuote(randomQuote);
-
-    // 仅从本地缓存检查登录状态，不调用任何微信异步接口
-    try {
-      if (isLoggedIn()) {
-        const currentUser = getCurrentUser();
-        if (currentUser) {
-          setUser(currentUser);
-        }
-      }
-    } catch (e) {
-      console.error('Check login status error:', e);
-    }
-  }, []);
-
-  // 微信登录（改为手动触发，且增加极端容错）
-  const handleLogin = async () => {
-    try {
-      setLoading(true);
-
-      // 获取微信登录 code
-      let loginRes;
-      try {
-        // 增加超时控制或直接捕获所有异常
-        loginRes = await Taro.login();
-      } catch (e: any) {
-        console.error('Taro.login System Error:', e);
-        throw new Error('当前环境微信登录接口异常，请尝试真机调试');
-      }
-
-      const { code } = loginRes;
-      if (!code) throw new Error('获取登录凭证失败');
-
-      const result = await wxLogin({
-        code,
-        userInfo: {
-          nickName: '微信用户',
-          avatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
-        }
-      });
-
-      setUser(result.user);
-      Taro.showToast({ title: '登录成功', icon: 'success' });
-    } catch (error: any) {
-      console.error('登录失败:', error);
-      Taro.showToast({
-        title: error.message || '登录失败',
-        icon: 'none'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const navigateToGuide = () => {
     Taro.navigateTo({ url: '/pages/guide/index' });
   };
@@ -86,31 +14,8 @@ export default function Index() {
         <Text className='subtitle'>职场转折的温暖驿站</Text>
       </View>
 
-      {user ? (
-        <View className='user-card'>
-          <View className='user-info'>
-            <Image className='avatar' src={user.avatarUrl || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'} />
-            <View className='info'>
-              <Text className='name'>{user.nickName}</Text>
-              <Text className='type'>{getUserTypeLabel(user.userType)}</Text>
-            </View>
-          </View>
-        </View>
-      ) : (
-        <View className='login-card'>
-          <Text className='login-tip'>登录后查看个性化推荐</Text>
-          <Button className='login-btn' onClick={handleLogin} loading={loading}>
-            微信登录
-          </Button>
-        </View>
-      )}
-
-      <View className='quote-card'>
-        <View className='quote-icon'>💡</View>
-        <View className='quote-content'>
-          <Text className='quote-label'>今日寄语</Text>
-          <Text className='quote-text'>{quote}</Text>
-        </View>
+      <View className='login-card'>
+        <Text className='login-tip'>欢迎来到转角驿站</Text>
       </View>
 
       <View className='feature-grid'>
@@ -147,14 +52,4 @@ export default function Index() {
       </View>
     </View>
   );
-}
-
-function getUserTypeLabel(userType: string): string {
-  const labels: Record<string, string> = {
-    'short_term': '短期失业者',
-    'long_term': '长期失业者',
-    'recent_graduate': '应届毕业生',
-    'career_transition': '职业转型者'
-  };
-  return labels[userType] || '用户';
 }
