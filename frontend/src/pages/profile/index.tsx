@@ -64,7 +64,16 @@ export default function Profile() {
       // 检查是否已同意隐私协议
       if (!hasAgreedPrivacyPolicy()) {
         console.log('[Profile] User has not agreed to privacy policy, showing modal')
-        const { code } = await Taro.login()
+        
+        let loginRes;
+        try {
+          loginRes = await Taro.login();
+        } catch (e) {
+          console.error('[Profile] Taro.login System Error:', e);
+          throw new Error('微信登录服务暂时不可用');
+        }
+        
+        const { code } = loginRes;
         console.log('[Profile] Got code:', code?.substring(0, 10) + '...')
         
         // 尝试获取用户信息（可能会失败，但不影响登录）
@@ -84,7 +93,7 @@ export default function Profile() {
           console.log('[Profile] Got user profile')
         } catch (e) {
           // 用户拒绝授权，使用默认值
-          console.log('[Profile] User denied profile access')
+          console.log('[Profile] User denied profile access or System Error')
         }
         
         // 保存登录信息，等待用户同意隐私协议
@@ -112,8 +121,14 @@ export default function Profile() {
       
       if (!loginCode) {
         console.log('[Profile] Getting new code...')
-        const { code: newCode } = await Taro.login()
-        loginCode = newCode
+        let loginRes;
+        try {
+          loginRes = await Taro.login();
+        } catch (e) {
+          console.error('[Profile] Taro.login System Error:', e);
+          throw new Error('微信登录服务暂时不可用');
+        }
+        loginCode = loginRes.code
         console.log('[Profile] Got code:', loginCode?.substring(0, 10) + '...')
         
         // 尝试获取用户信息
@@ -132,7 +147,7 @@ export default function Profile() {
           }
           console.log('[Profile] Got user profile')
         } catch (e) {
-          console.log('[Profile] User denied profile access')
+          console.log('[Profile] User denied profile access or System Error')
         }
       }
 
@@ -355,103 +370,49 @@ export default function Profile() {
                     type='number'
                     value={String(editForm.workYears)}
                     placeholder='请输入工作年限'
-                    onInput={(e) => handleEditChange('workYears', parseInt(e.detail.value) || 0)}
+                    onInput={(e) => handleEditChange('workYears', Number(e.detail.value))}
                   />
                 </View>
 
                 <Button 
-                  className='save-btn'
+                  className='save-btn' 
                   onClick={handleSaveEdit}
-                  disabled={loading}
+                  loading={loading}
                 >
-                  {loading ? '保存中...' : '保存修改'}
+                  保存修改
                 </Button>
               </View>
             ) : (
               <View className='info-display'>
                 <View className='info-item'>
-                  <Text className='info-label'>昵称</Text>
-                  <Text className='info-value'>{userInfo.nickName || '未设置'}</Text>
-                </View>
-                <View className='info-item'>
-                  <Text className='info-label'>OpenID</Text>
-                  <Text className='info-value'>{userInfo.openId}</Text>
-                </View>
-                <View className='info-item'>
-                  <Text className='info-label'>所在省份</Text>
-                  <Text className='info-value'>{userInfo.province || '未设置'}</Text>
-                </View>
-                <View className='info-item'>
-                  <Text className='info-label'>所在城市</Text>
-                  <Text className='info-value'>{userInfo.city || '未设置'}</Text>
+                  <Text className='info-label'>所在地</Text>
+                  <Text className='info-value'>{userInfo.province} {userInfo.city || '未设置'}</Text>
                 </View>
                 <View className='info-item'>
                   <Text className='info-label'>工作年限</Text>
-                  <Text className='info-value'>{userInfo.workYears || 0} 年</Text>
+                  <Text className='info-value'>{userInfo.workYears} 年</Text>
                 </View>
               </View>
             )}
           </View>
 
-          {/* 我的内容 */}
           <View className='menu-section'>
-            <Text className='section-title'>我的内容</Text>
-            <View
-              className='menu-item'
-              onClick={() => navigateToWebView('/profile/posts')}
-            >
-              <Text className='menu-icon'>📝</Text>
-              <Text className='menu-label'>我的帖子</Text>
-              <Text className='menu-arrow'>›</Text>
+            <View className='menu-item' onClick={() => navigateToWebView('https://help.manus.im')}>
+              <Text className='menu-text'>帮助与反馈</Text>
+              <Text className='menu-arrow'>></Text>
             </View>
-            <View
-              className='menu-item'
-              onClick={() => navigateToWebView('/profile/favorites')}
-            >
-              <Text className='menu-icon'>⭐</Text>
-              <Text className='menu-label'>我的收藏</Text>
-              <Text className='menu-arrow'>›</Text>
-            </View>
-            <View
-              className='menu-item'
-              onClick={() => navigateToWebView('/profile/notifications')}
-            >
-              <Text className='menu-icon'>🔔</Text>
-              <Text className='menu-label'>通知中心</Text>
-              <Text className='menu-arrow'>›</Text>
+            <View className='menu-item' onClick={() => navigateToWebView('https://manus.im/about')}>
+              <Text className='menu-text'>关于我们</Text>
+              <Text className='menu-arrow'>></Text>
             </View>
           </View>
 
-          {/* 设置 */}
-          <View className='menu-section'>
-            <Text className='section-title'>设置</Text>
-            <View
-              className='menu-item'
-              onClick={() => navigateToWebView('/profile/settings')}
-            >
-              <Text className='menu-icon'>⚙️</Text>
-              <Text className='menu-label'>账号设置</Text>
-              <Text className='menu-arrow'>›</Text>
-            </View>
-            <View
-              className='menu-item'
-              onClick={() => navigateToWebView('/about')}
-            >
-              <Text className='menu-icon'>ℹ️</Text>
-              <Text className='menu-label'>关于我们</Text>
-              <Text className='menu-arrow'>›</Text>
-            </View>
-          </View>
-
-          {/* 退出登录 */}
-          <View className='menu-section'>
-            <Button className='logout-btn' onClick={handleLogout}>
-              退出登录
-            </Button>
-          </View>
+          <Button className='logout-btn' onClick={handleLogout}>
+            退出登录
+          </Button>
         </View>
       )}
-    </View>
+      </View>
     </>
   )
 }
