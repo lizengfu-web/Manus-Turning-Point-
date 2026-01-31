@@ -55,11 +55,12 @@ export const COZE_WELCOME_MESSAGE = `您好！作为职场维权卫士，我可�
 
 /**
  * Coze 智能体配置（stream_run API 模式）
+ * 注意：请在下方填入您的真实 Token 和 Project ID
  */
 export const COZE_CONFIG = {
   // 您需要填入自己的 Coze 凭证
-  token: process.env.COZE_TOKEN || '',
-  projectId: process.env.COZE_PROJECT_ID || '7600759893704048649', // 示例 project_id
+  token: '', // 在此填入您的 Coze Token
+  projectId: '7600759893704048649', // 示例 project_id，应根据实际情况修改
   apiEndpoint: 'https://jcp33s7bqh.coze.site/stream_run',
   agentName: '转角卫士·职场维权助手'
 };
