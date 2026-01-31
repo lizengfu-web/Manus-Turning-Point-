@@ -130,6 +130,8 @@ export default function Layoff() {
         icon: 'none',
         duration: 2000
       })
+      // 自动触发微信登录
+      handleAutoLogin()
       return
     }
 
@@ -335,6 +337,41 @@ export default function Layoff() {
     } catch (error) {
       console.error('解析响应失败:', error)
       return ''
+    }
+  }
+
+  // 自动触发微信登录
+  const handleAutoLogin = async () => {
+    try {
+      const loginRes = await Taro.login()
+      const { code } = loginRes
+      if (!code) {
+        throw new Error('获取登录凭证失败')
+      }
+
+      const { wxLogin } = await import('@/api/auth')
+      const result = await wxLogin({
+        code,
+        userInfo: {
+          nickName: '微信用户',
+          avatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+        }
+      })
+
+      if (result) {
+        Taro.showToast({
+          title: '登录成功',
+          icon: 'success',
+          duration: 1500
+        })
+      }
+    } catch (error: any) {
+      console.error('自动登录失败:', error)
+      Taro.showToast({
+        title: error.message || '登录失败',
+        icon: 'none',
+        duration: 2000
+      })
     }
   }
 
