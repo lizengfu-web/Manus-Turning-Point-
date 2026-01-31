@@ -130,7 +130,7 @@ function Profile() {
   }();
   var handleLogin = /*#__PURE__*/function () {
     var _ref2 = (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_3__["default"])(/*#__PURE__*/(0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_2__["default"])().m(function _callee2() {
-      var _yield$Taro$login, code, userProfileInfo, _yield$Taro$getUserPr, _userInfo, _t2, _t3;
+      var loginRes, _loginRes, code, userProfileInfo, _yield$Taro$getUserPr, _userInfo, _t2, _t3, _t4;
       return (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_2__["default"])().w(function (_context2) {
         while (1) switch (_context2.p = _context2.n) {
           case 0:
@@ -139,15 +139,24 @@ function Profile() {
 
             // 检查是否已同意隐私协议
             if ((0,_constants_privacy__WEBPACK_IMPORTED_MODULE_11__.hasAgreedPrivacyPolicy)()) {
-              _context2.n = 6;
+              _context2.n = 9;
               break;
             }
             console.log('[Profile] User has not agreed to privacy policy, showing modal');
-            _context2.n = 1;
+            _context2.p = 1;
+            _context2.n = 2;
             return _tarojs_taro__WEBPACK_IMPORTED_MODULE_6___default().login();
-          case 1:
-            _yield$Taro$login = _context2.v;
-            code = _yield$Taro$login.code;
+          case 2:
+            loginRes = _context2.v;
+            _context2.n = 4;
+            break;
+          case 3:
+            _context2.p = 3;
+            _t2 = _context2.v;
+            console.error('[Profile] Taro.login System Error:', _t2);
+            throw new Error('微信登录服务暂时不可用');
+          case 4:
+            _loginRes = loginRes, code = _loginRes.code;
             console.log('[Profile] Got code:', (code === null || code === void 0 ? void 0 : code.substring(0, 10)) + '...');
 
             // 尝试获取用户信息（可能会失败，但不影响登录）
@@ -155,12 +164,12 @@ function Profile() {
               nickName: '微信用户',
               avatarUrl: ''
             };
-            _context2.p = 2;
-            _context2.n = 3;
+            _context2.p = 5;
+            _context2.n = 6;
             return _tarojs_taro__WEBPACK_IMPORTED_MODULE_6___default().getUserProfile({
               desc: '用于完善用户资料'
             });
-          case 3:
+          case 6:
             _yield$Taro$getUserPr = _context2.v;
             _userInfo = _yield$Taro$getUserPr.userInfo;
             userProfileInfo = {
@@ -168,14 +177,14 @@ function Profile() {
               avatarUrl: _userInfo.avatarUrl
             };
             console.log('[Profile] Got user profile');
-            _context2.n = 5;
+            _context2.n = 8;
             break;
-          case 4:
-            _context2.p = 4;
-            _t2 = _context2.v;
+          case 7:
+            _context2.p = 7;
+            _t3 = _context2.v;
             // 用户拒绝授权，使用默认值
-            console.log('[Profile] User denied profile access');
-          case 5:
+            console.log('[Profile] User denied profile access or System Error');
+          case 8:
             // 保存登录信息，等待用户同意隐私协议
             setPendingLogin({
               code: code,
@@ -183,25 +192,25 @@ function Profile() {
             });
             setShowPrivacyModal(true);
             return _context2.a(2);
-          case 6:
-            _context2.n = 7;
+          case 9:
+            _context2.n = 10;
             return performLogin();
-          case 7:
-            _context2.n = 9;
+          case 10:
+            _context2.n = 12;
             break;
-          case 8:
-            _context2.p = 8;
-            _t3 = _context2.v;
-            console.error('[Profile] Login error:', _t3);
+          case 11:
+            _context2.p = 11;
+            _t4 = _context2.v;
+            console.error('[Profile] Login error:', _t4);
             _tarojs_taro__WEBPACK_IMPORTED_MODULE_6___default().showToast({
-              title: _t3.message || '登录失败',
+              title: _t4.message || '登录失败',
               icon: 'none',
               duration: 3000
             });
-          case 9:
+          case 12:
             return _context2.a(2);
         }
-      }, _callee2, null, [[2, 4], [0, 8]]);
+      }, _callee2, null, [[5, 7], [1, 3], [0, 11]]);
     }));
     return function handleLogin() {
       return _ref2.apply(this, arguments);
@@ -209,7 +218,7 @@ function Profile() {
   }();
   var performLogin = /*#__PURE__*/function () {
     var _ref3 = (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_3__["default"])(/*#__PURE__*/(0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_2__["default"])().m(function _callee3(code, userProfileInfo) {
-      var loginCode, loginUserInfo, _loginCode, _yield$Taro$login2, newCode, _yield$Taro$getUserPr2, _userInfo2, result, _t4, _t5;
+      var loginCode, loginUserInfo, _loginCode, loginRes, _yield$Taro$getUserPr2, _userInfo2, result, _t5, _t6, _t7;
       return (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_2__["default"])().w(function (_context3) {
         while (1) switch (_context3.p = _context3.n) {
           case 0:
@@ -217,16 +226,24 @@ function Profile() {
             loginCode = code;
             loginUserInfo = userProfileInfo;
             if (loginCode) {
-              _context3.n = 5;
+              _context3.n = 8;
               break;
             }
             console.log('[Profile] Getting new code...');
-            _context3.n = 1;
+            _context3.p = 1;
+            _context3.n = 2;
             return _tarojs_taro__WEBPACK_IMPORTED_MODULE_6___default().login();
-          case 1:
-            _yield$Taro$login2 = _context3.v;
-            newCode = _yield$Taro$login2.code;
-            loginCode = newCode;
+          case 2:
+            loginRes = _context3.v;
+            _context3.n = 4;
+            break;
+          case 3:
+            _context3.p = 3;
+            _t5 = _context3.v;
+            console.error('[Profile] Taro.login System Error:', _t5);
+            throw new Error('微信登录服务暂时不可用');
+          case 4:
+            loginCode = loginRes.code;
             console.log('[Profile] Got code:', ((_loginCode = loginCode) === null || _loginCode === void 0 ? void 0 : _loginCode.substring(0, 10)) + '...');
 
             // 尝试获取用户信息
@@ -234,12 +251,12 @@ function Profile() {
               nickName: '微信用户',
               avatarUrl: ''
             };
-            _context3.p = 2;
-            _context3.n = 3;
+            _context3.p = 5;
+            _context3.n = 6;
             return _tarojs_taro__WEBPACK_IMPORTED_MODULE_6___default().getUserProfile({
               desc: '用于完善用户资料'
             });
-          case 3:
+          case 6:
             _yield$Taro$getUserPr2 = _context3.v;
             _userInfo2 = _yield$Taro$getUserPr2.userInfo;
             loginUserInfo = {
@@ -247,20 +264,20 @@ function Profile() {
               avatarUrl: _userInfo2.avatarUrl
             };
             console.log('[Profile] Got user profile');
-            _context3.n = 5;
+            _context3.n = 8;
             break;
-          case 4:
-            _context3.p = 4;
-            _t4 = _context3.v;
-            console.log('[Profile] User denied profile access');
-          case 5:
+          case 7:
+            _context3.p = 7;
+            _t6 = _context3.v;
+            console.log('[Profile] User denied profile access or System Error');
+          case 8:
             console.log('[Profile] Calling wxLogin...');
-            _context3.n = 6;
+            _context3.n = 9;
             return (0,_api_auth__WEBPACK_IMPORTED_MODULE_8__.wxLogin)({
               code: loginCode,
               userInfo: loginUserInfo
             });
-          case 6:
+          case 9:
             result = _context3.v;
             console.log('[Profile] Login successful');
             setUser(result.user);
@@ -268,21 +285,21 @@ function Profile() {
               title: '登录成功',
               icon: 'success'
             });
-            _context3.n = 8;
+            _context3.n = 11;
             break;
-          case 7:
-            _context3.p = 7;
-            _t5 = _context3.v;
-            console.error('[Profile] Login error:', _t5);
+          case 10:
+            _context3.p = 10;
+            _t7 = _context3.v;
+            console.error('[Profile] Login error:', _t7);
             _tarojs_taro__WEBPACK_IMPORTED_MODULE_6___default().showToast({
-              title: _t5.message || '登录失败',
+              title: _t7.message || '登录失败',
               icon: 'none',
               duration: 3000
             });
-          case 8:
+          case 11:
             return _context3.a(2);
         }
-      }, _callee3, null, [[2, 4], [0, 7]]);
+      }, _callee3, null, [[5, 7], [1, 3], [0, 10]]);
     }));
     return function performLogin(_x, _x2) {
       return _ref3.apply(this, arguments);
@@ -290,7 +307,7 @@ function Profile() {
   }();
   var handlePrivacyAgree = /*#__PURE__*/function () {
     var _ref4 = (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_3__["default"])(/*#__PURE__*/(0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_2__["default"])().m(function _callee4() {
-      var _t6;
+      var _t8;
       return (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_2__["default"])().w(function (_context4) {
         while (1) switch (_context4.p = _context4.n) {
           case 0:
@@ -314,8 +331,8 @@ function Profile() {
             break;
           case 3:
             _context4.p = 3;
-            _t6 = _context4.v;
-            console.error('[Profile] Error handling privacy agreement:', _t6);
+            _t8 = _context4.v;
+            console.error('[Profile] Error handling privacy agreement:', _t8);
             _tarojs_taro__WEBPACK_IMPORTED_MODULE_6___default().showToast({
               title: '处理协议失败',
               icon: 'none'
@@ -340,7 +357,7 @@ function Profile() {
   };
   var handleLogout = /*#__PURE__*/function () {
     var _ref5 = (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_3__["default"])(/*#__PURE__*/(0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_2__["default"])().m(function _callee5() {
-      var _yield$Taro$showModal, confirm, _t7;
+      var _yield$Taro$showModal, confirm, _t9;
       return (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_2__["default"])().w(function (_context5) {
         while (1) switch (_context5.p = _context5.n) {
           case 0:
@@ -365,7 +382,7 @@ function Profile() {
             break;
           case 2:
             _context5.p = 2;
-            _t7 = _context5.v;
+            _t9 = _context5.v;
           case 3:
             return _context5.a(2);
         }
@@ -380,7 +397,7 @@ function Profile() {
   };
   var handleSaveEdit = /*#__PURE__*/function () {
     var _ref6 = (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_3__["default"])(/*#__PURE__*/(0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_2__["default"])().m(function _callee6() {
-      var updated, _t8;
+      var updated, _t0;
       return (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_2__["default"])().w(function (_context6) {
         while (1) switch (_context6.p = _context6.n) {
           case 0:
@@ -405,9 +422,9 @@ function Profile() {
             break;
           case 2:
             _context6.p = 2;
-            _t8 = _context6.v;
+            _t0 = _context6.v;
             _tarojs_taro__WEBPACK_IMPORTED_MODULE_6___default().showToast({
-              title: _t8.message || '更新失败',
+              title: _t0.message || '更新失败',
               icon: 'none'
             });
           case 3:
@@ -552,14 +569,14 @@ function Profile() {
                 value: String(editForm.workYears),
                 placeholder: "\u8BF7\u8F93\u5165\u5DE5\u4F5C\u5E74\u9650",
                 onInput: function onInput(e) {
-                  return handleEditChange('workYears', parseInt(e.detail.value) || 0);
+                  return handleEditChange('workYears', Number(e.detail.value));
                 }
               })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
               className: "save-btn",
               onClick: handleSaveEdit,
-              disabled: loading,
-              children: loading ? '保存中...' : '保存修改'
+              loading: loading,
+              children: "\u4FDD\u5B58\u4FEE\u6539"
             })]
           }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
             className: "info-display",
@@ -567,37 +584,10 @@ function Profile() {
               className: "info-item",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
                 className: "info-label",
-                children: "\u6635\u79F0"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
+                children: "\u6240\u5728\u5730"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
                 className: "info-value",
-                children: userInfo.nickName || '未设置'
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
-              className: "info-item",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-                className: "info-label",
-                children: "OpenID"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-                className: "info-value",
-                children: userInfo.openId
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
-              className: "info-item",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-                className: "info-label",
-                children: "\u6240\u5728\u7701\u4EFD"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-                className: "info-value",
-                children: userInfo.province || '未设置'
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
-              className: "info-item",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-                className: "info-label",
-                children: "\u6240\u5728\u57CE\u5E02"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-                className: "info-value",
-                children: userInfo.city || '未设置'
+                children: [userInfo.province, " ", userInfo.city || '未设置']
               })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
               className: "info-item",
@@ -606,104 +596,41 @@ function Profile() {
                 children: "\u5DE5\u4F5C\u5E74\u9650"
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
                 className: "info-value",
-                children: [userInfo.workYears || 0, " \u5E74"]
+                children: [userInfo.workYears, " \u5E74"]
               })]
             })]
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
           className: "menu-section",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-            className: "section-title",
-            children: "\u6211\u7684\u5185\u5BB9"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
             className: "menu-item",
             onClick: function onClick() {
-              return navigateToWebView('/profile/posts');
+              return navigateToWebView('https://help.manus.im');
             },
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-icon",
-              children: "\uD83D\uDCDD"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-label",
-              children: "\u6211\u7684\u5E16\u5B50"
+              className: "menu-text",
+              children: "\u5E2E\u52A9\u4E0E\u53CD\u9988"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
               className: "menu-arrow",
-              children: "\u203A"
+              children: ">"
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
             className: "menu-item",
             onClick: function onClick() {
-              return navigateToWebView('/profile/favorites');
+              return navigateToWebView('https://manus.im/about');
             },
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-icon",
-              children: "\u2B50"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-label",
-              children: "\u6211\u7684\u6536\u85CF"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-arrow",
-              children: "\u203A"
-            })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
-            className: "menu-item",
-            onClick: function onClick() {
-              return navigateToWebView('/profile/notifications');
-            },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-icon",
-              children: "\uD83D\uDD14"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-label",
-              children: "\u901A\u77E5\u4E2D\u5FC3"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-arrow",
-              children: "\u203A"
-            })]
-          })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
-          className: "menu-section",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-            className: "section-title",
-            children: "\u8BBE\u7F6E"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
-            className: "menu-item",
-            onClick: function onClick() {
-              return navigateToWebView('/profile/settings');
-            },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-icon",
-              children: "\u2699\uFE0F"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-label",
-              children: "\u8D26\u53F7\u8BBE\u7F6E"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-arrow",
-              children: "\u203A"
-            })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsxs)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
-            className: "menu-item",
-            onClick: function onClick() {
-              return navigateToWebView('/about');
-            },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-icon",
-              children: "\u2139\uFE0F"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
-              className: "menu-label",
+              className: "menu-text",
               children: "\u5173\u4E8E\u6211\u4EEC"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Text, {
               className: "menu-arrow",
-              children: "\u203A"
+              children: ">"
             })]
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.View, {
-          className: "menu-section",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
-            className: "logout-btn",
-            onClick: handleLogout,
-            children: "\u9000\u51FA\u767B\u5F55"
-          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_12__.jsx)(_tarojs_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
+          className: "logout-btn",
+          onClick: handleLogout,
+          children: "\u9000\u51FA\u767B\u5F55"
         })]
       })]
     })]

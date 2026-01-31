@@ -37,6 +37,10 @@
   </view>
 </template>
 
+<template name="tmpl_0_56">
+  <rich-text nodes="{{xs.b(i.p0,[])}}" space="{{i.p1}}" user-select="{{xs.b(i.p2,false)}}" style="{{i.st}}" class="{{i.cl}}" bindtap="eh"  id="{{i.uid||i.sid}}" data-sid="{{i.sid}}"></rich-text>
+</template>
+
 <template name="tmpl_0_4">
   <text selectable="{{xs.b(i.p3,!1)}}" space="{{i.p4}}" decode="{{xs.b(i.p0,!1)}}" user-select="{{xs.b(i.p5,false)}}" overflow="{{xs.b(i.p2,visible)}}" max-lines="{{i.p1}}" style="{{i.st}}" class="{{i.cl}}"  id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">
     <block wx:for="{{i.cn}}" wx:key="sid">

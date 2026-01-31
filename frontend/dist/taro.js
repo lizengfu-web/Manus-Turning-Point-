@@ -1756,12 +1756,13 @@ _tarojs_shared__WEBPACK_IMPORTED_MODULE_3__.hooks.tap('modifyRemoveEventListener
 /* harmony export */   Image: function() { return /* binding */ Image; },
 /* harmony export */   Input: function() { return /* binding */ Input; },
 /* harmony export */   Picker: function() { return /* binding */ Picker; },
+/* harmony export */   RichText: function() { return /* binding */ RichText; },
 /* harmony export */   ScrollView: function() { return /* binding */ ScrollView; },
 /* harmony export */   Text: function() { return /* binding */ Text; },
 /* harmony export */   View: function() { return /* binding */ View; },
 /* harmony export */   WebView: function() { return /* binding */ WebView; }
 /* harmony export */ });
-/* unused harmony exports Ad, AdCustom, Audio, Block, Camera, Canvas, ChannelLive, ChannelVideo, Checkbox, CheckboxGroup, CoverImage, CoverView, CustomWrapper, DraggableSheet, Editor, Form, FunctionalPageNavigator, GridBuilder, GridView, Icon, KeyboardAccessory, Label, ListBuilder, ListView, LivePlayer, LivePusher, Map, MatchMedia, MovableArea, MovableView, NativeSlot, NavigationBar, Navigator, NestedScrollBody, NestedScrollHeader, OfficialAccount, OpenContainer, OpenData, PageContainer, PageMeta, PickerView, PickerViewColumn, Progress, Radio, RadioGroup, RichText, RootPortal, ShareElement, Slider, Slot, Snapshot, Span, StickyHeader, StickySection, Swiper, SwiperItem, Switch, Textarea, Video, VoipRoom */
+/* unused harmony exports Ad, AdCustom, Audio, Block, Camera, Canvas, ChannelLive, ChannelVideo, Checkbox, CheckboxGroup, CoverImage, CoverView, CustomWrapper, DraggableSheet, Editor, Form, FunctionalPageNavigator, GridBuilder, GridView, Icon, KeyboardAccessory, Label, ListBuilder, ListView, LivePlayer, LivePusher, Map, MatchMedia, MovableArea, MovableView, NativeSlot, NavigationBar, Navigator, NestedScrollBody, NestedScrollHeader, OfficialAccount, OpenContainer, OpenData, PageContainer, PageMeta, PickerView, PickerViewColumn, Progress, Radio, RadioGroup, RootPortal, ShareElement, Slider, Slot, Snapshot, Span, StickyHeader, StickySection, Swiper, SwiperItem, Switch, Textarea, Video, VoipRoom */
 var View = 'view';
 var Icon = 'icon';
 var Progress = 'progress';

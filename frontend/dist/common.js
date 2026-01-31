@@ -17,9 +17,11 @@
 /* harmony export */ });
 /* harmony import */ var E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/regenerator.js */ "./node_modules/@babel/runtime/helpers/esm/regenerator.js");
 /* harmony import */ var E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
-/* harmony import */ var _tarojs_taro__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @tarojs/taro */ "./node_modules/@tarojs/taro/index.js");
-/* harmony import */ var _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_tarojs_taro__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./config */ "./src/api/config.ts");
+/* harmony import */ var _request__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./request */ "./src/api/request.ts");
+/* harmony import */ var _tarojs_taro__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @tarojs/taro */ "./node_modules/@tarojs/taro/index.js");
+/* harmony import */ var _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_tarojs_taro__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./config */ "./src/api/config.ts");
+
 
 
 
@@ -36,67 +38,47 @@ function wxLogin(_x) {
  */
 function _wxLogin() {
   _wxLogin = (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/(0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])().m(function _callee(params) {
-    var _params$code, response, result, errorMsg, _t;
+    var _params$code, result, _t;
     return (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])().w(function (_context) {
       while (1) switch (_context.p = _context.n) {
         case 0:
           _context.p = 0;
           console.log('[wxLogin] Starting login with code:', ((_params$code = params.code) === null || _params$code === void 0 ? void 0 : _params$code.substring(0, 10)) + '...');
-          console.log('[wxLogin] API_BASE_URL:', _config__WEBPACK_IMPORTED_MODULE_3__.API_BASE_URL);
+          console.log('[wxLogin] API_BASE_URL:', _config__WEBPACK_IMPORTED_MODULE_4__.API_BASE_URL);
 
-          // 使用标准 HTTP POST 请求
+          // 使用封装好的 request 工具类
           _context.n = 1;
-          return _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().request({
-            url: "".concat(_config__WEBPACK_IMPORTED_MODULE_3__.API_BASE_URL, "/auth/login"),
-            method: 'POST',
-            data: params,
-            header: {
-              'Content-Type': 'application/json'
-            }
-          });
+          return (0,_request__WEBPACK_IMPORTED_MODULE_2__.post)('/auth/login', params, true);
         case 1:
-          response = _context.v;
-          console.log('[wxLogin] Response status:', response.statusCode);
-          console.log('[wxLogin] Response data:', response.data);
-          if (!(response.statusCode === 200 && response.data.success)) {
-            _context.n = 2;
-            break;
-          }
-          result = response.data.data; // 保存 token 和用户信息
-          _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().setStorageSync(_config__WEBPACK_IMPORTED_MODULE_3__.TOKEN_KEY, result.token);
-          _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().setStorageSync(_config__WEBPACK_IMPORTED_MODULE_3__.USER_INFO_KEY, result.user);
+          result = _context.v;
+          // 保存 token 和用户信息
+          _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().setStorageSync(_config__WEBPACK_IMPORTED_MODULE_4__.TOKEN_KEY, result.token);
+          _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().setStorageSync(_config__WEBPACK_IMPORTED_MODULE_4__.USER_INFO_KEY, result.user);
           console.log('[wxLogin] Login successful');
           return _context.a(2, result);
         case 2:
-          errorMsg = response.data.error || '登录失败';
-          console.error('[wxLogin] Login failed:', errorMsg);
-          throw new Error(errorMsg);
-        case 3:
-          _context.n = 5;
-          break;
-        case 4:
-          _context.p = 4;
+          _context.p = 2;
           _t = _context.v;
           console.error('[wxLogin] Error:', _t);
           throw _t;
-        case 5:
+        case 3:
           return _context.a(2);
       }
-    }, _callee, null, [[0, 4]]);
+    }, _callee, null, [[0, 2]]);
   }));
   return _wxLogin.apply(this, arguments);
 }
 function getCurrentUser() {
-  return _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().getStorageSync(_config__WEBPACK_IMPORTED_MODULE_3__.USER_INFO_KEY);
+  return _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().getStorageSync(_config__WEBPACK_IMPORTED_MODULE_4__.USER_INFO_KEY);
 }
 
 /**
  * 退出登录
  */
 function logout() {
-  _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().removeStorageSync(_config__WEBPACK_IMPORTED_MODULE_3__.TOKEN_KEY);
-  _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().removeStorageSync(_config__WEBPACK_IMPORTED_MODULE_3__.USER_INFO_KEY);
-  _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().reLaunch({
+  _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().removeStorageSync(_config__WEBPACK_IMPORTED_MODULE_4__.TOKEN_KEY);
+  _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().removeStorageSync(_config__WEBPACK_IMPORTED_MODULE_4__.USER_INFO_KEY);
+  _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().reLaunch({
     url: '/pages/index/index'
   });
 }
@@ -105,7 +87,7 @@ function logout() {
  * 检查是否已登录
  */
 function isLoggedIn() {
-  var token = _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().getStorageSync(_config__WEBPACK_IMPORTED_MODULE_3__.TOKEN_KEY);
+  var token = _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().getStorageSync(_config__WEBPACK_IMPORTED_MODULE_4__.TOKEN_KEY);
   return !!token;
 }
 
@@ -121,12 +103,12 @@ function getUserInfo() {
  */
 function _getUserInfo() {
   _getUserInfo = (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/(0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])().m(function _callee2() {
-    var token, response, _t2;
+    var token, _t2;
     return (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])().w(function (_context2) {
       while (1) switch (_context2.p = _context2.n) {
         case 0:
           _context2.p = 0;
-          token = _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().getStorageSync(_config__WEBPACK_IMPORTED_MODULE_3__.TOKEN_KEY);
+          token = _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().getStorageSync(_config__WEBPACK_IMPORTED_MODULE_4__.TOKEN_KEY);
           if (token) {
             _context2.n = 1;
             break;
@@ -134,34 +116,18 @@ function _getUserInfo() {
           throw new Error('未登录');
         case 1:
           _context2.n = 2;
-          return _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().request({
-            url: "".concat(_config__WEBPACK_IMPORTED_MODULE_3__.API_BASE_URL, "/auth/user"),
-            method: 'GET',
-            header: {
-              'Authorization': "Bearer ".concat(token)
-            }
-          });
+          return get('/auth/user', null, true);
         case 2:
-          response = _context2.v;
-          if (!(response.statusCode === 200 && response.data.success)) {
-            _context2.n = 3;
-            break;
-          }
-          return _context2.a(2, response.data.data);
+          return _context2.a(2, _context2.v);
         case 3:
-          throw new Error(response.data.error || '获取用户信息失败');
-        case 4:
-          _context2.n = 6;
-          break;
-        case 5:
-          _context2.p = 5;
+          _context2.p = 3;
           _t2 = _context2.v;
           console.error('获取用户信息错误:', _t2);
           throw _t2;
-        case 6:
+        case 4:
           return _context2.a(2);
       }
-    }, _callee2, null, [[0, 5]]);
+    }, _callee2, null, [[0, 3]]);
   }));
   return _getUserInfo.apply(this, arguments);
 }
@@ -170,12 +136,12 @@ function updateUserInfo(_x2) {
 }
 function _updateUserInfo() {
   _updateUserInfo = (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/(0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])().m(function _callee3(userInfo) {
-    var token, response, updatedUser, _t3;
+    var token, updatedUser, _t3;
     return (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])().w(function (_context3) {
       while (1) switch (_context3.p = _context3.n) {
         case 0:
           _context3.p = 0;
-          token = _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().getStorageSync(_config__WEBPACK_IMPORTED_MODULE_3__.TOKEN_KEY);
+          token = _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().getStorageSync(_config__WEBPACK_IMPORTED_MODULE_4__.TOKEN_KEY);
           if (token) {
             _context3.n = 1;
             break;
@@ -183,39 +149,20 @@ function _updateUserInfo() {
           throw new Error('未登录');
         case 1:
           _context3.n = 2;
-          return _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().request({
-            url: "".concat(_config__WEBPACK_IMPORTED_MODULE_3__.API_BASE_URL, "/auth/user/update"),
-            method: 'POST',
-            data: userInfo,
-            header: {
-              'Authorization': "Bearer ".concat(token),
-              'Content-Type': 'application/json'
-            }
-          });
+          return (0,_request__WEBPACK_IMPORTED_MODULE_2__.post)('/auth/user/update', userInfo, true);
         case 2:
-          response = _context3.v;
-          if (!(response.statusCode === 200 && response.data.success)) {
-            _context3.n = 3;
-            break;
-          }
-          // 更新本地存储
-          updatedUser = response.data.data;
-          _tarojs_taro__WEBPACK_IMPORTED_MODULE_2___default().setStorageSync(_config__WEBPACK_IMPORTED_MODULE_3__.USER_INFO_KEY, updatedUser);
+          updatedUser = _context3.v;
+          _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().setStorageSync(_config__WEBPACK_IMPORTED_MODULE_4__.USER_INFO_KEY, updatedUser);
           return _context3.a(2, updatedUser);
         case 3:
-          throw new Error(response.data.error || '编辑用户信息失败');
-        case 4:
-          _context3.n = 6;
-          break;
-        case 5:
-          _context3.p = 5;
+          _context3.p = 3;
           _t3 = _context3.v;
           console.error('编辑用户信息错误:', _t3);
           throw _t3;
-        case 6:
+        case 4:
           return _context3.a(2);
       }
-    }, _callee3, null, [[0, 5]]);
+    }, _callee3, null, [[0, 3]]);
   }));
   return _updateUserInfo.apply(this, arguments);
 }
@@ -228,7 +175,6 @@ function _updateUserInfo() {
   \***************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-__webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   API_BASE_URL: function() { return /* binding */ API_BASE_URL; },
 /* harmony export */   REQUEST_TIMEOUT: function() { return /* binding */ REQUEST_TIMEOUT; },
@@ -287,7 +233,7 @@ function request(_x) {
  */
 function _request() {
   _request = (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_2__["default"])(/*#__PURE__*/(0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])().m(function _callee(options) {
-    var url, _options$method, method, data, _options$header, header, _options$showLoading, showLoading, _options$loadingText, loadingText, token, response, result, timeoutError, errorMsg, failError, _t;
+    var url, _options$method, method, data, _options$header, header, _options$showLoading, showLoading, _options$loadingText, loadingText, token, requestUrl, response, result, timeoutError, errorMsg, failError, _t;
     return (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_regenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])().w(function (_context) {
       while (1) switch (_context.p = _context.n) {
         case 0:
@@ -300,10 +246,11 @@ function _request() {
           }
           _context.p = 1;
           // 获取 token
-          token = _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().getStorageSync(_config__WEBPACK_IMPORTED_MODULE_4__.TOKEN_KEY); // 发起请求
+          token = _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().getStorageSync(_config__WEBPACK_IMPORTED_MODULE_4__.TOKEN_KEY); // 确保路径拼接正确
+          requestUrl = url.startsWith('http') ? url : "".concat(_config__WEBPACK_IMPORTED_MODULE_4__.API_BASE_URL).concat(url.startsWith('/') ? '' : '/').concat(url); // 发起请求
           _context.n = 2;
           return _tarojs_taro__WEBPACK_IMPORTED_MODULE_3___default().request({
-            url: "".concat(_config__WEBPACK_IMPORTED_MODULE_4__.API_BASE_URL).concat(url),
+            url: requestUrl,
             method: method,
             data: data,
             header: (0,E_Manus_Turning_Point_frontend_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_1__["default"])({
@@ -323,7 +270,7 @@ function _request() {
             _context.n = 6;
             break;
           }
-          if (!(result.code === 0 || result.code === 200)) {
+          if (!(result.success === true || result.code === 0 || result.code === 200)) {
             _context.n = 3;
             break;
           }
@@ -545,6 +492,57 @@ function _trpcMutation() {
   }));
   return _trpcMutation.apply(this, arguments);
 }
+
+/***/ }),
+
+/***/ "./src/pages/guide/data.ts":
+/*!*********************************!*\
+  !*** ./src/pages/guide/data.ts ***!
+  \*********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   GUIDES_DATA: function() { return /* binding */ GUIDES_DATA; }
+/* harmony export */ });
+var GUIDES_DATA = [{
+  id: 'unemployment-claim',
+  title: '失业保险金申领攻略',
+  desc: '手把手教你如何在线申领失业金，包括所需材料和流程。',
+  tag: '政策解读',
+  content: "### 1. \u7533\u9886\u6761\u4EF6\n- \u5931\u4E1A\u524D\u7528\u4EBA\u5355\u4F4D\u548C\u672C\u4EBA\u5DF2\u7ECF\u7F34\u7EB3\u5931\u4E1A\u4FDD\u9669\u8D39\u6EE1\u4E00\u5E74\uFF1B\n- \u975E\u56E0\u672C\u4EBA\u610F\u613F\u4E2D\u65AD\u5C31\u4E1A\uFF08\u5982\u88AB\u8F9E\u9000\u3001\u5408\u540C\u5230\u671F\u7B49\uFF09\uFF1B\n- \u5DF2\u7ECF\u8FDB\u884C\u5931\u4E1A\u767B\u8BB0\uFF0C\u5E76\u6709\u6C42\u804C\u8981\u6C42\u3002\n\n### 2. \u7533\u9886\u6E20\u9053\n- **\u7EBF\u4E0A\u529E\u7406**\uFF1A\u53EF\u4EE5\u901A\u8FC7\u201C\u7535\u5B50\u793E\u4FDD\u5361\u201D\u5C0F\u7A0B\u5E8F\u3001\u56FD\u5BB6\u793E\u4F1A\u4FDD\u9669\u516C\u5171\u670D\u52A1\u5E73\u53F0\u6216\u5F53\u5730\u4EBA\u793E\u90E8\u95E8\u5B98\u7F51/APP\u529E\u7406\u3002\n- **\u7EBF\u4E0B\u529E\u7406**\uFF1A\u643A\u5E26\u8EAB\u4EFD\u8BC1\u3001\u793E\u4FDD\u5361\u524D\u5F80\u53C2\u4FDD\u5730\u793E\u4FDD\u7ECF\u529E\u673A\u6784\u3002\n\n### 3. \u9886\u53D6\u671F\u9650\n- \u7D2F\u8BA1\u7F34\u8D39\u6EE11\u5E74\u4E0D\u8DB35\u5E74\u7684\uFF0C\u9886\u53D6\u671F\u9650\u6700\u957F\u4E3A12\u4E2A\u6708\uFF1B\n- \u6EE15\u5E74\u4E0D\u8DB310\u5E74\u7684\uFF0C\u6700\u957F\u4E3A18\u4E2A\u6708\uFF1B\n- 10\u5E74\u4EE5\u4E0A\u7684\uFF0C\u6700\u957F\u4E3A24\u4E2A\u6708\u3002\n\n### 4. \u5F85\u9047\u6807\u51C6\n\u5931\u4E1A\u4FDD\u9669\u91D1\u6807\u51C6\u901A\u5E38\u4E3A\u5F53\u5730\u6700\u4F4E\u5DE5\u8D44\u6807\u51C6\u768480%-90%\u3002\u9886\u53D6\u671F\u95F4\uFF0C\u793E\u4FDD\u57FA\u91D1\u4F1A\u4EE3\u7F34\u57FA\u672C\u533B\u7597\u4FDD\u9669\u8D39\uFF0C\u4E2A\u4EBA\u65E0\u9700\u7F34\u7EB3\u3002"
+}, {
+  id: 'unemployment-calc',
+  title: '失业金领取计算器',
+  desc: '输入缴费年限，快速估算你可以领取的失业金总额及期限。',
+  tag: '实用工具',
+  isTool: true,
+  path: '/pages/guide/calculator/index'
+}, {
+  id: 'social-security-strategy',
+  title: '个人就业缴社保攻略',
+  desc: '自由职业、灵活就业如何自己交社保？最全省钱攻略。',
+  tag: '办事指南',
+  isTool: true,
+  path: '/pages/guide/social-security/index'
+}, {
+  id: 'unemployment-subsidy',
+  title: '失业补助金与临时生活补助',
+  desc: '针对不符合失业金领取条件的人员，还有哪些补助可以领？',
+  tag: '福利补贴',
+  content: "### \u4EC0\u4E48\u662F\u5931\u4E1A\u8865\u52A9\u91D1\uFF1F\n\u5931\u4E1A\u8865\u52A9\u91D1\u662F\u9488\u5BF9\u9886\u53D6\u5931\u4E1A\u4FDD\u9669\u91D1\u671F\u6EE1\u4ECD\u672A\u5C31\u4E1A\u7684\u5931\u4E1A\u4EBA\u5458\uFF0C\u4EE5\u53CA\u4E0D\u7B26\u5408\u9886\u53D6\u5931\u4E1A\u4FDD\u9669\u91D1\u6761\u4EF6\u7684\u53C2\u4FDD\u5931\u4E1A\u4EBA\u5458\u53D1\u653E\u7684\u4E34\u65F6\u6027\u8865\u8D34\u3002\n\n### \u7533\u9886\u6761\u4EF6\n- \u9886\u53D6\u5931\u4E1A\u4FDD\u9669\u91D1\u671F\u6EE1\u4ECD\u672A\u5C31\u4E1A\u7684\u5931\u4E1A\u4EBA\u5458\uFF1B\n- \u4E0D\u7B26\u5408\u9886\u53D6\u5931\u4E1A\u4FDD\u9669\u91D1\u6761\u4EF6\u7684\u53C2\u4FDD\u5931\u4E1A\u4EBA\u5458\uFF08\u5982\u7F34\u8D39\u4E0D\u6EE1\u4E00\u5E74\u6216\u4E3B\u52A8\u8F9E\u804C\uFF09\u3002\n\n### \u8865\u8D34\u6807\u51C6\n\u5177\u4F53\u6807\u51C6\u7531\u5404\u5730\u533A\u6839\u636E\u5B9E\u9645\u60C5\u51B5\u786E\u5B9A\uFF0C\u901A\u5E38\u4F4E\u4E8E\u5931\u4E1A\u4FDD\u9669\u91D1\u3002\n\n### \u6CE8\u610F\u4E8B\u9879\n\u5931\u4E1A\u8865\u52A9\u91D1\u53EA\u80FD\u7533\u9886\u4E00\u6B21\uFF0C\u9886\u53D6\u671F\u95F4\u4E0D\u4EAB\u53D7\u5931\u4E1A\u4FDD\u9669\u5176\u4ED6\u5F85\u9047\uFF08\u5982\u4EE3\u7F34\u533B\u4FDD\uFF09\u3002"
+}, {
+  id: 'skill-subsidy',
+  title: '技能提升补贴申领指南',
+  desc: '在职或失业期间考取职业资格证书，最高可领2000元。',
+  tag: '技能提升',
+  content: "### \u8865\u8D34\u5BF9\u8C61\n\u4F9D\u6CD5\u53C2\u52A0\u5931\u4E1A\u4FDD\u9669\uFF0C\u7D2F\u8BA1\u7F34\u7EB3\u5931\u4E1A\u4FDD\u9669\u8D3936\u4E2A\u6708\uFF08\u90E8\u5206\u5730\u533A\u653E\u5BBD\u81F312\u4E2A\u6708\uFF09\u53CA\u4EE5\u4E0A\u7684\u4F01\u4E1A\u804C\u5DE5\u6216\u9886\u53D6\u5931\u4E1A\u91D1\u4EBA\u5458\u3002\n\n### \u8865\u8D34\u6807\u51C6\n- **\u521D\u7EA7\uFF08\u4E94\u7EA7\uFF09**\uFF1A1000\u5143\n- **\u4E2D\u7EA7\uFF08\u56DB\u7EA7\uFF09**\uFF1A1500\u5143\n- **\u9AD8\u7EA7\uFF08\u4E09\u7EA7\uFF09**\uFF1A2000\u5143\n\n### \u7533\u9886\u6D41\u7A0B\n\u53D6\u5F97\u8BC1\u4E66\u4E4B\u65E5\u8D7712\u4E2A\u6708\u5185\uFF0C\u901A\u8FC7\u5F53\u5730\u4EBA\u793E\u90E8\u95E8\u5B98\u7F51 or APP\u5728\u7EBF\u7533\u8BF7\u3002"
+}, {
+  id: 'startup-loan',
+  title: '创业担保贷款政策',
+  desc: '想创业资金不足？了解一下政府贴息的创业担保贷款。',
+  tag: '创业支持',
+  content: "### \u8D37\u6B3E\u5BF9\u8C61\n\u57CE\u9547\u767B\u8BB0\u5931\u4E1A\u4EBA\u5458\u3001\u5C31\u4E1A\u56F0\u96BE\u4EBA\u5458\u3001\u590D\u5458\u8F6C\u4E1A\u519B\u4EBA\u3001\u9AD8\u6821\u6BD5\u4E1A\u751F\u7B49\u3002\n\n### \u8D37\u6B3E\u989D\u5EA6\n- **\u4E2A\u4EBA**\uFF1A\u6700\u9AD8\u53EF\u7533\u8BF720\u4E07\u5143\u3002\n- **\u5408\u4F19\u521B\u4E1A**\uFF1A\u53EF\u6839\u636E\u5408\u4F19\u4EBA\u6570\u9002\u5F53\u63D0\u9AD8\u8D37\u6B3E\u989D\u5EA6\u3002\n\n### \u8D34\u606F\u653F\u7B56\n\u653F\u5E9C\u5C06\u6309\u89C4\u5B9A\u7ED9\u4E88\u8D34\u606F\u652F\u6301\uFF0C\u4E2A\u4EBA\u53EA\u9700\u627F\u62C5\u8F83\u4F4E\u6BD4\u4F8B\u7684\u5229\u606F\u3002\n\n### \u7533\u8BF7\u6761\u4EF6\n\u9664\u52A9\u5B66\u8D37\u6B3E\u3001\u6276\u8D2B\u8D37\u6B3E\u3001\u4F4F\u623F\u8D37\u6B3E\u3001\u8D2D\u8F66\u8D37\u6B3E\u30015\u4E07\u5143\u4EE5\u4E0B\u5C0F\u989D\u6D88\u8D39\u8D37\u6B3E\uFF08\u542B\u4FE1\u7528\u5361\u5206\u671F\uFF09\u5916\uFF0C\u7533\u8BF7\u4EBA\u53CA\u5176\u914D\u5076\u5E94\u65E0\u5176\u4ED6\u8D37\u6B3E\u8BB0\u5F55\u3002"
+}];
 
 /***/ }),
 

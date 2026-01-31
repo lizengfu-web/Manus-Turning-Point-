@@ -20,9 +20,32 @@ function App(_ref) {
   var children = _ref.children;
   (0,_tarojs_taro__WEBPACK_IMPORTED_MODULE_0__.useLaunch)(function () {
     console.log('App launched.');
+
+    // 针对微信开发者工具的特定系统错误进行全局拦截
+    if (true) {
+      try {
+        _tarojs_taro__WEBPACK_IMPORTED_MODULE_0___default().onError(function (error) {
+          if (typeof error === 'string' && error.includes('webapi_getwxaasyncsecinfo:fail')) {
+            console.warn('[System Compatibility] Intercepted WeChat SystemError in onError:', error);
+            return;
+          }
+          console.error('App Error:', error);
+        });
+      } catch (e) {
+        console.warn('Failed to set Taro.onError');
+      }
+    }
   });
 
-  // children 是将要会渲染的页面
+  // 使用 React 错误边界的思想，虽然这里是 Taro App 入口
+  // 确保系统级错误不中断渲染
+  (0,_tarojs_taro__WEBPACK_IMPORTED_MODULE_0__.useError)(function (error) {
+    if (typeof error === 'string' && error.includes('webapi_getwxaasyncsecinfo:fail')) {
+      console.warn('[System Compatibility] Intercepted WeChat SystemError in useError:', error);
+      return;
+    }
+    console.error('Global Error:', error);
+  });
   return children;
 }
 /* harmony default export */ __webpack_exports__["default"] = (App);
@@ -1035,7 +1058,7 @@ var react__WEBPACK_IMPORTED_MODULE_6___namespace_cache;
 
 
 
-var config = {"pages":["pages/index/index","pages/ai/index","pages/layoff/index","pages/interview/index","pages/opportunity/index","pages/hole/index","pages/profile/index","pages/webview/index"],"window":{"backgroundTextStyle":"light","navigationBarBackgroundColor":"#fff","navigationBarTitleText":"转角驿站","navigationBarTextStyle":"black"},"tabBar":{"color":"#999","selectedColor":"#8b5cf6","backgroundColor":"#fff","borderStyle":"black","list":[{"pagePath":"pages/index/index","text":"首页","iconPath":"assets/images/home.png","selectedIconPath":"assets/images/home-active.png"},{"pagePath":"pages/opportunity/index","text":"机会","iconPath":"assets/images/opportunity.png","selectedIconPath":"assets/images/opportunity-active.png"},{"pagePath":"pages/hole/index","text":"树洞","iconPath":"assets/images/hole.png","selectedIconPath":"assets/images/hole-active.png"},{"pagePath":"pages/profile/index","text":"我的","iconPath":"assets/images/profile.png","selectedIconPath":"assets/images/profile-active.png"}]}};
+var config = {"pages":["pages/index/index","pages/guide/index","pages/guide/detail/index","pages/guide/calculator/index","pages/guide/social-security/index","pages/ai/index","pages/layoff/index","pages/interview/index","pages/opportunity/index","pages/hole/index","pages/profile/index","pages/webview/index"],"window":{"backgroundTextStyle":"light","navigationBarBackgroundColor":"#fff","navigationBarTitleText":"转角驿站","navigationBarTextStyle":"black"},"tabBar":{"color":"#999","selectedColor":"#8b5cf6","backgroundColor":"#fff","borderStyle":"black","list":[{"pagePath":"pages/index/index","text":"首页","iconPath":"assets/images/home.png","selectedIconPath":"assets/images/home-active.png"},{"pagePath":"pages/opportunity/index","text":"机会","iconPath":"assets/images/opportunity.png","selectedIconPath":"assets/images/opportunity-active.png"},{"pagePath":"pages/hole/index","text":"树洞","iconPath":"assets/images/hole.png","selectedIconPath":"assets/images/hole-active.png"},{"pagePath":"pages/profile/index","text":"我的","iconPath":"assets/images/profile.png","selectedIconPath":"assets/images/profile-active.png"}]}};
 _tarojs_runtime__WEBPACK_IMPORTED_MODULE_2__.window.__taroAppConfig = config
 var inst = App((0,_tarojs_plugin_framework_react_dist_runtime__WEBPACK_IMPORTED_MODULE_3__.createReactApp)(_node_modules_tarojs_taro_loader_lib_entry_cache_js_name_app_app_tsx__WEBPACK_IMPORTED_MODULE_5__["default"], /*#__PURE__*/ (react__WEBPACK_IMPORTED_MODULE_6___namespace_cache || (react__WEBPACK_IMPORTED_MODULE_6___namespace_cache = __webpack_require__.t(react__WEBPACK_IMPORTED_MODULE_6__, 2))), react_dom__WEBPACK_IMPORTED_MODULE_7__["default"], config))
 
