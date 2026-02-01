@@ -4,6 +4,9 @@ export const GUIDES_DATA = [
     title: '失业保险金申领攻略',
     desc: '手把手教你如何在线申领失业金，包括所需材料和流程。',
     tag: '政策解读',
+    icon: '💵',
+    backgroundColor: '#fef3c7',
+    iconBackgroundColor: '#fcd34d',
     content: `### 1. 申领条件
 - 失业前用人单位和本人已经缴纳失业保险费满一年；
 - 非因本人意愿中断就业（如被辞退、合同到期等）；
@@ -26,6 +29,9 @@ export const GUIDES_DATA = [
     title: '失业金领取计算器',
     desc: '输入缴费年限，快速估算你可以领取的失业金总额及期限。',
     tag: '实用工具',
+    icon: '📊',
+    backgroundColor: '#dbeafe',
+    iconBackgroundColor: '#93c5fd',
     isTool: true,
     path: '/pages/guide/calculator/index'
   },
@@ -34,6 +40,9 @@ export const GUIDES_DATA = [
     title: '个人就业缴社保攻略',
     desc: '自由职业、灵活就业如何自己交社保？最全省钱攻略。',
     tag: '办事指南',
+    icon: '📄',
+    backgroundColor: '#d1fae5',
+    iconBackgroundColor: '#6ee7b7',
     isTool: true,
     path: '/pages/guide/social-security/index'
   },
@@ -42,6 +51,9 @@ export const GUIDES_DATA = [
     title: '失业补助金与临时生活补助',
     desc: '针对不符合失业金领取条件的人员，还有哪些补助可以领？',
     tag: '福利补贴',
+    icon: '🌟',
+    backgroundColor: '#fce7f3',
+    iconBackgroundColor: '#fbcfe8',
     content: `### 什么是失业补助金？
 失业补助金是针对领取失业保险金期满仍未就业的失业人员，以及不符合领取失业保险金条件的参保失业人员发放的临时性补贴。
 
@@ -58,8 +70,11 @@ export const GUIDES_DATA = [
   {
     id: 'skill-subsidy',
     title: '技能提升补贴申领指南',
-    desc: '在职或失业期间考取职业资格证书，最高可领2000元。',
+    desc: '在职或失业期间考取职业资格证书，最高可领 2000元。',
     tag: '技能提升',
+    icon: '🎆',
+    backgroundColor: '#e0e7ff',
+    iconBackgroundColor: '#c7d2fe',
     content: `### 补贴对象
 依法参加失业保险，累计缴纳失业保险费36个月（部分地区放宽至12个月）及以上的企业职工或领取失业金人员。
 
@@ -76,6 +91,9 @@ export const GUIDES_DATA = [
     title: '创业担保贷款政策',
     desc: '想创业资金不足？了解一下政府贴息的创业担保贷款。',
     tag: '创业支持',
+    icon: '🚀',
+    backgroundColor: '#fef2f2',
+    iconBackgroundColor: '#fecaca',
     content: `### 贷款对象
 城镇登记失业人员、就业困难人员、复员转业军人、高校毕业生等。
 

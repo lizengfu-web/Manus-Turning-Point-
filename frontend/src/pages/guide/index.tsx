@@ -21,8 +21,25 @@ export default function Guide() {
 
       <ScrollView scrollY className='guide-list'>
         {GUIDES_DATA.map((item) => (
-          <View key={item.id} className='guide-item' onClick={() => handleNavigate(item)}>
-            <View className='guide-tag'>{item.tag}</View>
+          <View
+            key={item.id}
+            className='guide-item'
+            style={{
+              backgroundColor: item.backgroundColor || '#fff'
+            }}
+            onClick={() => handleNavigate(item)}
+          >
+            <View className='guide-header'>
+              <View
+                className='guide-icon'
+                style={{
+                  backgroundColor: item.iconBackgroundColor || '#f0f0f0'
+                }}
+              >
+                <Text className='icon-text'>{item.icon}</Text>
+              </View>
+              <View className='guide-tag'>{item.tag}</View>
+            </View>
             <Text className='guide-title'>{item.title}</Text>
             <Text className='guide-desc'>{item.desc}</Text>
             <View className='guide-footer'>
