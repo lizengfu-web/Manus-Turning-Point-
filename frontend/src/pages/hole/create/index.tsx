@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro'
-import { View, Text, TextArea, Button, ScrollView } from '@tarojs/components'
+import { View, Text, Textarea, Button, ScrollView } from '@tarojs/components'
 import { useState } from 'react'
 import { createPost } from '@/api/hole'
 import { useUserStore } from '@/store/user'
@@ -153,7 +153,7 @@ export default function HoleCreate() {
               {contentLength}/5000
             </Text>
           </View>
-          <TextArea
+          <Textarea
             className='content-input'
             placeholder='在这里倾诉你的心声，我们在这里倾听...'
             value={content}
@@ -166,7 +166,7 @@ export default function HoleCreate() {
         <View className='section'>
           <Text className='section-title'>添加标签</Text>
           <View className='tag-input-group'>
-            <TextArea
+            <Textarea
               className='tag-input'
               placeholder='输入标签，最多 5 个'
               value={tagInput}
