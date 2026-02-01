@@ -137,13 +137,17 @@ export default function Interview() {
   // 处理发送消息
   const handleSendMessage = async () => {
     if (!isLoggedIn()) {
-      Taro.showToast({
-        title: '请先登录',
-        icon: 'none',
-        duration: 2000
+      Taro.showModal({
+        title: '提示',
+        content: '你需要登录后才能使用 AI 面试功能，是否立即登录？',
+        confirmText: '微信登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            handleAutoLogin()
+          }
+        }
       })
-      // 自动触发微信登录
-      handleAutoLogin()
       return
     }
 
@@ -398,6 +402,10 @@ export default function Interview() {
       }
     } catch (error: any) {
       console.error('自动登录失败:', error)
+      if (error.message && error.message.includes('用户拒绝')) {
+        // 用户主动拒绝登录，不显示错误提示
+        return
+      }
       Taro.showToast({
         title: error.message || '登录失败',
         icon: 'none',

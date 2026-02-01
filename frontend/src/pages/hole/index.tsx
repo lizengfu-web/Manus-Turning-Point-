@@ -37,13 +37,17 @@ export default function Hole() {
 
   const handleCreatePost = () => {
     if (!user) {
-      Taro.showToast({
-        title: '请先登录',
-        icon: 'none',
-        duration: 2000
+      Taro.showModal({
+        title: '提示',
+        content: '你需要登录后才能发布帖子，是否立即登录？',
+        confirmText: '微信登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            handleAutoLogin()
+          }
+        }
       })
-      // 自动触发微信登录
-      handleAutoLogin()
       return
     }
     Taro.navigateTo({
@@ -77,6 +81,10 @@ export default function Hole() {
       }
     } catch (error: any) {
       console.error('自动登录失败:', error)
+      if (error.message && error.message.includes('用户拒绝')) {
+        // 用户主动拒绝登录，不显示错误提示
+        return
+      }
       Taro.showToast({
         title: error.message || '登录失败',
         icon: 'none',
@@ -87,13 +95,17 @@ export default function Hole() {
 
   const handleLikePost = (postId: number) => {
     if (!user) {
-      Taro.showToast({
-        title: '请先登录',
-        icon: 'none',
-        duration: 2000
+      Taro.showModal({
+        title: '提示',
+        content: '你需要登录后才能点赞，是否立即登录？',
+        confirmText: '微信登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            handleAutoLogin()
+          }
+        }
       })
-      // 自动触发微信登录
-      handleAutoLogin()
       return
     }
     // 实现点赞逻辑
@@ -102,13 +114,17 @@ export default function Hole() {
 
   const handleCommentPost = (postId: number) => {
     if (!user) {
-      Taro.showToast({
-        title: '请先登录',
-        icon: 'none',
-        duration: 2000
+      Taro.showModal({
+        title: '提示',
+        content: '你需要登录后才能评论，是否立即登录？',
+        confirmText: '微信登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            handleAutoLogin()
+          }
+        }
       })
-      // 自动触发微信登录
-      handleAutoLogin()
       return
     }
     // 实现评论逻辑
