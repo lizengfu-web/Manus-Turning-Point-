@@ -37,16 +37,20 @@ export default function Layoff() {
     loadChatHistory()
   }, [])
 
-  // 当消息列表更新时，自动滚动到下部
+  // 当消息列表更新时，自动滚动到下部（三重保障）
   useEffect(() => {
     if (chatMessages.length > 0) {
       const lastMessage = chatMessages[chatMessages.length - 1]
-      // 使用 scroll-into-view 滚动到最后一条消息
+      // 第一次：使用 scroll-into-view 滚动到最后一条消息
       setScrollIntoViewId(lastMessage.id)
-      // 同时设置一个超大的 scrollTop 值作为备选
+      // 第二次：第一次延迟滚动（100ms）
       setTimeout(() => {
         setScrollTop(999999)
-      }, 50)
+      }, 100)
+      // 第三次：第二次延迟滚动（300ms，等待長文本渲染完成）
+      setTimeout(() => {
+        setScrollTop(999999)
+      }, 300)
     }
   }, [chatMessages])
 
@@ -79,12 +83,15 @@ export default function Layoff() {
         setChatMessages(savedHistory.data)
         // 更新 messageIdRef 以确保新消息 ID 不重复
         messageIdRef.current = savedHistory.data.length
-        // 延迟滚动到下部
+        // 延迟滚动到下部（三重保障）
+        const lastMessage = savedHistory.data[savedHistory.data.length - 1]
+        setScrollIntoViewId(lastMessage.id)
         setTimeout(() => {
-          const lastMessage = savedHistory.data[savedHistory.data.length - 1]
-          setScrollIntoViewId(lastMessage.id)
           setScrollTop(999999)
         }, 100)
+        setTimeout(() => {
+          setScrollTop(999999)
+        }, 300)
       } else {
         // 首次进入，显示开场白
         const welcomeMessage: ChatMessage = {

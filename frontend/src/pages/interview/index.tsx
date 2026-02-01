@@ -24,6 +24,7 @@ export default function Interview() {
   const [inputValue, setInputValue] = useState('')
   const [loading, setLoading] = useState(false)
   const [scrollTop, setScrollTop] = useState(0)
+  const [scrollIntoViewId, setScrollIntoViewId] = useState<string>('')
   const messageIdRef = useRef(0)
   const sessionIdRef = useRef<string>('')
 
@@ -36,14 +37,20 @@ export default function Interview() {
     loadChatHistory()
   }, [])
 
-  // 当消息列表更新时，自动滚动到下部
+  // 当消息列表更新时，自动滚动到下部（三重保障）
   useEffect(() => {
     if (chatMessages.length > 0) {
-      // 延迟执行滚动，确保 DOM 已更新
+      const lastMessage = chatMessages[chatMessages.length - 1]
+      // 第一次：使用 scroll-into-view 定位
+      setScrollIntoViewId(lastMessage.id)
+      // 第二次：第一次延迟滚动（100ms）
       setTimeout(() => {
-        // 使用一个超大的数值确保滚动到最下
         setScrollTop(999999)
       }, 100)
+      // 第三次：第二次延迟滚动（300ms，等待長文本渲染完成）
+      setTimeout(() => {
+        setScrollTop(999999)
+      }, 300)
     }
   }, [chatMessages])
 
@@ -76,11 +83,15 @@ export default function Interview() {
         setChatMessages(savedHistory.data)
         // 更新 messageIdRef 以确保新消息 ID 不重复
         messageIdRef.current = savedHistory.data.length
-        // 延迟滚动到下部，确保 DOM 已更新
+        // 延迟滚动到下部，确保 DOM 已更新（三重保障）
+        const lastMessage = savedHistory.data[savedHistory.data.length - 1]
+        setScrollIntoViewId(lastMessage.id)
         setTimeout(() => {
-          // 使用一个超大的数值确保滚动到最下
           setScrollTop(999999)
-        }, 150)
+        }, 100)
+        setTimeout(() => {
+          setScrollTop(999999)
+        }, 300)
       } else {
         // 首次进入，显示开场白
         const welcomeMessage: ChatMessage = {
@@ -468,15 +479,16 @@ export default function Interview() {
         </View>
       </View>
 
-      {/* 聊天消息区域 */}
+      {/* 聘天消息区域 */}
       <ScrollView
         className='chat-messages'
         scrollY
         scrollTop={scrollTop}
         scrollWithAnimation
+        scrollIntoViewId={scrollIntoViewId}
       >
         {chatMessages.map((msg) => (
-          <View key={msg.id} className={`message-wrapper ${msg.role}`}>
+          <View key={msg.id} id={msg.id} className={`message-wrapper ${msg.role}`}>
             <View className={`message-avatar ${msg.role}`}>
               {msg.role === 'user' ? '👤' : '🌟'}
             </View>
