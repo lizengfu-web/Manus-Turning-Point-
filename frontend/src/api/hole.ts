@@ -56,5 +56,9 @@ export function createPost(data: {
   mood?: string;
   isAnonymous?: boolean;
 }) {
-  return post('/api/trpc/hole.create', data);
+  console.log('[API] createPost called with data:', data);
+  return post('/api/trpc/hole.create', data).catch((error) => {
+    console.error('[API] createPost failed:', error);
+    throw error;
+  });
 }

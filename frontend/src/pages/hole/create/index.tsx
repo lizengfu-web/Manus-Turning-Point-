@@ -79,28 +79,37 @@ export default function HoleCreate() {
 
     setLoading(true)
     try {
-      await createPost({
+      const postData = {
         content: content.trim(),
         category: selectedCategory,
         tags,
         mood: selectedMood,
         isAnonymous
-      })
+      }
+      console.log('[HoleCreate] 准备发布帖子，数据:', postData)
+      
+      await createPost(postData)
 
       Taro.showToast({
         title: '发布成功',
         icon: 'success'
       })
 
-      // 延迟返回，让用户看到成功提示
       setTimeout(() => {
         Taro.navigateBack()
       }, 1500)
     } catch (error: any) {
-      console.error('发布失败:', error)
+      console.error('[HoleCreate] 发布失败:', error)
+      let errorMsg = error.message || '发布失败，请稍后重试'
+      if (error.message === '网络请求失败') {
+        errorMsg = '网络连接失败，请检查网络设置'
+      } else if (error.message === '请求超时，请检查网络') {
+        errorMsg = '请求超时，请检查网络连接'
+      }
       Taro.showToast({
-        title: error.message || '发布失败，请稍后重试',
-        icon: 'none'
+        title: errorMsg,
+        icon: 'none',
+        duration: 3000
       })
     } finally {
       setLoading(false)
