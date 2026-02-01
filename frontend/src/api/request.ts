@@ -88,11 +88,8 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
         throw new Error(result.message || '请求失败');
       }
     } else {
-      Taro.showToast({
-        title: '网络请求失败',
-        icon: 'none',
-        duration: 2000
-      });
+      // 网络请求失败，不再弹窗，由各页面自行处理
+      console.error(`[Request] HTTP ${response.statusCode}: ${response.statusMessage}`);
       throw new Error('网络请求失败');
     }
   } catch (error: any) {

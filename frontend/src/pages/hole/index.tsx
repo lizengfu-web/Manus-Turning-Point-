@@ -9,21 +9,31 @@ export default function Hole() {
   const { user } = useUserStore()
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     loadPosts()
   }, [])
 
-  const loadPosts = async () => {
+  const loadPosts = async (retryCount = 0) => {
     try {
       setLoading(true)
+      setError(null)
       const data = await getPostList()
-      setPosts(data)
+      setPosts(data.posts || data || [])
     } catch (error: any) {
-      Taro.showToast({
-        title: error.message || '加载失败',
-        icon: 'none'
-      })
+      console.error('[Hole] 加载帖子列表失败:', error)
+      
+      // 如果是网络错误且重试次数少于 1 次，尝试静默重试
+      if (error.message === '网络请求失败' && retryCount < 1) {
+        console.log('[Hole] 网络请求失败，正在静默重试...')
+        setTimeout(() => loadPosts(retryCount + 1), 1500)
+        return
+      }
+      
+      // 如果最终还是失败，仅记录错误但不弹窗，展示空状态
+      setError('暂时无法连接服务器')
+      setPosts([])
     } finally {
       setLoading(false)
     }
@@ -82,7 +92,6 @@ export default function Hole() {
     } catch (error: any) {
       console.error('自动登录失败:', error)
       if (error.message && error.message.includes('用户拒绝')) {
-        // 用户主动拒绝登录，不显示错误提示
         return
       }
       Taro.showToast({
@@ -108,7 +117,6 @@ export default function Hole() {
       })
       return
     }
-    // 实现点赞逻辑
     console.log('点赞了帖子:', postId)
   }
 
@@ -127,7 +135,6 @@ export default function Hole() {
       })
       return
     }
-    // 实现评论逻辑
     Taro.navigateTo({
       url: `/pages/webview/index?url=/hole/${postId}/comment`
     })
@@ -151,10 +158,17 @@ export default function Hole() {
     }
   }
 
+  const handleRetry = () => {
+    loadPosts()
+  }
+
   if (loading) {
     return (
       <View className='hole-page'>
-        <View className='loading'>加载中...</View>
+        <View className='loading-state'>
+          <Text className='loading-icon'>⏳</Text>
+          <Text className='loading-text'>加载中...</Text>
+        </View>
       </View>
     )
   }
@@ -172,8 +186,24 @@ export default function Hole() {
       </View>
 
       <ScrollView className='post-list' scrollY>
+        {error && (
+          <View className='error-state'>
+            <Text className='error-icon'>🌐</Text>
+            <Text className='error-text'>{error}</Text>
+            <Button className='retry-btn' onClick={handleRetry}>
+              重新加载
+            </Button>
+          </View>
+        )}
+
+        {!error && posts.length === 0 && (
+          <View className='empty-state'>
+            <Text className='empty-icon'>📝</Text>
+            <Text className='empty-text'>还没有帖子，快来发布第一条吧！</Text>
+          </View>
+        )}
+
         {posts.map((post: any) => {
-          // 根据帖子内容判断类型，设置不同的样式
           const getPostType = () => {
             const content = post.content?.toLowerCase() || ''
             if (content.includes('求助') || content.includes('求推荐')) return 'help'
@@ -183,53 +213,47 @@ export default function Hole() {
           }
           const postType = getPostType()
           return (
-          <View
-            key={post.id}
-            className={`post-card type-${postType}`}
-            onClick={() => navigateToDetail(post.id)}
-          >
-            <View className='post-header'>
-              <Text className='author'>{post.author || '匿名用户'}</Text>
-              <Text className='time'>{formatTime(post.createdAt)}</Text>
+            <View
+              key={post.id}
+              className={`post-card type-${postType}`}
+              onClick={() => navigateToDetail(post.id)}
+            >
+              <View className='post-header'>
+                <Text className='author'>{post.author || '匿名用户'}</Text>
+                <Text className='time'>{formatTime(post.createdAt)}</Text>
+              </View>
+
+              <Text className='post-content'>{post.content}</Text>
+
+              {post.tags && post.tags.length > 0 && (
+                <View className='tags'>
+                  {post.tags.map((tag: string, index: number) => (
+                    <Text key={index} className='tag'>
+                      #{tag}
+                    </Text>
+                  ))}
+                </View>
+              )}
+
+              <View className='post-footer'>
+                <View className='stat-item' onClick={(e) => {
+                  e.stopPropagation()
+                  handleLikePost(post.id)
+                }}>
+                  <Text className='stat-icon'>👍</Text>
+                  <Text className='stat-count'>{post.likes || 0}</Text>
+                </View>
+                <View className='stat-item' onClick={(e) => {
+                  e.stopPropagation()
+                  handleCommentPost(post.id)
+                }}>
+                  <Text className='stat-icon'>💬</Text>
+                  <Text className='stat-count'>{post.comments || 0}</Text>
+                </View>
+              </View>
             </View>
-
-            <Text className='post-content'>{post.content}</Text>
-
-            {post.tags && post.tags.length > 0 && (
-              <View className='tags'>
-                {post.tags.map((tag: string, index: number) => (
-                  <Text key={index} className='tag'>
-                    #{tag}
-                  </Text>
-                ))}
-              </View>
-            )}
-
-            <View className='post-footer'>
-              <View className='stat-item' onClick={(e) => {
-                e.stopPropagation()
-                handleLikePost(post.id)
-              }}>
-                <Text className='stat-icon'>👍</Text>
-                <Text className='stat-count'>{post.likes || 0}</Text>
-              </View>
-              <View className='stat-item' onClick={(e) => {
-                e.stopPropagation()
-                handleCommentPost(post.id)
-              }}>
-                <Text className='stat-icon'>💬</Text>
-                <Text className='stat-count'>{post.comments || 0}</Text>
-              </View>
-            </View>
-          </View>
-        )
+          )
         })}
-
-        {posts.length === 0 && (
-          <View className='empty'>
-            <Text>还没有帖子，快来发布第一条吧！</Text>
-          </View>
-        )}
       </ScrollView>
     </View>
   )

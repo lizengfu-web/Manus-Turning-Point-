@@ -78,11 +78,7 @@ export default function Profile() {
 
       // 如果最终还是失败，且没有本地缓存，则给予友好提示
       // 注意：getUserInfo 内部已经处理了本地缓存降级，如果走到这里说明本地也没有缓存
-      Taro.showToast({
-        title: '暂时无法连接服务器，已切换至离线模式',
-        icon: 'none',
-        duration: 3000
-      })
+      console.log('[Profile] 网络连接失败，将使用离线模式')
     } finally {
       setLoading(false)
     }
