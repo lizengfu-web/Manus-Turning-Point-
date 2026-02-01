@@ -44,7 +44,7 @@ export default {
       },
       {
         pagePath: 'pages/hole/index',
-        text: '树洞',
+        text: '心声驿站',
         iconPath: 'assets/images/hole.png',
         selectedIconPath: 'assets/images/hole-active.png'
       },

@@ -451,7 +451,7 @@ export default function Profile() {
                       <View className='menu-icon'>📝</View>
                       <View className='menu-content'>
                         <Text className='menu-title'>我的帖子</Text>
-                        <Text className='menu-desc'>查看我在树洞发布的帖子</Text>
+                        <Text className='menu-desc'>查看我在心声驿站发布的帖子</Text>
                       </View>
                       <Text className='menu-arrow'>›</Text>
                     </View>

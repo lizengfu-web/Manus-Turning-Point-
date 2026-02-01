@@ -1,3 +1,3 @@
 export default {
-  navigationBarTitleText: '树洞'
+  navigationBarTitleText: '心声驿站'
 };

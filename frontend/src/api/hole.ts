@@ -11,6 +11,10 @@ export interface Post {
   commentCount: number;
   createdAt: string;
   isLiked: boolean;
+  isAnonymous?: boolean; // 是否匿名发布
+  category?: 'vent' | 'help' | 'share' | 'positive'; // 帖子分类
+  tags?: string[]; // 标签
+  mood?: string; // 心情表情
 }
 
 export interface PostListParams {
@@ -40,4 +44,17 @@ export function likePost(postId: number) {
  */
 export function unlikePost(postId: number) {
   return post('/api/trpc/hole.unlike', { postId });
+}
+
+/**
+ * 发布新帖子
+ */
+export function createPost(data: {
+  content: string;
+  category?: 'vent' | 'help' | 'share' | 'positive';
+  tags?: string[];
+  mood?: string;
+  isAnonymous?: boolean;
+}) {
+  return post('/api/trpc/hole.create', data);
 }

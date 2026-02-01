@@ -163,8 +163,8 @@ export default function Hole() {
     <View className='hole-page'>
       <View className='header'>
         <View className='header-content'>
-          <Text className='title'>树洞</Text>
-          <Text className='subtitle'>倾诉你的心声，我们在这里倾听</Text>
+          <Text className='title'>心声驿站</Text>
+          <Text className='subtitle'>倾诰你的心声，我们在这里倾听</Text>
         </View>
         <Button className='create-btn' onClick={handleCreatePost}>
           发布
@@ -172,10 +172,20 @@ export default function Hole() {
       </View>
 
       <ScrollView className='post-list' scrollY>
-        {posts.map((post: any) => (
+        {posts.map((post: any) => {
+          // 根据帖子内容判断类型，设置不同的样式
+          const getPostType = () => {
+            const content = post.content?.toLowerCase() || ''
+            if (content.includes('求助') || content.includes('求推荐')) return 'help'
+            if (content.includes('正能量') || content.includes('加油')) return 'positive'
+            if (content.includes('分享')) return 'share'
+            return 'vent'
+          }
+          const postType = getPostType()
+          return (
           <View
             key={post.id}
-            className='post-card'
+            className={`post-card type-${postType}`}
             onClick={() => navigateToDetail(post.id)}
           >
             <View className='post-header'>
@@ -212,7 +222,8 @@ export default function Hole() {
               </View>
             </View>
           </View>
-        ))}
+        )
+        })}
 
         {posts.length === 0 && (
           <View className='empty'>

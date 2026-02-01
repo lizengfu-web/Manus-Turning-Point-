@@ -39,7 +39,7 @@ export const FEATURES: Feature[] = [
   },
   {
     id: 'hole',
-    title: '情感树洞',
+    title: '心声驿站',
     description: '倾诉烦恼、获得支持、分享经验',
     icon: '💬',
     tags: ['社区', '支持'],
