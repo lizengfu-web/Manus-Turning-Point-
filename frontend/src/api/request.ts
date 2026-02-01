@@ -113,6 +113,7 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
         let errorMsg = '网络连接失败';
         if (error.errMsg.includes('request:fail')) {
           errorMsg = '无法连接到服务器，请检查：\n1. 网络连接\n2. 服务器地址配置\n3. 微信开发者工具中关闭域名校验';
+          console.error(`[Network Diagnostic] Failed to connect to: ${requestUrl}. Please ensure the server is running and accessible from your network.`);
         }
         const failError = new Error(errorMsg);
         throw failError;

@@ -55,7 +55,7 @@ export default function Profile() {
     }
   }, [user])
 
-  const loadUserInfo = async () => {
+  const loadUserInfo = async (retryCount = 0) => {
     try {
       setLoading(true)
       const info = await getUserInfo()
@@ -68,9 +68,20 @@ export default function Profile() {
       })
     } catch (error: any) {
       console.error('加载用户信息错误:', error)
+      
+      // 如果是网络错误且重试次数少于 2 次，尝试静默重试
+      if (error.message === '网络请求失败' && retryCount < 2) {
+        console.log(`[Profile] 网络请求失败，正在进行第 ${retryCount + 1} 次重试...`)
+        setTimeout(() => loadUserInfo(retryCount + 1), 1000)
+        return
+      }
+
+      // 如果最终还是失败，且没有本地缓存，则给予友好提示
+      // 注意：getUserInfo 内部已经处理了本地缓存降级，如果走到这里说明本地也没有缓存
       Taro.showToast({
-        title: error.message || '加载用户信息失败',
-        icon: 'none'
+        title: '暂时无法连接服务器，已切换至离线模式',
+        icon: 'none',
+        duration: 3000
       })
     } finally {
       setLoading(false)
