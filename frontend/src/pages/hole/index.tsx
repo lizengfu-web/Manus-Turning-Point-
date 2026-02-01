@@ -51,7 +51,7 @@ export default function Hole() {
       return
     }
     Taro.navigateTo({
-      url: `/pages/webview/index?url=/hole/create`
+      url: `/pages/hole/create/index`
     })
   }
 

@@ -10,6 +10,7 @@ export default {
     'pages/interview/index',
     'pages/opportunity/index',
     'pages/hole/index',
+    'pages/hole/create/index',
     'pages/profile/index',
     'pages/profile/edit/index',
     'pages/profile/posts/index',
