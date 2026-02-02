@@ -2,7 +2,8 @@ import { View, Text, Button, Image, Input, Picker, ScrollView } from '@tarojs/co
 import Taro from '@tarojs/taro'
 import { useUserStore } from '@/store/user'
 import { wxLogin, logout, getUserInfo, updateUserInfo } from '@/api/auth'
-import { useState, useEffect, useMemo } from 'react'
+import { dailyCheckIn } from '@/api/points'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import PrivacyAgreementModal from '@/components/PrivacyAgreementModal'
 import { hasAgreedPrivacyPolicy, savePrivacyPolicyAgreement } from '@/constants/privacy'
 import { getProvinceList, getCityListByProvince } from '@/pages/guide/calculator/data'
@@ -19,6 +20,8 @@ export default function Profile() {
     avatarUrl: '',
     openId: '',
     userType: '',
+    totalPoints: 0,
+    level: 1,
     province: '',
     city: '',
     workYears: 0,
@@ -65,6 +68,8 @@ export default function Profile() {
         province: info.province || '',
         city: info.city || '',
         workYears: info.workYears || 0,
+        totalPoints: info.totalPoints || 0,
+        level: info.level || 1,
       })
     } catch (error: any) {
       console.error('加载用户信息错误:', error)
@@ -186,6 +191,7 @@ export default function Profile() {
 
       console.log('[Profile] Login successful')
       setUser(result.user)
+      setUserInfo(result.user) // 更新本地 state
       Taro.showToast({
         title: '登录成功',
         icon: 'success'
@@ -311,6 +317,7 @@ export default function Profile() {
       })
       
       setUserInfo(updated)
+      setUser(updated) // 更新全局 store
       setIsEditing(false)
       
       Taro.showToast({
@@ -321,6 +328,50 @@ export default function Profile() {
       console.error('保存用户信息错误:', error)
       Taro.showToast({
         title: error.message || '更新失败',
+        icon: 'none'
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDailyCheckIn = async () => {
+    if (!user) {
+      Taro.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
+    setLoading(true)
+    try {
+      const res = await dailyCheckIn()
+      if (res.success) {
+        Taro.showToast({
+          title: res.message,
+          icon: 'success'
+        })
+        // 更新用户 store 中的积分和等级
+        setUser({
+          ...user,
+          totalPoints: res.currentPoints,
+          level: res.currentLevel
+        })
+        setUserInfo(prev => ({
+          ...prev,
+          totalPoints: res.currentPoints,
+          level: res.currentLevel
+        }))
+      } else {
+        Taro.showToast({
+          title: res.message || '打卡失败',
+          icon: 'none'
+        })
+      }
+    } catch (error: any) {
+      console.error('每日打卡失败:', error)
+      Taro.showToast({
+        title: error.message || '打卡失败',
         icon: 'none'
       })
     } finally {
@@ -361,9 +412,16 @@ export default function Profile() {
                 <View className='user-details'>
                   <Text className='nickname'>{userInfo.nickName || '用户'}</Text>
                   <Text className='location'>{userInfo.province} {userInfo.city || '未设置'}</Text>
+                  <View className='user-stats'>
+                    <Text className='stat-item'>积分: {userInfo.totalPoints}</Text>
+                    <Text className='stat-item'>等级: Lv.{userInfo.level}</Text>
+                  </View>
                 </View>
                 <Button className='edit-btn' onClick={() => setIsEditing(!isEditing)}>
                   {isEditing ? '取消' : '编辑'}
+                </Button>
+                <Button className='checkin-btn' onClick={handleDailyCheckIn} disabled={loading}>
+                  {loading ? '打卡中...' : '每日打卡'}
                 </Button>
               </View>
             ) : (

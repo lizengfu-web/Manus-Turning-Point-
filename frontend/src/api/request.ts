@@ -20,6 +20,7 @@ interface Response<T = any> {
  * 网络请求封装
  */
 export async function request<T = any>(options: RequestOptions): Promise<T> {
+  let requestUrl: string;
   const {
     url,
     method = 'GET',
@@ -39,7 +40,7 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
     const token = Taro.getStorageSync(TOKEN_KEY);
 
     // 确保路径拼接正确
-    const requestUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+    requestUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
 
     // 发起请求
     const response = await Taro.request({

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { INTERVIEW_WELCOME_MESSAGE, COZE_CONFIG, MOCK_RESPONSES, generateSessionId } from './data'
 import { useUserStore } from '@/store/user'
 import { isLoggedIn } from '@/api/auth'
+import { consumeAiInterviewPoints } from '@/api/points'
 import './index.scss'
 
 interface ChatMessage {
@@ -155,7 +156,8 @@ export default function Interview() {
         cancelText: '取消',
         success: (res) => {
           if (res.confirm) {
-            handleAutoLogin()
+            // TODO: 跳转到登录页面或执行登录操作
+            // 目前先不处理，因为登录逻辑在 profile 页面
           }
         }
       })
@@ -165,6 +167,41 @@ export default function Interview() {
     if (!inputValue.trim()) {
       Taro.showToast({ title: '请输入您的问题', icon: 'none' })
       return
+    }
+
+    // 检查用户积分是否足够
+    if (user && user.totalPoints < 20) { // 假设 AI 面试消耗 20 积分
+      Taro.showToast({
+        title: '积分不足，无法进行 AI 面试',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 消耗积分
+    if (user) {
+      try {
+        const consumeRes = await consumeAiInterviewPoints(user.id)
+        if (!consumeRes.success) {
+          Taro.showToast({
+            title: consumeRes.message || '积分消耗失败',
+            icon: 'none'
+          })
+          return
+        }
+        // 更新用户 store 中的积分
+        useUserStore.getState().setUser({
+          ...user,
+          totalPoints: user.totalPoints - 20 // 假设 AI 面试消耗 20 积分
+        })
+      } catch (error: any) {
+        console.error('消耗积分失败:', error)
+        Taro.showToast({
+          title: error.message || '积分消耗失败',
+          icon: 'none'
+        })
+        return
+      }
     }
 
     try {

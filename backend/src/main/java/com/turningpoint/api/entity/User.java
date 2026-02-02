@@ -24,9 +24,13 @@ public class User {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer totalPoints = 0;
+    private Integer level = 1;
 
     @PrePersist
     protected void onCreate() {
+        if (totalPoints == null) { totalPoints = 0; }
+        if (level == null) { level = 1; }
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }

@@ -6,6 +6,8 @@ interface User {
   nickName: string;
   avatarUrl: string;
   userType: string;
+  totalPoints: number;
+  level: number;
 }
 
 interface UserStore {

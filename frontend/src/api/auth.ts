@@ -12,8 +12,10 @@ export interface LoginParams {
 
 export interface LoginResponse {
   token: string;
-  user: {
+    user: {
     id: number;
+    totalPoints: number;
+    level: number;
     openId: string;
     nickName: string;
     avatarUrl: string;
@@ -33,7 +35,7 @@ export async function wxLogin(params: LoginParams): Promise<LoginResponse> {
     console.log('[wxLogin] API_BASE_URL:', API_BASE_URL);
     
     // 使用封装好的 request 工具类
-    const result = await post<LoginResponse>('/auth/login', params, true);
+    const result = await post<LoginResponse>('/api/auth/login', params, true);
     
     // 保存 token 和用户信息
     Taro.setStorageSync(TOKEN_KEY, result.token);
@@ -84,7 +86,7 @@ export async function getUserInfo() {
 
     try {
       // 尝试从服务器获取
-      const userInfo = await get('/auth/user', null, false);
+      const userInfo = await get('/api/auth/user', null, false);
       // 获取成功，保存到本地缓存
       Taro.setStorageSync(LOCAL_USER_CACHE_KEY, userInfo);
       return userInfo;
@@ -124,7 +126,7 @@ export async function updateUserInfo(userInfo: {
 
     try {
       // 尝试从服务器更新
-      const updatedUser = await post('/auth/user/update', userInfo, false);
+      const updatedUser = await post('/api/auth/user/update', userInfo, false);
       // 更新成功，保存到本地缓存和存储
       Taro.setStorageSync(USER_INFO_KEY, updatedUser);
       Taro.setStorageSync(LOCAL_USER_CACHE_KEY, updatedUser);
@@ -171,7 +173,7 @@ export async function syncUserInfoToServer() {
     }
 
     // 尝试同步到服务器
-    const syncedUser = await post('/auth/user/update', cachedInfo, false);
+    const syncedUser = await post('/api/auth/user/update', cachedInfo, false);
     
     // 同步成功，更新本地存储
     Taro.setStorageSync(USER_INFO_KEY, syncedUser);

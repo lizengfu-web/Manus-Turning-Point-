@@ -4,6 +4,7 @@ import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.turningpoint.api.entity.User;
 import com.turningpoint.api.repository.UserRepository;
+import com.turningpoint.api.service.PointService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +23,9 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PointService pointService;
 
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, Object> body) {
@@ -49,6 +53,7 @@ public class AuthController {
                 user = new User();
                 user.setOpenid(openid);
                 userRepository.save(user);
+                pointService.grantFirstLoginPoints(user); // 首次登录发放积分
             } else {
                 user = userOptional.get();
             }
@@ -63,6 +68,8 @@ public class AuthController {
             userMap.put("nickName", user.getNickname() != null ? user.getNickname() : "微信用户");
             userMap.put("avatarUrl", user.getAvatarUrl() != null ? user.getAvatarUrl() : "");
             userMap.put("userType", "normal");
+            userMap.put("totalPoints", user.getTotalPoints());
+            userMap.put("level", user.getLevel());
             
             data.put("user", userMap);
             response.put("data", data);

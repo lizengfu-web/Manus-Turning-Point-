@@ -26,7 +26,7 @@ export interface PostListParams {
  * 获取帖子列表
  */
 export function getPostList(params: PostListParams = {}) {
-  return get<{ posts: Post[]; total: number }>('/api/trpc/hole.list', {
+  return get<{ posts: Post[]; total: number }>('/api/hole/list', {
     page: params.page || 1,
     pageSize: params.pageSize || 20
   });
@@ -36,14 +36,14 @@ export function getPostList(params: PostListParams = {}) {
  * 点赞帖子
  */
 export function likePost(postId: number) {
-  return post('/api/trpc/hole.like', { postId });
+  return post('/api/hole/like', { postId });
 }
 
 /**
  * 取消点赞
  */
 export function unlikePost(postId: number) {
-  return post('/api/trpc/hole.unlike', { postId });
+  return post('/api/hole/unlike', { postId });
 }
 
 /**
@@ -57,7 +57,7 @@ export function createPost(data: {
   isAnonymous?: boolean;
 }) {
   console.log('[API] createPost called with data:', data);
-  return post('/api/trpc/hole.create', data).catch((error) => {
+  return post('/api/hole/create', data).catch((error) => {
     console.error('[API] createPost failed:', error);
     throw error;
   });
