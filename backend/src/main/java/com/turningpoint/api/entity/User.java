@@ -21,6 +21,8 @@ public class User {
     private String city;
     private String province;
     private String country;
+    private String occupation;
+    private String identity;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

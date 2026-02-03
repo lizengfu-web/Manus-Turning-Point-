@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.HashMap;
 import java.util.Map;
+import com.turningpoint.api.payload.UpdateUserProfileRequest;
 import java.util.Optional;
 
 @RestController
@@ -81,6 +82,50 @@ public class AuthController {
             response.put("message", e.getMessage());
         }
         
+        return response;
+    }
+
+    @PostMapping("/user/updateProfile")
+    public Map<String, Object> updateProfile(@RequestBody UpdateUserProfileRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // 假设用户已经登录，并且可以通过某种方式获取到当前用户的ID或OpenID
+            // 这里简化处理，直接通过 request 中的 openid 来查找用户
+            // 实际应用中，应该从认证信息中获取当前用户ID
+            String openid = request.getOpenid(); // 假设 request 中包含 openid
+            if (openid == null || openid.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "OpenID is missing");
+                return response;
+            }
+
+            Optional<User> userOptional = userRepository.findByOpenid(openid);
+            if (userOptional.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "User not found");
+                return response;
+            }
+
+            User user = userOptional.get();
+            user.setNickname(request.getNickname());
+            user.setAvatarUrl(request.getAvatarUrl());
+            user.setGender(request.getGender());
+            user.setCity(request.getCity());
+            user.setProvince(request.getProvince());
+            user.setCountry(request.getCountry());
+            user.setOccupation(request.getOccupation());
+            user.setIdentity(request.getIdentity());
+
+            userRepository.save(user);
+
+            response.put("success", true);
+            response.put("message", "User profile updated successfully");
+        } catch (Exception e) {
+            System.err.println("[UpdateProfile] Exception occurred during profile update:");
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
         return response;
     }
 }

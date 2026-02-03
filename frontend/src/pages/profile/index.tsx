@@ -196,6 +196,16 @@ export default function Profile() {
         title: '登录成功',
         icon: 'success'
       })
+      
+      // 检查用户信息是否完善
+      if (!result.user.occupation || !result.user.identity || !result.user.city) {
+        // 用户信息未完善，跳转到完善页面
+        setTimeout(() => {
+          Taro.navigateTo({
+            url: '/pages/completeProfile/index'
+          })
+        }, 1500)
+      }
     } catch (error: any) {
       console.error('[Profile] Login error:', error)
       Taro.showToast({
